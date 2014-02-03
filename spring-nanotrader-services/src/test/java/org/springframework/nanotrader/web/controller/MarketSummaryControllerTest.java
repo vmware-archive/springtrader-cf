@@ -15,11 +15,11 @@
  */
 package org.springframework.nanotrader.web.controller;
 
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
 
@@ -39,7 +39,7 @@ public class MarketSummaryControllerTest extends AbstractBaseControllerTest {
 	public void getMarketSummaryJson() throws Exception {
 		mockMvc.perform(get("/marketSummary").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(content().mimeType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.tradeStockIndexAverage").value(ServiceTestConfiguration.MARKET_INDEX.doubleValue()))
 				.andExpect(jsonPath("$.tradeStockIndexOpenAverage").value(ServiceTestConfiguration.MARKET_OPENING.doubleValue()))
 				.andExpect(jsonPath("$.tradeStockIndexVolume").value(ServiceTestConfiguration.MARKET_VOLUME.doubleValue()))

@@ -15,13 +15,13 @@
  */
 package org.springframework.nanotrader.web.controller;
 
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -42,7 +42,7 @@ public class AccountProfileControllerTest extends AbstractSecureControllerTest {
 	public void getAccountProfileByIdJson() throws Exception {
 		mockMvc.perform(get("/accountProfile/400").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(content().mimeType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.userid").value(ServiceTestConfiguration.USER_ID))
 				.andExpect(jsonPath("$.profileid").value(ServiceTestConfiguration.PROFILE_ID))
 				.andExpect(jsonPath("$.email").value(ServiceTestConfiguration.EMAIL))
@@ -56,7 +56,7 @@ public class AccountProfileControllerTest extends AbstractSecureControllerTest {
 	public void createAccountProfileJson() throws Exception {
 		byte[] jsonRequest = FileCopyUtils.copyToByteArray(new ClassPathResource("create-account-profile.json").getFile());
 		mockMvc.perform(post("/accountProfile/").accept(MediaType.APPLICATION_JSON)
-				.body(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+				.content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())  //HTTP 201 - Created
 				.andDo(print());
 	}
@@ -65,7 +65,7 @@ public class AccountProfileControllerTest extends AbstractSecureControllerTest {
 	public void createAccountProfileUnsupportedMediaType() throws Exception {
 		byte[] jsonRequest = FileCopyUtils.copyToByteArray(new ClassPathResource("create-account-profile.json").getFile());
 		mockMvc.perform(post("/accountProfile/")
-				.body(jsonRequest))
+				.content(jsonRequest))
 				.andExpect(status().is(415)) //unsupported media type
 				.andDo(print());
 	}
@@ -74,7 +74,7 @@ public class AccountProfileControllerTest extends AbstractSecureControllerTest {
 	public void updateAccountProfileJson() throws Exception {
 		byte[] jsonRequest = FileCopyUtils.copyToByteArray(new ClassPathResource("update-account-profile.json").getFile());
 		mockMvc.perform(put("/accountProfile/400").accept(MediaType.APPLICATION_JSON)
-				.body(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+				.content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(print());
 	}

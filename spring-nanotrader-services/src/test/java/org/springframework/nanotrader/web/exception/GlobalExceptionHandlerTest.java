@@ -16,11 +16,11 @@
 package org.springframework.nanotrader.web.exception;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -43,7 +43,7 @@ public class GlobalExceptionHandlerTest extends AbstractSecureControllerTest {
 		mockMvc.perform(get("/accountProfile/not-a-number"))
 		.andExpect(status()
 		.isBadRequest())
-		.andExpect(content().mimeType(MediaType.APPLICATION_JSON))
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.detail", containsString("An error has occured while processing the request: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer'")) )
 		.andDo(print());
 	}	
@@ -52,7 +52,7 @@ public class GlobalExceptionHandlerTest extends AbstractSecureControllerTest {
 	public void getAccountProfileByIdJsonNoRecordFound() throws Exception {
 		mockMvc.perform(get("/accountProfile/900" + ServiceTestConfiguration.NOT_A_VALID_PROFILE).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isUnauthorized())
-				.andExpect(content().mimeType(MediaType.APPLICATION_JSON))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andDo(print());
 	}
 	

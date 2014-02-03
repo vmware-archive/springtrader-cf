@@ -15,11 +15,11 @@
  */
 package org.springframework.nanotrader.web.controller;
 
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.server.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -35,7 +35,7 @@ public class AuthenticationControllerTest extends AbstractSecureControllerTest {
 				.copyToByteArray(new ClassPathResource("login.json").getFile());
 		mockMvc.perform(
 				post("/login")
-						.accept(MediaType.APPLICATION_JSON).body(jsonRequest)
+						.accept(MediaType.APPLICATION_JSON).content(jsonRequest)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated()) // HTTP 201 - Created
 				.andExpect(jsonPath("$.authToken").value(ServiceTestConfiguration.AUTH_TOKEN))
@@ -50,7 +50,7 @@ public class AuthenticationControllerTest extends AbstractSecureControllerTest {
 				.copyToByteArray(new ClassPathResource("failed-login.json").getFile());
 		mockMvc.perform(
 				post("/login")
-						.accept(MediaType.APPLICATION_JSON).body(jsonRequest)
+						.accept(MediaType.APPLICATION_JSON).content(jsonRequest)
 						.contentType(MediaType.APPLICATION_JSON))
 						.andExpect(status().isUnauthorized()) 
 						.andDo(print());
