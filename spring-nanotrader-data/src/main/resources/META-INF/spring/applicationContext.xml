@@ -7,13 +7,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:cloud="http://www.springframework.org/schema/cloud"	
 	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
 		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/cloud http://www.springframework.org/schema/cloud/spring-cloud.xsd">
 	<!-- This will automatically locate any and all property files you have 
 		within your classpath, provided they fall under the META-INF/spring directory. 
 		The located property files are parsed and their values can then be used within 
@@ -74,99 +76,40 @@
 
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-				<property name="showSql" value="false" />
+				<property name="showSql" value="true" />
 				<property name="databasePlatform" value="#{dbPropertiesBean['dialect']}" />
 			</bean>
 		</property>
 		<property name="jpaPropertyMap">
 			<map>
 				<entry key="hibernate.jdbc.use_scrollable_resultset" value="#{dbPropertiesBean['use_scrollable_resultset']}" />
-				<entry key="hibernate.hbm2ddl.auto" value="#{dbPropertiesBean['hb2ddl.auto']}"/>
+				<entry key="hibernate.hbm2ddl.auto" value="#{dbPropertiesBean['hb2ddl_auto']}"/>
+				<entry key="hibernate.hbm2ddl.import_files" value="#{dbPropertiesBean['import_files']}" />
 			</map>
 		</property>
 	</bean>
 
-
-	<beans profile="default,test">
+ 	<beans profile="default">
+		<util:properties id="dbPropertiesBean">
+			<prop key="use_scrollable_resultset">false</prop>
+			<prop key="dialect">org.hibernate.dialect.MySQLDialect</prop>
+			<prop key="hb2ddl_auto">create-drop</prop>
+			<prop key="import_files">/importrefdata.sql</prop>
+		</util:properties>
+		<cloud:data-source id="dataSource">
+			<cloud:connection properties="sessionVariables=sql_mode='ANSI';characterEncoding=UTF-8;defaultTransactionIsolation=2" />
+			<cloud:pool pool-size="20" max-wait-time="200" />
+		</cloud:data-source>
+	</beans>
+	
+	<beans profile="test">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
 			<prop key="dialect">org.hibernate.dialect.H2Dialect</prop>
-			<prop key="hb2ddl.auto">create</prop>
+			<prop key="hb2ddl_auto">create</prop>
+			<prop key="import_files"></prop>
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
 	</beans>
-
-	<beans profile="postgresql">
-		<util:properties id="dbPropertiesBean">
-			<prop key="use_scrollable_resultset">true</prop>
-			<prop key="dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
-			<prop key="hb2ddl.auto">validate</prop>
-		</util:properties>
-		<bean class="org.apache.commons.dbcp.BasicDataSource"
-			destroy-method="close" id="dataSource">
-			<property name="driverClassName" value="${database.driverClassName}" />
-			<property name="url" value="${database.url}" />
-			<property name="username" value="${database.username}" />
-			<property name="password" value="${database.password}" />
-			<property name="testOnBorrow" value="true" />
-			<property name="testOnReturn" value="true" />
-			<property name="testWhileIdle" value="true" />
-			<property name="timeBetweenEvictionRunsMillis" value="1800000" />
-			<property name="numTestsPerEvictionRun" value="3" />
-			<property name="minEvictableIdleTimeMillis" value="1800000" />
-			<property name="defaultTransactionIsolation" value="2" />
-			<property name="validationQuery" value="SELECT version();" />
-		</bean>
-	</beans>
-
-	<beans profile="sqlfire">
-		<util:properties id="dbPropertiesBean">
-			<prop key="use_scrollable_resultset">false</prop>
-			<prop key="dialect">org.hibernate.dialect.DerbyDialect</prop>
-			<prop key="hb2ddl.auto">validate</prop>
-		</util:properties>
-
-		<bean class="org.apache.commons.dbcp.BasicDataSource"
-			destroy-method="close" id="dataSource">
-			<property name="driverClassName" value="${sqlfire.database.driverClassName}" />
-			<property name="url" value="${sqlfire.database.url}" />
-			<property name="username" value="${database.username}" />
-			<property name="password" value="${database.password}" />
-			<property name="testOnBorrow" value="true" />
-			<property name="testOnReturn" value="true" />
-			<property name="testWhileIdle" value="true" />
-			<property name="timeBetweenEvictionRunsMillis" value="1800000" />
-			<property name="numTestsPerEvictionRun" value="3" />
-			<property name="minEvictableIdleTimeMillis" value="1800000" />
-
-			<!-- Default isolation level for SQLfire is NONE. Default isolation level 
-				for vPostgres is TRANSACTION_READ_COMMITTED Constant value documentation: 
-				http://docs.oracle.com/javase/6/docs/api/constant-values.html Override the 
-				default isolation level to ensure consistent unit test behavior across data 
-				stores. Examples: NONE = 0 TRANSACTION_READ_UNCOMMITTED = 1 TRANSACTION_READ_COMMITTED 
-				= 2 -->
-			<property name="defaultTransactionIsolation" value="2" />
-			<!-- <property name="validationQuery" value="SELECT version();"/> -->
-		</bean>
-	</beans>
-
-
-	<beans profile="jndi">
-		<util:properties id="dbPropertiesBean">
-			<prop key="use_scrollable_resultset">false</prop>
-			<prop key="dialect">org.hibernate.dialect.DerbyDialect</prop>
-			<prop key="hb2ddl.auto">validate</prop>
-		</util:properties>
-		<jee:jndi-lookup id="dataSource"  jndi-name="jdbc/nanodb" />
-	</beans>
-
-    <beans profile="jndiPostgresql">
-        <util:properties id="dbPropertiesBean">
-            <prop key="use_scrollable_resultset">true</prop>
-            <prop key="dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
-            <prop key="hb2ddl.auto">validate</prop>
-        </util:properties>
-        <jee:jndi-lookup id="dataSource"  jndi-name="jdbc/nanodb" />
-    </beans>
 
 </beans>

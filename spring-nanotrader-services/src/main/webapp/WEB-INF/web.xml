@@ -8,19 +8,10 @@
         <param-name>contextClass</param-name>
         <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
     </context-param>
-<!--    <context-param> -->
-<!--         <param-name>spring.profiles.active</param-name> -->
-
-<!--         H2 -->
- <!--         <param-value>production, default</param-value> --> 
-
-<!--         postgreSQL -->
-<!--         <param-value>production, sqlfire</param-value> -->
-
-<!--         JNDI -->
-<!--          <param-value>production, jndi</param-value>    -->
-
-<!-- 	</context-param> -->
+    <context-param>
+        <param-name>spring.profiles.active</param-name>
+        <param-value>production, default</param-value>
+    </context-param>
    
     <!-- Location of Java @Configuration classes that configure the components that makeup this application -->
     <context-param>
@@ -66,7 +57,7 @@
 
 	<!-- Disables servlet container welcome file handling. Needed for compatibility with Servlet 3.0 and Tomcat 7.0 -->
 	<welcome-file-list>
-		<welcome-file />
+		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 	
 
