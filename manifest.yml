@@ -1,21 +1,15 @@
+---
+timeout: 180
+memory: 1G
+domain: cfapps.io
+instances: 1
+services:
+- stsql
+- stmessaging
 applications:
 - name: traderback
-  timeout: 180
-  memory: 1G
   path: dist/spring-nanotrader-asynch-services-1.0.1.BUILD-SNAPSHOT.war
-  domain: cfapps.io
   host: traderback
-  instances: 1
-  services:
-  - stsql
-  - stmessaging
 - name: traderfront
-  timeout: 180
-  memory: 1G
   path: dist/spring-nanotrader-services-1.0.1.BUILD-SNAPSHOT.war
-  domain: cfapps.io
   host: traderfront
-  instances: 1
-  services:
-  - stsql
-  - stmessaging
