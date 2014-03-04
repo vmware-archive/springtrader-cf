@@ -4,8 +4,8 @@ memory: 1G
 domain: cfapps.io
 instances: 1
 services:
-- stsql
-- stmessaging
+- tradersql
+- tradermessaging
 applications:
 - name: traderback
   path: dist/spring-nanotrader-asynch-services-1.0.1.BUILD-SNAPSHOT.war
