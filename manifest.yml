@@ -9,7 +9,7 @@ services:
 applications:
 - name: traderback
   path: dist/spring-nanotrader-asynch-services-1.0.1.BUILD-SNAPSHOT.war
-  host: traderback
+  host: {name for your traderback app}
 - name: traderfront
   path: dist/spring-nanotrader-services-1.0.1.BUILD-SNAPSHOT.war
-  host: traderfront
+  host: {name for your traderfront app}
