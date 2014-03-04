@@ -1,8 +1,27 @@
-SpringTrader getting started guide is available under github wiki
-==============================================================
+SpringTrader on Cloud Foundry
+=============================
 
-* See [Application Overview](https://github.com/vFabric/springtrader/wiki/Application-Overview)
-* See [Getting Started Guide](https://github.com/vFabric/springtrader/wiki/Getting-Started-Guide)
+This repository holds the SpringTrader application, slightly modified from the [original](https://github.com/vFabric/springtrader), so that the application component war files are deployed to Cloud Foundry with bindings to database and AMQP services.  The links below point to the original Application Overview, which, at a high level, continues to apply to this new version, the original Getting Started Guide and a new Getting Started Guide.  Comparing the old and new versions of this document is telling - the former requires the installation of numerous components including an application server, database, AMQP messaging server and more. For deployment to Cloud Foundry, the PaaS provides all of these things and the deployment involves creation of database and AMQP instances (no SW installation required) and deployment of the war files (again, no SW installation); all of this is accomplished with only a few commands. 
+
+* See NEW [Getting Started Guide](https://github.com/cf-platform-eng/springtrader-cf/wiki/Getting-Started-Guide): Start here to deploy to Cloud Foundry.
+* See (original) [Application Overview](https://github.com/vFabric/springtrader/wiki/Application-Overview)
+* See (original) [Getting Started Guide](https://github.com/vFabric/springtrader/wiki/Getting-Started-Guide)
+
+Known Limitations
+=================
+
+The following current limitations will be eliminated shortly (pull requests welcome!!):
+
+* The web tier and services tier have been combined to avoid cross-site scripting issues. With the old deployment the war files for the UI and services tier were both deployed to the same domain (i.e. localhost:8080) with only the path being different, http://localhost:8080/spring-nanotrader-web and http://localhost:8080/spring-nanotrader-services, respectively.  Two war files deployed to Cloud Foundry may share the same host, (i.e. cfapps.io) but will necessarily have two different subdomains (i.e. traderweb.cfapps.io and traderservices.cfapps.io), thus introducing cross-site scripting issues.  There are various options for handling this, our initial one is to simply pull those two tiers together, and hence the [Getting Started Guide]() only describes the deployment of two war files rather than three.  Other alternatives are being investigated and will update this project.
+* No session state caching. The original project leveraged Gemfire to do session state caching, and did so with a peer to peer Gemfire configuration. Because different instances of the web tier run in independent and isolated containers in Cloud Foundry, the peer to peer protocol cannot be used. We are planning on updating the use of Gemfire for session state caching to use a server (hence services) based configuration.
+* Sample data is not yet being loaded.  The current configuration DOES load reference data (prices for different stock tickers), but does not yet load additional sample data.
+
+SpringTrader Overview
+=====================
+
+The SpringTrader is a web application that allows users to establish an account and then manage a portfolio of stocks, buying and selling.  The architecture is fairly simple with a front end that includes the web tier talking to a set of HTTP/JSON-based services where stock quotes and portfolios can be viewed, and stock trade orders may be submitted, and a back end that fulfills orders. The communication between the front and back ends is asynchronous with the front end delivering orders to a message queue and the back end consuming from that queue. Both the front end services and the back end also access a shared relational database.  See the [Application Overview]() for the high-level architectue.
+
+The following diagram depicts the SpringTrader application UI.
 
 ![Spring Trader Screenshot](https://raw.github.com/vFabric/springtrader/master/wiki/springtrader.png)
 
