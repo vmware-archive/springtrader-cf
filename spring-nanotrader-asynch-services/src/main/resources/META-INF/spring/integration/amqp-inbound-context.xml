@@ -9,8 +9,6 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<import resource="amqp-common-context.xml" />
-
 <!--#################################################################### 
 	Order Processing:
 	a) Receives the order

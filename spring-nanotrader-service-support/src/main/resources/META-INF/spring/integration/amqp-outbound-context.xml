@@ -7,8 +7,6 @@
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<import resource="amqp-common-context.xml"/>
-
 	<int:gateway service-interface="org.springframework.nanotrader.service.support.TradingServiceFacadeImpl$OrderGateway"
 		default-request-channel="toAmqpChannel"/>
 

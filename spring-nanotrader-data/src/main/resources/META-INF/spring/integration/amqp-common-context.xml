@@ -2,8 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:cloud="http://www.springframework.org/schema/cloud"	
 	xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/cloud http://www.springframework.org/schema/cloud/spring-cloud.xsd">
 <!--#################################################################### 
 	Rabbit connecton factory "addresses" attribute can be configured with 
 	one or more broker host/ports to enable client side fail over. The 
@@ -18,9 +20,14 @@
 	
 
 		
-	<rabbit:connection-factory id="connectionFactory"
+	<beans profile="test">
+ 		<rabbit:connection-factory id="connectionFactory"
 			host="${NANO_RABBIT_HOST:localhost}"
 			port="${NANO_RABBIT_PORT:5672}"/>
+	</beans>
+	<beans profile="default">
+		<cloud:rabbit-connection-factory id="connectionFactory"/>
+	</beans>
 	
 	<!--  Enable clustered rabbit brokers by adding "clusteredRabbit" 
 		  to the catalina.properties property spring.active.profiles. 
@@ -28,7 +35,7 @@
 	 -->
 	<beans profile="clusteredRabbit">
 	  
-	    <rabbit:connection-factory  id="connectionFactory" 
+	    <rabbit:connection-factory  id="connectionFactory"
     			addresses="${NANO_RABBIT_HOSTS:localhost:5679}"/>
 	</beans>
 	
