@@ -314,7 +314,6 @@ project('spring-nanotrader-asynch-services') {
 
 	description = 'Spring Nanotrader Asynch Services'
 	dependencies {
-		compile project(":spring-nanotrader-data")
 		compile project(":spring-nanotrader-service-support")
 		compile "org.springframework:spring-webmvc:$springVersion"
 		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
