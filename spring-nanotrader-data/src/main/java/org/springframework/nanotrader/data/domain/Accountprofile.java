@@ -29,7 +29,7 @@ import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "accountprofile")
+@Table(name = "ACCOUNTPROFILE")
 public class Accountprofile implements Serializable {
 	@Id
     @GeneratedValue(strategy = GenerationType.TABLE)

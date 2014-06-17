@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "quote")
+@Table(name = "QUOTE")
 public class Quote implements Serializable {
 	@Id
     @GeneratedValue(strategy = GenerationType.TABLE)

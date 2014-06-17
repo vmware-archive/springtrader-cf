@@ -35,7 +35,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "holding")
+@Table(name = "HOLDING")
 public class Holding implements Serializable {
 	@Id
     @GeneratedValue(strategy = GenerationType.TABLE) 
