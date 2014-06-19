@@ -253,15 +253,8 @@ project('tools') {
 project('spring-nanotrader-services') {
 	apply plugin: 'war'
 
-	description = 'Spring Nanotrader Web and Services'
+	description = 'Spring Nanotrader Services'
         
-	/* TODO: Temporily pulling the web and services components into a single war. */
-    war {
-		from ("../spring-nanotrader-web/src/main/webapp") {
-			exclude('**/web.xml')
-        }
-    }
-
 	dependencies {
 		compile project(":spring-nanotrader-service-support")
 		compile project(":spring-nanotrader-chaos")
