@@ -69,6 +69,7 @@ subprojects { subproject ->
 	ext.springWsVersion = '2.0.3.RELEASE'
 	ext.springIntegrationVersion = '2.2.6.RELEASE'
 	ext.springRooVersion = '1.2.0.RELEASE'
+	ext.springCloudVersion = '1.0.0.RELEASE'
 	ext.javaxInjectVersion = '1'
 	ext.servletApiVersion = '2.5'
 	ext.dozerVersion='5.3.2'
@@ -179,9 +180,8 @@ project('spring-nanotrader-data') {
 	description = 'Spring Nanotrader Data'
 	dependencies {
 		// Spring Cloud
-		compile 'org.springframework.cloud:core:0.9.2-BUILD-SNAPSHOT'
-		compile 'org.springframework.cloud:spring-service-connector:0.9.2-BUILD-SNAPSHOT'
-		compile 'org.springframework.cloud:cloudfoundry-connector:0.9.2-BUILD-SNAPSHOT'
+		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
+		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
 	
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.aspectj:aspectjrt:$aspectjVersion"
@@ -261,7 +261,7 @@ project('spring-nanotrader-services') {
 			exclude('**/web.xml')
         }
     }
-		
+
 	dependencies {
 		compile project(":spring-nanotrader-service-support")
 		compile project(":spring-nanotrader-chaos")
@@ -297,6 +297,16 @@ project('spring-nanotrader-web') {
 	}
 	artifacts {
 	    archives tar
+	}
+	dependencies {
+		// Spring Cloud
+		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
+		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
+
+		compile "org.springframework:spring-webmvc:$springVersion"
+		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		compile "javax.servlet:jstl:1.2"
+		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 	}
         task release(dependsOn: assemble) << {
             copy {
