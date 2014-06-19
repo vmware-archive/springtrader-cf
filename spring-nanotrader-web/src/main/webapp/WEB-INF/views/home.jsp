@@ -1,3 +1,5 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html lang="en-GB" class="no-js ie6"> <![endif]-->
 <!--[if IE 7   ]>      <html lang="en-GB" class="no-js ie7"> <![endif]-->
@@ -6,7 +8,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>SpringTrader :: Dashboard</title>
+        <title>SpringTrader :: Dashboard - index</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
         <meta name="author" content="">
@@ -37,7 +39,10 @@
         <script src="js/backbone.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/nano.utils.js"></script>
-        <script src="js/nano.configuration.js"></script>
+ 		<script>
+		nano.bindings = { servicesurl : '${serviceURI}' };
+		</script>
+       <script src="js/nano.configuration.js"></script>
         <script src="js/nano.strings.js"></script>
         <script src="js/nano.models.js"></script>
         <script src="js/views/paginator.js"></script>
