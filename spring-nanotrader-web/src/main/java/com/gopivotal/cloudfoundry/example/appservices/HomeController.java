@@ -21,6 +21,9 @@ public class HomeController {
 	/**
 	 * This simple controller just looks up the URI of the bound service and returns a JSP page that injects that URI.
 	 * If there is more than one service bound, or the service bound does not have a URI then an error is thrown.
+	 * @param locale the locale
+	 * @param model the model
+	 * @return page to go to
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {

@@ -36,9 +36,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 /**
  * Java configuration which bootstraps the web application context. Global error
  * handling is configured via
- * configureHandlerExceptionResolvers(List<HandlerExceptionResolver>
- * exceptionResolvers) enabling consistent REST exception handling across
- * Controllers.
+ * configureHandlerExceptionResolvers(List&lt;HandlerExceptionResolver&gt;exceptionResolvers) 
+ * enabling consistent REST exception handling across Controllers.
  * 
  * 
  * @author Brian Dussault

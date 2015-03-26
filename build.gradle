@@ -15,7 +15,7 @@ buildscript {
 
    dependencies {
 
-       classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.1.5'
+       classpath 'io.spring.gradle:docbook-reference-plugin:0.3.0'
 
    }
 
@@ -45,9 +45,9 @@ subprojects { subproject ->
 	apply plugin: 'idea'
 	apply plugin:'eclipse-wtp'
 	
-	// ensure JDK 6 compatibility (GRADLE-18; INT-1578)
-	sourceCompatibility=1.6
-	targetCompatibility=1.6
+	// ensure JDK 8 compatibility (GRADLE-18; INT-1578)
+	sourceCompatibility=1.8
+	targetCompatibility=1.8
 	ext.aspectjVersion = '1.6.12.M2'
 	ext.cglibVersion = '2.2'
 	ext.commonsNetVersion = '3.0.1'
@@ -231,7 +231,7 @@ project('tools') {
 	}
 
 	dependencies {
-	    groovy localGroovy()
+	    compile localGroovy()
 	    compile 'org.apache.commons:commons-lang3:3.1'
 	    compile 'commons-beanutils:commons-beanutils-core:1.8.3'
 	    compile 'commons-codec:commons-codec:1.4'
