@@ -56,10 +56,10 @@ subprojects { subproject ->
 	ext.groovyVersion = '1.8.5'
 	ext.jacksonVersion = '1.9.2'
 	ext.javaxActivationVersion = '1.1.1'
-	ext.junitVersion = '4.8.2'
+	ext.junitVersion = '4.12'
 	ext.log4jVersion = '1.2.12'
 	ext.mockitoVersion = '1.9.0'
-	ext.springVersion = '3.2.6.RELEASE'
+	ext.springVersion = '4.1.5.RELEASE'
 	ext.springAmqpVersion = '1.1.0.RELEASE'
 	ext.springDataMongoVersion = '1.0.0.RELEASE'
 	ext.springDataRedisVersion = '1.0.0.RELEASE'
@@ -71,7 +71,7 @@ subprojects { subproject ->
 	ext.springRooVersion = '1.2.0.RELEASE'
 	ext.springCloudVersion = '1.0.0.RELEASE'
 	ext.javaxInjectVersion = '1'
-	ext.servletApiVersion = '2.5'
+	ext.servletApiVersion = '3.0.1'
 	ext.dozerVersion='5.3.2'
 	ext.h2Version="1.3.166"
 	ext.webAppDirName = 'src/main/webapp'
@@ -108,7 +108,7 @@ subprojects { subproject ->
 	dependencies {
 		compile "org.slf4j:slf4j-log4j12:1.6.4"
 		testCompile "cglib:cglib-nodep:$cglibVersion"
-		testCompile "junit:junit-dep:$junitVersion"
+		testCompile "junit:junit:$junitVersion"
 		testCompile "log4j:log4j:$log4jVersion"
 		testCompile "org.easymock:easymock:$easymockVersion"
 		testCompile "org.easymock:easymockclassextension:$easymockVersion"
@@ -168,7 +168,7 @@ project('spring-nanotrader-service-support') {
 		compile project(":spring-nanotrader-data")
 		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion" 
 		compile "net.sf.dozer:dozer:$dozerVersion"
-		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+		compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
 		compile  "joda-time:joda-time:1.6"
 		compile "com.gemstone.gemfire:gemfire:6.6.3"	
 		compile  "org.springframework.data:spring-data-gemfire:1.1.1.RELEASE"
@@ -188,7 +188,7 @@ project('spring-nanotrader-data') {
 		compile "org.springframework:spring-aspects:$springVersion"
 		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
 		compile "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final"
-		compile "org.springframework.data:spring-data-jpa:1.0.3.RELEASE"
+		compile "org.springframework.data:spring-data-jpa:1.8.0.RELEASE"
 		compile "org.apache.commons:commons-lang3:$commonsLangVersion"
 		compile "javax.validation:validation-api:1.0.0.GA"
 		compile "org.hibernate:hibernate-validator:4.2.0.Final"
@@ -259,12 +259,11 @@ project('spring-nanotrader-services') {
 		compile project(":spring-nanotrader-service-support")
 		compile project(":spring-nanotrader-chaos")
 		compile "org.springframework:spring-webmvc:$springVersion"
-		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		providedCompile  ("javax.servlet:javax.servlet-api:$servletApiVersion")
 		compile "com.jayway.jsonpath:json-path:0.8.1"
 		compile "cglib:cglib-nodep:$cglibVersion"
 		compile "org.springframework.security:spring-security-web:$springSecurityVersion" 
 		compile "org.springframework.security:spring-security-config:$springSecurityVersion" 
-		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 		compile "javax.inject:javax.inject:$javaxInjectVersion"
 		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
@@ -297,7 +296,7 @@ project('spring-nanotrader-web') {
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
 
 		compile "org.springframework:spring-webmvc:$springVersion"
-		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		providedCompile  ("javax.servlet:javax.servlet-api:$servletApiVersion")
 		compile "javax.servlet:jstl:1.2"
 		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 	}
@@ -319,7 +318,7 @@ project('spring-nanotrader-asynch-services') {
 	dependencies {
 		compile project(":spring-nanotrader-service-support")
 		compile "org.springframework:spring-webmvc:$springVersion"
-		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		providedCompile  ("javax.servlet:javax.servlet-api:$servletApiVersion")
 		compile "com.jayway.jsonpath:json-path:0.8.1"
 		compile "cglib:cglib-nodep:$cglibVersion"
 		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
