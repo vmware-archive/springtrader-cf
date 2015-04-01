@@ -45,11 +45,9 @@ subprojects { subproject ->
 	apply plugin: 'idea'
 	apply plugin:'eclipse-wtp'
 	
-	// ensure JDK 6 compatibility (GRADLE-18; INT-1578)
-	sourceCompatibility=1.6
-	targetCompatibility=1.6
-	ext.aspectjVersion = '1.6.12.M2'
-	ext.cglibVersion = '2.2'
+	// ensure JDK 7 compatibility
+	sourceCompatibility=1.7
+	targetCompatibility=1.7
 	ext.commonsNetVersion = '3.0.1'
 	ext.commonsLangVersion = '3.0.1'
 	ext.easymockVersion = '2.3'
@@ -107,7 +105,6 @@ subprojects { subproject ->
 	// dependencies that are common across all java projects
 	dependencies {
 		compile "org.slf4j:slf4j-log4j12:1.6.4"
-		testCompile "cglib:cglib-nodep:$cglibVersion"
 		testCompile "junit:junit-dep:$junitVersion"
 		testCompile "log4j:log4j:$log4jVersion"
 		testCompile "org.easymock:easymock:$easymockVersion"
@@ -172,7 +169,7 @@ project('spring-nanotrader-service-support') {
 		compile  "joda-time:joda-time:1.6"
 		compile "com.gemstone.gemfire:gemfire:6.6.3"	
 		compile  "org.springframework.data:spring-data-gemfire:1.1.1.RELEASE"
-	        compile "net.schmizz:sshj:0.8.1"
+		compile "net.schmizz:sshj:0.8.1"
         }
 }
 
@@ -184,8 +181,9 @@ project('spring-nanotrader-data') {
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
 	
 		compile "org.springframework:spring-tx:$springVersion"
-		compile "org.aspectj:aspectjrt:$aspectjVersion"
-		compile "org.springframework:spring-aspects:$springVersion"
+		compile ("org.springframework:spring-aspects:$springVersion") {
+			exclude module: 'aspectjweaver'
+		}
 		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
 		compile "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final"
 		compile "org.springframework.data:spring-data-jpa:1.0.3.RELEASE"
@@ -193,8 +191,10 @@ project('spring-nanotrader-data') {
 		compile "javax.validation:validation-api:1.0.0.GA"
 		compile "org.hibernate:hibernate-validator:4.2.0.Final"
 		compile "commons-dbcp:commons-dbcp:1.3"
-		compile "org.hibernate:hibernate-core:3.6.8.Final"
-		compile "org.hibernate:hibernate-entitymanager:3.6.8.Final"
+		compile"org.hibernate:hibernate-core:3.6.8.Final"
+		compile ("org.hibernate:hibernate-entitymanager:3.6.8.Final") {
+			exclude module: 'cglib'
+		}
 		compile "postgresql:postgresql:9.0-801.jdbc3"
 		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile "com.h2database:h2:$h2Version"
@@ -261,7 +261,6 @@ project('spring-nanotrader-services') {
 		compile "org.springframework:spring-webmvc:$springVersion"
 		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
 		compile "com.jayway.jsonpath:json-path:0.8.1"
-		compile "cglib:cglib-nodep:$cglibVersion"
 		compile "org.springframework.security:spring-security-web:$springSecurityVersion" 
 		compile "org.springframework.security:spring-security-config:$springSecurityVersion" 
 		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
@@ -269,7 +268,6 @@ project('spring-nanotrader-services') {
 		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
 		testCompile "org.hamcrest:hamcrest-all:1.1"
-		compile "org.aspectj:aspectjweaver:$aspectjVersion"
 	}
         task release(dependsOn: assemble) << {
             copy {
@@ -321,13 +319,10 @@ project('spring-nanotrader-asynch-services') {
 		compile "org.springframework:spring-webmvc:$springVersion"
 		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
 		compile "com.jayway.jsonpath:json-path:0.8.1"
-		compile "cglib:cglib-nodep:$cglibVersion"
 		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 		compile "javax.inject:javax.inject:$javaxInjectVersion"
 		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
-		compile "org.aspectj:aspectjweaver:$aspectjVersion"
-
 	}
         task release(dependsOn: assemble) << {
             copy {
