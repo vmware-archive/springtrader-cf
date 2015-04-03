@@ -17,8 +17,8 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">21</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">2</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">30</stringProp>
         <longProp name="ThreadGroup.start_time">1366304121000</longProp>
         <longProp name="ThreadGroup.end_time">1366304121000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -30,7 +30,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">stfront.cfdemo6.fe.gopivotal.com</stringProp>
+          <stringProp name="HTTPSampler.domain">traderfront.cfdemo3.fe.gopivotal.com</stringProp>
           <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -41,7 +41,7 @@
         </ConfigTestElement>
         <hashTree/>
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Users CSV Data Set Config" enabled="true">
-          <stringProp name="filename">/Users/jomeara/Downloads/PCF/jMeter-scripts/names.csv</stringProp>
+          <stringProp name="filename">names.csv</stringProp>
           <stringProp name="fileEncoding"></stringProp>
           <stringProp name="variableNames">csvuser,csvpass,users_token,users_id,users_initialsymbol,users_orders,users_orderids,users_quantity</stringProp>
           <stringProp name="delimiter">,</stringProp>
@@ -80,7 +80,7 @@
               <bytes>true</bytes>
             </value>
           </objProp>
-          <stringProp name="filename">/Users/jomeara/Downloads/PCF/jMeter-scripts/jmeter-springtrader-vmw-buy-sell.jtl</stringProp>
+          <stringProp name="filename">./jmeter-springtrader-vmw-buy-sell.jtl</stringProp>
         </ResultCollector>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -112,7 +112,7 @@
               <bytes>true</bytes>
             </value>
           </objProp>
-          <stringProp name="filename">/Users/jomeara/Downloads/PCF/jMeter-scripts/jmeter-springtrader-vmw-buy-sell.jtl</stringProp>
+          <stringProp name="filename">./jmeter-springtrader-vmw-buy-sell.jtl</stringProp>
         </ResultCollector>
         <hashTree/>
         <ResultCollector guiclass="MonitorHealthVisualizer" testclass="ResultCollector" testname="Monitor Results" enabled="true">
@@ -144,7 +144,7 @@
               <bytes>true</bytes>
             </value>
           </objProp>
-          <stringProp name="filename">/Users/jomeara/Downloads/PCF/JMeter-scripts/jmeter-springtrader-vmw-buy-sell.jtl</stringProp>
+          <stringProp name="filename">./jmeter-springtrader-vmw-buy-sell.jtl</stringProp>
         </ResultCollector>
         <hashTree/>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Buy Sell Simple Controller" enabled="true"/>
@@ -255,7 +255,7 @@
               </HeaderManager>
               <hashTree/>
               <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Quotes CSV Data Set Config" enabled="true">
-                <stringProp name="filename">/Users/jomeara/Downloads/PCF/JMeter-scripts/quote.csv</stringProp>
+                <stringProp name="filename">quote.csv</stringProp>
                 <stringProp name="fileEncoding"></stringProp>
                 <stringProp name="variableNames">price1,price2,volume,price3,price4,compname,symbol,order</stringProp>
                 <stringProp name="delimiter">:</stringProp>
@@ -276,7 +276,7 @@
                     </elementProp>
                   </collectionProp>
                 </elementProp>
-                <stringProp name="HTTPSampler.domain">stfront.cfdemo6.fe.gopivotal.com</stringProp>
+                <stringProp name="HTTPSampler.domain"></stringProp>
                 <stringProp name="HTTPSampler.port"></stringProp>
                 <stringProp name="HTTPSampler.connect_timeout"></stringProp>
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -315,7 +315,7 @@
                     </elementProp>
                   </collectionProp>
                 </elementProp>
-                <stringProp name="HTTPSampler.domain">stfront.cfdemo6.fe.gopivotal.com</stringProp>
+                <stringProp name="HTTPSampler.domain"></stringProp>
                 <stringProp name="HTTPSampler.port"></stringProp>
                 <stringProp name="HTTPSampler.connect_timeout"></stringProp>
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
