@@ -1,17 +1,23 @@
 #!/bin/sh
 
-frontName=traderfront
-webName=traderweb
-backName=traderback
-domain=cfapps.io
-sqlName=stsql
-messagingName=stmessaging
+frontName=stfront
+webName=stweb
+backName=stback
+domain=cedemo.fe.pivotal.io
+sqlName=tradersql
+messagingName=tradermessaging
+appDweb=app-dynamics-ST-web
+appDAPI=app-dynamics-ST-rest
+appDDB=app-dynamics-ST-asynch
 
 date
-gcf delete -f $frontName
-gcf delete -f $webName
-gcf delete -f $backName
-gcf delete-service -f $frontName
-gcf delete-service -f $sqlName
-gcf delete-service -f $messagingName
+cf unbind-service $webName $appDweb
+cf unbind-service $frontName $appDAPI
+cf unbind-service $backName $appDDB
+cf delete -f $frontName
+cf delete -f $webName
+cf delete -f $backName
+cf delete-service -f $frontName
+cf delete-service -f $sqlName
+cf delete-service -f $messagingName
 date

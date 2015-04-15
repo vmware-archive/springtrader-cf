@@ -28,22 +28,24 @@ public class HomeController {
 		// using spring cloud to get the single service bound to this app and get the uri
 		// There must be a single service bound and it must contain the fields of a URIBasedServiceInfo
 		// object, else an error will be displayed.
-		CloudFactory cloudFactory = new CloudFactory();
-		Cloud cloud = cloudFactory.getCloud();
-		if (cloud.getServiceInfos().size() == 1 && cloud.getServiceInfos().get(0) instanceof UriBasedServiceInfo) {
-			UriBasedServiceInfo serviceInfo = (UriBasedServiceInfo) cloud.getServiceInfos().get(0);
+		//CloudFactory cloudFactory = new CloudFactory();
+		//Cloud cloud = cloudFactory.getCloud();
+		//if (cloud.getServiceInfos().size() == 1 && cloud.getServiceInfos().get(0) instanceof UriBasedServiceInfo) 
+		//if (cloud.getServiceInfos().get(0) instanceof UriBasedServiceInfo) {
+			//UriBasedServiceInfo serviceInfo = (UriBasedServiceInfo) cloud.getServiceInfos().get(0);
 			// TODO: Currently this assumes no port, accurate if the http web service is deployed to CF, but may not be if the http web service is external
 			// TODO: When UriBasedServiceInfo class exposes scheme, update to reflect whether it is http or https
-			String uri = "http://" + serviceInfo.getHost() + "/" + serviceInfo.getPath();
+			// String uri = "http://" + serviceInfo.getHost() + "/" + serviceInfo.getPath();
+            String uri = "http://stfront.cedemo.fe.pivotal.io/api/";
 			model.addAttribute("serviceURI", uri);
 			return "home";
-		} else {
-			int numSvc = cloud.getServiceInfos().size();
-			String serviceInfoName = ((numSvc == 1) ? cloud.getServiceInfos().get(0).getClass().getName() : "unknown");
-			model.addAttribute("numServices", numSvc);
-			model.addAttribute("type", serviceInfoName);
-			return "error";
-		}
+		//} else {
+		//	int numSvc = cloud.getServiceInfos().size();
+		//	String serviceInfoName = ((numSvc == 1) ? cloud.getServiceInfos().get(0).getClass().getName() : "unknown");
+	//		model.addAttribute("numServices", numSvc);
+	//		model.addAttribute("type", serviceInfoName);
+	//		return "error";
+	//	}
 	}
 
 
