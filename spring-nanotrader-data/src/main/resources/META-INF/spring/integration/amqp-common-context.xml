@@ -3,11 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
 	xmlns:cloud="http://www.springframework.org/schema/cloud"	
-	xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/cloud http://www.springframework.org/schema/cloud/spring-cloud.xsd">
 <!--#################################################################### 
-	Rabbit connecton factory "addresses" attribute can be configured with 
+	Rabbit connection factory "addresses" attribute can be configured with 
 	one or more broker host/ports to enable client side fail over. The 
 	default is to use a single host running locally at the default rabbit 
 	port. To configure multiple hosts, edit the catalina.properties 

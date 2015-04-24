@@ -1,4 +1,4 @@
-rootProject.name = 'spring-nanotrader'
+rootProject.name = 'springtrader-cf'
 
 include 'spring-nanotrader-data'
 include 'spring-nanotrader-services'
