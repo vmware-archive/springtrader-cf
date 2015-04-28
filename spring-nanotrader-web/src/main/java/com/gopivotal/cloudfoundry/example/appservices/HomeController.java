@@ -2,8 +2,6 @@ package com.gopivotal.cloudfoundry.example.appservices;
 
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.service.UriBasedServiceInfo;

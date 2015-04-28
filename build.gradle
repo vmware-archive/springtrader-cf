@@ -19,6 +19,7 @@ allprojects {
 	}
 }
 
+
 subprojects { subproject ->
 
 	apply plugin: 'java'
@@ -47,6 +48,7 @@ subprojects { subproject ->
 	ext.springSocialTwitterVersion = '1.0.1.RELEASE'
 	ext.springWsVersion = '2.0.3.RELEASE'
 	ext.springRooVersion = '1.2.0.RELEASE'
+	ext.springCloudVersion = '1.1.0.RELEASE'
 	ext.springCloudVersion = '1.0.0.RELEASE'
 	ext.javaxInjectVersion = '1'
 	ext.servletApiVersion = '3.0.1'
@@ -79,10 +81,9 @@ subprojects { subproject ->
 
 	// dependencies that are common across all java projects
 	dependencies {
-		compile "org.slf4j:log4j-over-slf4j:1.7.11"
-		
+		compile "log4j:log4j:$log4jVersion"
+		compile "org.slf4j:slf4j-log4j12:1.7.11"
 		testCompile "junit:junit:$junitVersion"
-		
 		testCompile "org.mockito:mockito-core:1.10.19"
 		testCompile "org.springframework:spring-test:$springVersion"
 	}
@@ -93,8 +94,6 @@ subprojects { subproject ->
 	test {
 		// suppress all console output during testing unless running `gradle -i`
 		logging.captureStandardOutput(LogLevel.INFO)
-		//jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${buildDir}/jacoco.exec,includes=org.springframework.nanotrader.*"
-		//		jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000'
 		systemProperties['spring.profiles.active'] = 'test'
 	}
 
@@ -135,6 +134,7 @@ project('spring-nanotrader-service-support') {
 		testCompile files(project(":spring-nanotrader-data").sourceSets.test.resources.srcDirs)
 		
 		compile project(":spring-nanotrader-data")
+		compile "org.springframework.integration:spring-integration-amqp:$springVersion" 
 		compile "net.sf.dozer:dozer:$dozerVersion"
 		compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
 		compile  "joda-time:joda-time:1.6"
@@ -147,17 +147,17 @@ project('spring-nanotrader-service-support') {
 project('spring-nanotrader-data') {
 	description = 'Spring Nanotrader Data'
 	dependencies {
+		// Spring Cloud
+		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
+		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
+		
 		compile "org.springframework:spring-context:$springVersion"
-	
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.springframework:spring-orm:$springVersion"
-		
+		compile "org.springframework:spring-aspects:$springVersion"
 		compile "org.springframework.integration:spring-integration-core:$springVersion"
 		compile "org.springframework.integration:spring-integration-amqp:$springVersion"
-		compile "org.springframework:spring-aspects:$springVersion"
-		
 		compile "org.springframework.data:spring-data-jpa:1.8.0.RELEASE"
-		
 		compile "javax.validation:validation-api:1.0.0.GA"
 		compile "org.hibernate:hibernate-core:4.3.6.Final"
 		
