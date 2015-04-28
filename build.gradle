@@ -159,7 +159,9 @@ project('spring-nanotrader-data') {
 		compile "org.springframework.integration:spring-integration-amqp:$springVersion"
 		compile "org.springframework.data:spring-data-jpa:1.8.0.RELEASE"
 		compile "javax.validation:validation-api:1.0.0.GA"
+		compile "commons-dbcp:commons-dbcp:1.4"
 		compile "org.hibernate:hibernate-core:4.3.6.Final"
+		compile "mysql:mysql-connector-java:5.1.31"
 		
 		compile ("org.hibernate:hibernate-entitymanager:4.3.6.Final") {
 			exclude module: 'cglib'
@@ -199,7 +201,7 @@ project('tools') {
 	}
 
 	dependencies {
-	    groovy localGroovy()
+	    compile localGroovy()
 	    compile 'org.apache.commons:commons-lang3:3.1'
 	    compile 'commons-beanutils:commons-beanutils-core:1.8.3'
 	    compile 'commons-codec:commons-codec:1.4'

@@ -58,9 +58,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
 		
 		//this has been removed in jackson2. TODO: replace somehow? Is it needed?
 		//mappingJacksonHttpMessageConverter.getObjectMapper().configure(
-		//Feature.WRITE_DATES_AS_TIMESTAMPS, true);
-		
-		
+		//		Feature.WRITE_DATES_AS_TIMESTAMPS, true);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// There is no need to set the timezone as Jackson uses GMT and not the
 		// local time zone (which is exactly what you want)
@@ -68,7 +66,6 @@ public class WebConfig extends WebMvcConfigurationSupport {
 		// StdSerializerProvider clones the configured formatter for each thread
 		mappingJacksonHttpMessageConverter.getObjectMapper().setDateFormat(
 				format);
-		
 		mappingJacksonHttpMessageConverter.setPrettyPrint(true);
 		// mappingJacksonHttpMessageConverter.getObjectMapper().getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);
 		converters.add(mappingJacksonHttpMessageConverter);
