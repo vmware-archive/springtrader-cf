@@ -17,7 +17,7 @@ package org.springframework.nanotrader.service.domain;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder(value={"page", "pageSize", "totalRecords", "results"})
 public class CollectionResult {

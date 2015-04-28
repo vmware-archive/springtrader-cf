@@ -2,24 +2,7 @@ description = 'Spring Nanotrader'
 
 apply plugin: 'base'
 apply plugin: 'idea'
-
-
-
-buildscript {
-
-   repositories {
-
-       maven { url 'http://repo.springsource.org/plugins-release' }
-
-   }
-
-   dependencies {
-
-       classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.1.5'
-
-   }
-
-}
+apply plugin: 'eclipse'
 
 allprojects {
 	group = 'org.springframework.nanotrader'
@@ -45,21 +28,18 @@ subprojects { subproject ->
 	apply plugin: 'idea'
 	apply plugin:'eclipse-wtp'
 	
-	// ensure JDK 6 compatibility (GRADLE-18; INT-1578)
-	sourceCompatibility=1.6
-	targetCompatibility=1.6
-	ext.aspectjVersion = '1.6.12.M2'
-	ext.cglibVersion = '2.2'
+	// ensure JDK 7 compatibility (GRADLE-18; INT-1578)
+	sourceCompatibility=1.7
+	targetCompatibility=1.7
 	ext.commonsNetVersion = '3.0.1'
 	ext.commonsLangVersion = '3.0.1'
-	ext.easymockVersion = '2.3'
+	ext.easymockVersion = '3.2'
 	ext.groovyVersion = '1.8.5'
-	ext.jacksonVersion = '1.9.2'
 	ext.javaxActivationVersion = '1.1.1'
-	ext.junitVersion = '4.8.2'
+	ext.junitVersion = '4.12'
 	ext.log4jVersion = '1.2.12'
 	ext.mockitoVersion = '1.9.0'
-	ext.springVersion = '3.2.6.RELEASE'
+	ext.springVersion = '4.1.2.RELEASE'
 	ext.springAmqpVersion = '1.1.0.RELEASE'
 	ext.springDataMongoVersion = '1.0.0.RELEASE'
 	ext.springDataRedisVersion = '1.0.0.RELEASE'
@@ -67,13 +47,13 @@ subprojects { subproject ->
 	ext.springSecurityVersion = '3.1.0.RELEASE'
 	ext.springSocialTwitterVersion = '1.0.1.RELEASE'
 	ext.springWsVersion = '2.0.3.RELEASE'
-	ext.springIntegrationVersion = '2.2.6.RELEASE'
 	ext.springRooVersion = '1.2.0.RELEASE'
+	ext.springCloudVersion = '1.1.0.RELEASE'
 	ext.springCloudVersion = '1.0.0.RELEASE'
 	ext.javaxInjectVersion = '1'
-	ext.servletApiVersion = '2.5'
+	ext.servletApiVersion = '3.0.1'
 	ext.dozerVersion='5.3.2'
-	ext.h2Version="1.3.166"
+	ext.h2Version="1.4.185"
 	ext.webAppDirName = 'src/main/webapp'
 	// add the natures and builders to your project
 	eclipse.project {
@@ -99,23 +79,13 @@ subprojects { subproject ->
 		}
 	}
 
-	// See http://www.gradle.org/docs/current/userguide/dependency_management.html#sub:configurations
-	// and http://www.gradle.org/docs/current/dsl/org.gradle.api.artifacts.ConfigurationContainer.html
-	configurations { jacoco //Configuration Group used by Sonar to provide Code Coverage using JaCoCo
-	}
-
 	// dependencies that are common across all java projects
 	dependencies {
-		compile "org.slf4j:slf4j-log4j12:1.6.4"
-		testCompile "cglib:cglib-nodep:$cglibVersion"
-		testCompile "junit:junit-dep:$junitVersion"
-		testCompile "log4j:log4j:$log4jVersion"
-		testCompile "org.easymock:easymock:$easymockVersion"
-		testCompile "org.easymock:easymockclassextension:$easymockVersion"
-		
-		testCompile "org.mockito:mockito-all:$mockitoVersion"
+		compile "log4j:log4j:$log4jVersion"
+		compile "org.slf4j:slf4j-log4j12:1.7.11"
+		testCompile "junit:junit:$junitVersion"
+		testCompile "org.mockito:mockito-core:1.10.19"
 		testCompile "org.springframework:spring-test:$springVersion"
-		jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.5.3.201107060350", classifier: "runtime"
 	}
 
 	// enable all compiler warnings; individual projects may customize further
@@ -124,8 +94,6 @@ subprojects { subproject ->
 	test {
 		// suppress all console output during testing unless running `gradle -i`
 		logging.captureStandardOutput(LogLevel.INFO)
-		jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${buildDir}/jacoco.exec,includes=org.springframework.nanotrader.*"
-		//		jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000'
 		systemProperties['spring.profiles.active'] = 'test'
 	}
 
@@ -166,13 +134,13 @@ project('spring-nanotrader-service-support') {
 		testCompile files(project(":spring-nanotrader-data").sourceSets.test.resources.srcDirs)
 		
 		compile project(":spring-nanotrader-data")
-		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion" 
+		compile "org.springframework.integration:spring-integration-amqp:$springVersion" 
 		compile "net.sf.dozer:dozer:$dozerVersion"
-		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+		compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
 		compile  "joda-time:joda-time:1.6"
 		compile "com.gemstone.gemfire:gemfire:6.6.3"	
 		compile  "org.springframework.data:spring-data-gemfire:1.1.1.RELEASE"
-	        compile "net.schmizz:sshj:0.8.1"
+	    compile "net.schmizz:sshj:0.8.1"
         }
 }
 
@@ -182,23 +150,25 @@ project('spring-nanotrader-data') {
 		// Spring Cloud
 		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
-	
+		
+		compile "org.springframework:spring-context:$springVersion"
 		compile "org.springframework:spring-tx:$springVersion"
-		compile "org.aspectj:aspectjrt:$aspectjVersion"
+		compile "org.springframework:spring-orm:$springVersion"
 		compile "org.springframework:spring-aspects:$springVersion"
-		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
-		compile "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final"
-		compile "org.springframework.data:spring-data-jpa:1.0.3.RELEASE"
-		compile "org.apache.commons:commons-lang3:$commonsLangVersion"
+		compile "org.springframework.integration:spring-integration-core:$springVersion"
+		compile "org.springframework.integration:spring-integration-amqp:$springVersion"
+		compile "org.springframework.data:spring-data-jpa:1.8.0.RELEASE"
 		compile "javax.validation:validation-api:1.0.0.GA"
-		compile "org.hibernate:hibernate-validator:4.2.0.Final"
-		compile "commons-dbcp:commons-dbcp:1.3"
-		compile "org.hibernate:hibernate-core:3.6.8.Final"
-		compile "org.hibernate:hibernate-entitymanager:3.6.8.Final"
-		compile "postgresql:postgresql:9.0-801.jdbc3"
-		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-		compile "com.h2database:h2:$h2Version"
-		compile "mysql:mysql-connector-java:5.1.13"
+		compile "commons-dbcp:commons-dbcp:1.4"
+		compile "org.hibernate:hibernate-core:4.3.6.Final"
+		compile "mysql:mysql-connector-java:5.1.31"
+		
+		compile ("org.hibernate:hibernate-entitymanager:4.3.6.Final") {
+			exclude module: 'cglib'
+		}
+
+		compile "org.codehaus.jackson:jackson-mapper-asl:1.9.2"
+        compile "com.h2database:h2:$h2Version"
 	}
 }
 
@@ -231,7 +201,7 @@ project('tools') {
 	}
 
 	dependencies {
-	    groovy localGroovy()
+	    compile localGroovy()
 	    compile 'org.apache.commons:commons-lang3:3.1'
 	    compile 'commons-beanutils:commons-beanutils-core:1.8.3'
 	    compile 'commons-codec:commons-codec:1.4'
@@ -259,17 +229,14 @@ project('spring-nanotrader-services') {
 		compile project(":spring-nanotrader-service-support")
 		compile project(":spring-nanotrader-chaos")
 		compile "org.springframework:spring-webmvc:$springVersion"
-		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		providedCompile  ("javax.servlet:javax.servlet-api:$servletApiVersion")
 		compile "com.jayway.jsonpath:json-path:0.8.1"
-		compile "cglib:cglib-nodep:$cglibVersion"
 		compile "org.springframework.security:spring-security-web:$springSecurityVersion" 
 		compile "org.springframework.security:spring-security-config:$springSecurityVersion" 
-		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 		compile "javax.inject:javax.inject:$javaxInjectVersion"
 		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
 		testCompile "org.hamcrest:hamcrest-all:1.1"
-		compile "org.aspectj:aspectjweaver:$aspectjVersion"
 	}
         task release(dependsOn: assemble) << {
             copy {
@@ -297,9 +264,11 @@ project('spring-nanotrader-web') {
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
 
 		compile "org.springframework:spring-webmvc:$springVersion"
-		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		providedCompile  ("javax.servlet:javax.servlet-api:$servletApiVersion")
 		compile "javax.servlet:jstl:1.2"
-		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
+		runtime "com.fasterxml.jackson.core:jackson-annotations:2.5.1"
+		runtime "com.fasterxml.jackson.core:jackson-core:2.5.1"
+		runtime "com.fasterxml.jackson.core:jackson-databind:2.5.1"
 	}
         task release(dependsOn: assemble) << {
             copy {
@@ -319,15 +288,11 @@ project('spring-nanotrader-asynch-services') {
 	dependencies {
 		compile project(":spring-nanotrader-service-support")
 		compile "org.springframework:spring-webmvc:$springVersion"
-		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
+		providedCompile  ("javax.servlet:javax.servlet-api:$servletApiVersion")
 		compile "com.jayway.jsonpath:json-path:0.8.1"
-		compile "cglib:cglib-nodep:$cglibVersion"
-		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 		compile "javax.inject:javax.inject:$javaxInjectVersion"
 		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
-		compile "org.aspectj:aspectjweaver:$aspectjVersion"
-
 	}
         task release(dependsOn: assemble) << {
             copy {
@@ -337,11 +302,6 @@ project('spring-nanotrader-asynch-services') {
             }
         }
 }
-
-
-apply plugin: 'docbook-reference'
-
-reference { ext.sourceDir = file('src/reference/docbook') }
 
 apply plugin: 'sonar'
 
@@ -404,8 +364,6 @@ task docsZip(type: Zip) {
 	from('src/dist') { include 'changelog.txt' }
 
 	from (api) { into 'api' }
-
-	from (reference) { into 'reference' }
 }
 
 task distZip(type: Zip, dependsOn: [docsZip]) {

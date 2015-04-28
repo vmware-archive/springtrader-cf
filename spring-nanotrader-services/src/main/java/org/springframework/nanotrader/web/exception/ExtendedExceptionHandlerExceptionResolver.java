@@ -38,6 +38,7 @@ public class ExtendedExceptionHandlerExceptionResolver extends ExceptionHandlerE
 
 	/**
 	 * Provide a handler with @{@link ExceptionHandler} methods.
+	 * @param handler the handler
 	 */
 	public void setExceptionHandler(Object handler) {
 		this.handler = handler;

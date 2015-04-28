@@ -44,8 +44,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AdminController extends BaseController {
 
 	/**
-	 * Creates users & buy orders for the (usercount) number of users
-	 * @param recreateDataRequest
+	 * Creates users and buy orders for the (usercount) number of users
+	 * @param recreateDataRequest the request
 	 */
 	@RequestMapping(value = "/admin/userdata", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
@@ -69,6 +69,7 @@ public class AdminController extends BaseController {
 
 	/**
 	 * Delete the account associated by the given userid
+	 * @param userNameRequest the request
 	 */
 	@RequestMapping(value = "/admin/deleteaccount", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.OK)
@@ -79,6 +80,8 @@ public class AdminController extends BaseController {
 
 	/**
 	 * Run performance test
+	 * @param servletRequest the request
+	 * @param perfRequest the request
 	 */
 	@RequestMapping(value = "/admin/perftest", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)

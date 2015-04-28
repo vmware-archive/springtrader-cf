@@ -19,13 +19,13 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.codehaus.jackson.map.SerializationConfig.Feature;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.nanotrader.service.configuration.ServiceConfig;
 import org.springframework.nanotrader.web.exception.ExtendedExceptionHandlerExceptionResolver;
 import org.springframework.nanotrader.web.exception.GlobalExceptionHandler;
@@ -36,9 +36,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 /**
  * Java configuration which bootstraps the web application context. Global error
  * handling is configured via
- * configureHandlerExceptionResolvers(List<HandlerExceptionResolver>
- * exceptionResolvers) enabling consistent REST exception handling across
- * Controllers.
+ * configureHandlerExceptionResolvers(List&lt;HandlerExceptionResolver&gt;exceptionResolvers) 
+ * enabling consistent REST exception handling across Controllers.
  * 
  * 
  * @author Brian Dussault
@@ -53,11 +52,13 @@ public class WebConfig extends WebMvcConfigurationSupport {
 	public void configureMessageConverters(
 			List<HttpMessageConverter<?>> converters) {
 		// Configure JSON support
-		MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
+		MappingJackson2HttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
 		mappingJacksonHttpMessageConverter.setSupportedMediaTypes(Arrays
 				.asList(MediaType.APPLICATION_JSON));
-		mappingJacksonHttpMessageConverter.getObjectMapper().configure(
-				Feature.WRITE_DATES_AS_TIMESTAMPS, true);
+		
+		//this has been removed in jackson2. TODO: replace somehow? Is it needed?
+		//mappingJacksonHttpMessageConverter.getObjectMapper().configure(
+		//		Feature.WRITE_DATES_AS_TIMESTAMPS, true);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// There is no need to set the timezone as Jackson uses GMT and not the
 		// local time zone (which is exactly what you want)
@@ -65,8 +66,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
 		// StdSerializerProvider clones the configured formatter for each thread
 		mappingJacksonHttpMessageConverter.getObjectMapper().setDateFormat(
 				format);
-		mappingJacksonHttpMessageConverter.getObjectMapper().configure(
-				Feature.INDENT_OUTPUT, true);
+		mappingJacksonHttpMessageConverter.setPrettyPrint(true);
 		// mappingJacksonHttpMessageConverter.getObjectMapper().getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);
 		converters.add(mappingJacksonHttpMessageConverter);
 	}
