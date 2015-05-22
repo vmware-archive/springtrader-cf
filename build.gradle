@@ -182,7 +182,7 @@ project('spring-nanotrader-data') {
 		// Spring Cloud
 		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
-	
+    compile "org.springframework:spring-web:$springVersion"
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.aspectj:aspectjrt:$aspectjVersion"
 		compile "org.springframework:spring-aspects:$springVersion"

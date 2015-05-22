@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -48,7 +47,6 @@ import org.springframework.nanotrader.data.repository.HoldingRepository;
 import org.springframework.nanotrader.data.repository.MarketSummaryRepository;
 import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +84,7 @@ public class TradingServiceImpl implements TradingService {
 	private AccountRepository accountRepository;
 
 	@Autowired
-	private QuoteRepository quoteRepository;
+	private QuoteService quoteRepository;
 
 	@Autowired
 	private PortfolioSummaryRepository portfolioSummaryRepository;
@@ -283,7 +281,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-		Quote quote = quoteRepository.findBySymbol(order.getQuote().getSymbol());
+		Quote quote = quoteRepository.findQuote(order.getQuoteid());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
@@ -326,7 +324,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order createOrder(Order order, Account account, Holding holding, Quote quote) {
 		Order createdOrder = null;
 		order.setAccountAccountid(account);
-		order.setQuote(quote);
+		order.setQuoteid(quote.getQuoteid());
 		if (order.getQuantity() == null) {
 			order.setQuantity(holding.getQuantity());
 		}
@@ -341,6 +339,8 @@ public class TradingServiceImpl implements TradingService {
 
 	// TO DO: refactor this
 	public Order completeOrder(Order order) {
+		Quote quote = quoteRepository.findQuote(order.getQuoteid());
+
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
@@ -348,7 +348,7 @@ public class TradingServiceImpl implements TradingService {
 				holding.setPurchasedate(new Date());
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
-				holding.setQuoteSymbol(order.getQuote().getSymbol());
+				holding.setQuoteSymbol(quote.getSymbol());
 				Set<Order> orders = new HashSet<Order>();
 				orders.add(order);
 				holding.setOrders(orders);
@@ -364,7 +364,7 @@ public class TradingServiceImpl implements TradingService {
 		order.setCompletiondate(new Date());
 
 			
-		updateQuoteMarketData(order.getQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
+		updateQuoteMarketData(quote.getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
 	
 		
 		return order;
@@ -373,7 +373,7 @@ public class TradingServiceImpl implements TradingService {
 	// TODO: Need to clean this up
 	private void updateAccount(Order order) {
 		// update account balance
-		Quote quote = order.getQuote();
+		Quote quote = quoteRepository.findQuote(order.getQuoteid());
 		Account account = order.getAccountAccountid();
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
@@ -429,11 +429,6 @@ public class TradingServiceImpl implements TradingService {
 			quoteToPublish.setVolume(quote.getVolume().add(sharesTraded));
 			quoteToPublish.setChange1(newPrice.subtract(quote.getOpen1()));
 			this.quotePublisher.publishQuote(quoteToPublish);
-	}
-	
-	@Transactional
-	public void updateQuote(Quote quote) { 
-		quoteRepository.save(quote);
 	}
 	
 	@Override
@@ -527,10 +522,6 @@ public class TradingServiceImpl implements TradingService {
 
 	private List<Order> processOrderResults(List<Order> orders, Integer accountId) { 
 		if (orders != null && orders.size() > 0) {
-			// Loop over the orders to populate the lazy quote fields
-			for (Order order : orders) {
-				order.getQuote();
-			}
 			orderRepository.updateClosedOrders(accountId);
 		}
 		return orders;
@@ -576,10 +567,10 @@ public class TradingServiceImpl implements TradingService {
 	public MarketSummary findMarketSummary() {
 		MarketSummary marketSummary = marketSummaryRepository.findMarketSummary();
 		// get top losing stocks
-		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
+		List<Quote> losers = quoteRepository.findQuoteEntries(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
 
 		// get top gaining stocks
-		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
+		List<Quote> winners = quoteRepository.findQuoteEntries(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
 
 		List<Quote> topLosers = new ArrayList<Quote>(TOP_N);
 		for (Quote q : losers) {

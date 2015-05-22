@@ -39,13 +39,13 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+//import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.AccountprofileDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.HoldingDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.repository.AccountRepository;
 import org.springframework.nanotrader.data.repository.HoldingRepository;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.test.context.ContextConfiguration;
@@ -83,10 +83,7 @@ public class TradingServiceTests {
 	HoldingRepository holdingRepository;
 	
 	@Autowired
-    QuoteRepository quoteRepository;
-	
-	@Autowired
-    QuoteService quoteService;
+	QuoteService quoteService;
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -176,16 +173,10 @@ public class TradingServiceTests {
 	public void testFindAccountSummary() {
 		Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
 		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
+		Quote quote = quoteService.findBySymbol("GOOG");
+		holding.setQuoteSymbol(quote.getSymbol());
 		tradingService.saveHolding(holding);
 		entityManager.flush();
-		entityManager.clear(); // force reload
-        Quote quote = new Quote();
-        quote.setSymbol("quoteSymbol_100");
-        quote.setPrice(BigDecimal.valueOf(50.00));
-        quote.setChange1(BigDecimal.valueOf(5.00));
-        quote.setVolume( BigDecimal.valueOf(50000));
-        quoteService.saveQuote(quote);
-        entityManager.flush();
 		entityManager.clear(); // force reload
         Assert.assertNotNull("Expected 'Quote' identifier to no longer be null", quote.getQuoteid());
 		PortfolioSummary portfolioSummary = tradingService.findPortfolioSummary(100);
@@ -229,32 +220,19 @@ public class TradingServiceTests {
 	@Test
 
 	public void testFindMarketSummary() {
-		
-        Quote quote = new Quote();
-        quote.setSymbol("symbol1");
-        quote.setPrice(BigDecimal.valueOf(50.01) );
-        quote.setChange1( BigDecimal.valueOf(5.00));
-        quote.setVolume( BigDecimal.valueOf(50000));
-        quote.setChange1( BigDecimal.valueOf(4.00));
-        quote.setOpen1( BigDecimal.valueOf(49.00));
-        quoteService.saveQuote(quote);
-		entityManager.flush();
-		entityManager.clear(); // force reload
-        Quote quote2 = new Quote();
-        quote2.setSymbol("symbol2");
-        quote2.setPrice(BigDecimal.valueOf(150.00));
-        quote2.setChange1(BigDecimal.valueOf(15.00));
-        quote2.setVolume(BigDecimal.valueOf(150000));
-        quote2.setChange1(BigDecimal.valueOf(4.00));
-        quote2.setOpen1(BigDecimal.valueOf(120.00));
-        quoteService.saveQuote(quote2);
-        entityManager.flush();
-		entityManager.clear(); // force reload
 		MarketSummary marketSummary = tradingService.findMarketSummary();
-		// need to harden this test!!
-		Assert.assertTrue("Expected 'MarketSummary' Market Volume should be => than 200000", marketSummary.getTradeStockIndexVolume().intValue() >= 200000);
+		assertNotNull(marketSummary);
 
-
+		assertEquals(new BigDecimal(928), marketSummary.getChange());
+		assertEquals("3.00", marketSummary.getPercentGain().toString());
+		assertNotNull(marketSummary.getSummaryDate());
+		assertNotNull(marketSummary.getTopGainers());
+		assertEquals(3, marketSummary.getTopGainers().size());
+		assertNotNull(marketSummary.getTopLosers());
+		assertEquals(3, marketSummary.getTopLosers().size());	
+		assertEquals("107.00", marketSummary.getTradeStockIndexAverage().toString());
+		assertEquals("104.00", marketSummary.getTradeStockIndexOpenAverage().toString());
+		assertEquals("458.00", marketSummary.getTradeStockIndexVolume().toString());
 	}
 	
 	

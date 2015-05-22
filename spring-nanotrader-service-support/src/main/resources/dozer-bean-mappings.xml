@@ -79,6 +79,10 @@
 			<a>holdingHoldingid.holdingid</a>
 			<b>holdingid</b>
 		</field>
+		<field>
+			<a>quoteid</a>
+			<b>quote.quoteid</b>
+		</field>
 	</mapping>
 
 	<mapping map-id="quote">

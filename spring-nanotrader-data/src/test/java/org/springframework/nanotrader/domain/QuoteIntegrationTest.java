@@ -1,6 +1,7 @@
 package org.springframework.nanotrader.domain;
 
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.domain.test.QuoteDataOnDemand;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,12 +27,9 @@ public class QuoteIntegrationTest {
 
 	@Autowired
     private QuoteDataOnDemand dod;
-
+ 
 	@Autowired
     QuoteService quoteService;
-
-	@Autowired
-    QuoteRepository quoteRepository;
 
 	@Test
     public void testCountAllQuotes() {
@@ -57,7 +54,7 @@ public class QuoteIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Quote' failed to initialize correctly", dod.getRandomQuote());
         long count = quoteService.countAllQuotes();
         Assert.assertTrue("Too expensive to perform a find all test for 'Quote', as there are " + count + " entries; set the findAllMaximum to exceed this value or set findAll=false on the integration test annotation to disable the test", count < 250);
-        List<Quote> result = quoteService.findAllQuotes();
+        List<Quote> result = quoteService.findAll();
         Assert.assertNotNull("Find all method for 'Quote' illegally returned null", result);
         Assert.assertTrue("Find all method for 'Quote' failed to return any data", result.size() > 0);
     }
@@ -72,28 +69,5 @@ public class QuoteIntegrationTest {
         List<Quote> result = quoteService.findQuoteEntries(firstResult, maxResults);
         Assert.assertNotNull("Find entries method for 'Quote' illegally returned null", result);
         Assert.assertEquals("Find entries method for 'Quote' returned an incorrect number of entries", count, result.size());
-    }
-
-	@Test
-    public void testSaveQuote() {
-        Assert.assertNotNull("Data on demand for 'Quote' failed to initialize correctly", dod.getRandomQuote());
-        Quote obj = dod.getNewTransientQuote(Integer.MAX_VALUE);
-        Assert.assertNotNull("Data on demand for 'Quote' failed to provide a new transient entity", obj);
-        Assert.assertNull("Expected 'Quote' identifier to be null", obj.getQuoteid());
-        quoteService.saveQuote(obj);
-        quoteRepository.flush();
-        Assert.assertNotNull("Expected 'Quote' identifier to no longer be null", obj.getQuoteid());
-    }
-
-	@Test
-    public void testDeleteQuote() {
-        Quote obj = dod.getRandomQuote();
-        Assert.assertNotNull("Data on demand for 'Quote' failed to initialize correctly", obj);
-        Integer id = obj.getQuoteid();
-        Assert.assertNotNull("Data on demand for 'Quote' failed to provide an identifier", id);
-        obj = quoteService.findQuote(id);
-        quoteService.deleteQuote(obj);
-        quoteRepository.flush();
-        Assert.assertNull("Failed to remove 'Quote' with identifier '" + id + "'", quoteService.findQuote(id));
     }
 }

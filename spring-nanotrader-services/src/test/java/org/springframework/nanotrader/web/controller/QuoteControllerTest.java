@@ -15,6 +15,8 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -22,7 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.nanotrader.service.domain.Quote;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
 
 /**
@@ -34,10 +38,17 @@ import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration
 
 public class QuoteControllerTest extends AbstractSecureControllerTest {
 
+	@Autowired
+	QuoteController quoteContoller;
 
 	@Test
 	public void getQuoteBySymbolJson() throws Exception {
-		mockMvc.perform(get("/quote/VMW").accept(MediaType.APPLICATION_JSON))
+		Quote q = quoteContoller.findQuote("ATVI").getBody();
+		assertNotNull(q);
+		assertNotNull(q.getQuoteid());
+		assertEquals("ATVI", q.getSymbol());
+
+		mockMvc.perform(get("/quote/ATVI").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.quoteid").value(ServiceTestConfiguration.QUOTE_ID))

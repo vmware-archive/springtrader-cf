@@ -110,6 +110,10 @@
 			<prop key="import_files"></prop>
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
+		<bean id="quoteService" class="org.springframework.nanotrader.data.service.QuoteService">
+			<constructor-arg value="http://localhost:8080/quoteService" />
+	</bean>
+
 	</beans>
 
 </beans>

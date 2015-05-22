@@ -16,13 +16,20 @@
 package org.springframework.nanotrader.data.repository;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
+import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -31,6 +38,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepository {
+
+	@Autowired
+	HoldingRepository holdingRepository;
+
+	@Autowired
+	QuoteService quoteClient;
 
 	@PersistenceContext
 	private EntityManager em;
@@ -42,20 +55,45 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 	@Override
 	public PortfolioSummary findPortfolioSummary(Integer accountId) {
 		PortfolioSummary portfolioSummary = new PortfolioSummary();
-		Query query = em.createQuery("SELECT SUM(h.purchaseprice * h.quantity) as purchaseBasis, sum(q.price * h.quantity) as marketValue, count(h) FROM Holding h, Quote q Where h.accountAccountid =:accountId and h.quoteSymbol=q.symbol  ORDER BY marketValue desc");
-		query.setParameter("accountId", accountId);
-		@SuppressWarnings("unchecked")
-		List<Object[]> result = query.getResultList();
-		for (Object[] o: result) {
-			BigDecimal price = (BigDecimal)o[0];
-			BigDecimal marketValue = (BigDecimal)o[1];
-			Long countOfHoldings = (Long)o[2];
-			portfolioSummary.setTotalBasis(price);
-			portfolioSummary.setTotalMarketValue(marketValue);
-			portfolioSummary.setNumberOfHoldings(countOfHoldings.intValue());
-		}
+		List<Holding> holdings = holdingRepository
+				.findByAccountAccountid(accountId);
 
+		Map<String, Quote> quotes = getQuotesFromHoldings(holdings);
+
+		portfolioSummary.setTotalBasis(getTotalBasis(holdings));
+		portfolioSummary.setTotalMarketValue(getTotalMarketValue(holdings, quotes));
+		portfolioSummary.setNumberOfHoldings(holdings.size());
 
 		return portfolioSummary;
+	}
+
+	private Map<String, Quote> getQuotesFromHoldings(List<Holding> holdings) {
+		Set<String> symbols = new HashSet<String>();
+		for(Holding h: holdings) {
+			symbols.add(h.getQuoteSymbol());
+		}
+		List<Quote> quotes = quoteClient.findBySymbolIn(symbols);
+		Map<String, Quote> ret = new HashMap<String, Quote>();
+		for(Quote q: quotes) {
+			ret.put(q.getSymbol(), q);
+		}
+
+		return ret;
+	}
+
+	private BigDecimal getTotalBasis(List<Holding> holdings) {
+		BigDecimal ret = new BigDecimal(0);
+		for(Holding h: holdings) {
+			ret.add(h.getPurchaseprice().multiply(h.getQuantity()));
+		}
+		return ret;
+	}
+
+	private BigDecimal getTotalMarketValue(List<Holding> holdings, Map<String, Quote> quotes) {
+		BigDecimal ret = new BigDecimal(0);
+		for(Holding h: holdings) {
+			ret.add(h.getQuantity().multiply(quotes.get(h.getQuoteSymbol()).getPrice()));
+		}
+		return ret;
 	}
 }

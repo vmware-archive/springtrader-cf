@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Account;
 import org.springframework.nanotrader.service.domain.Accountprofile;
@@ -76,7 +77,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     private static Integer DEFAULT_PAGE = 0;
     
     private static Integer DEFAULT_PAGE_SIZE = 24;
-    
+
     @Resource
     private TradingService tradingService;
 
@@ -84,7 +85,10 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     private Mapper mapper;
 
     @Autowired(required=false)
-    private OrderGateway orderGateway;
+    private OrderGateway orderGateway;  
+
+    @Autowired
+    private QuoteService quoteService;
 
     @Cacheable(value="authorizationCache")
     public Accountprofile findAccountprofileByAuthtoken(String token) { 
@@ -288,7 +292,10 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
             throw new NoRecordsFoundException();
         }
         Order responseOrder = new Order();
+        Quote responseQuote = new Quote();
         mapper.map(order, responseOrder, ORDER_MAPPING);
+        mapper.map(quoteService.findQuote(order.getQuoteid()), responseQuote);
+        responseOrder.setQuote(responseQuote);
         return responseOrder;
     }
 
@@ -322,8 +329,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         
             for(org.springframework.nanotrader.data.domain.Order o: orders) {
                 Order order = new Order();
+                Quote responseQuote = new Quote();
                 mapper.map(o, order, ORDER_MAPPING);
                 responseOrders.add(order);
+                mapper.map(quoteService.findQuote(o.getQuoteid()), responseQuote);
+                order.setQuote(responseQuote);
             }
         }
         

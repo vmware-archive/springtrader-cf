@@ -15,25 +15,15 @@
  */
 package org.springframework.nanotrader.service;
 
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
-import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
  * @author Gary Russell
@@ -48,37 +38,11 @@ public class QuotePublishingTests {
 	private TradingService tradingService;
 
 	@Autowired
-	QuoteRepository quoteRepository;
-
-	@Before
-	public void setupMocks() {
-		Quote quote = new Quote();
-		quote.setSymbol("VMW");
-		quote.setPrice(BigDecimal.valueOf(120.0));
-		quote.setVolume(BigDecimal.valueOf(1000));
-		quote.setOpen1(BigDecimal.valueOf(115.0));
-		quote.setHigh(BigDecimal.valueOf(130.0));
-		quote.setLow(BigDecimal.valueOf(1.0));
-		Mockito.when(quoteRepository.findBySymbol("VMW")).thenReturn(quote);
-	}
+	QuoteService quoteRepository;
 
 	@Test
 	public void test() {
-		ReflectionUtils.doWithMethods(TradingServiceImpl.class, new MethodCallback() {
-			@Override
-			public void doWith(Method method) throws IllegalArgumentException,
-					IllegalAccessException {
-				if ("updateQuoteMarketData".equals(method.getName())) {
-					method.setAccessible(true);
-					try {
-						method.invoke(tradingService, "VMW", BigDecimal.valueOf(1.0), BigDecimal.valueOf(100.0));
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
-						fail("Failed to invoke updateQuoteMarketData:" + e.getMessage());
-					}
-				}
-			}
-		});
+		tradingService.updateQuoteMarketData("VMW", new BigDecimal(1), new BigDecimal(100));
 	}
 
 }

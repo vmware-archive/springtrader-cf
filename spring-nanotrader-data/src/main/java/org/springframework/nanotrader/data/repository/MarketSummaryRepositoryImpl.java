@@ -16,13 +16,14 @@
 package org.springframework.nanotrader.data.repository;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.MarketSummary;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Repository;
 
@@ -35,38 +36,31 @@ public class MarketSummaryRepositoryImpl implements MarketSummaryRepository {
 	@PersistenceContext
 	private EntityManager em;
 
+	@Autowired
+	QuoteService quoteClient;
+
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
 
 	public MarketSummary findMarketSummary() {
 		MarketSummary marketSummary = new MarketSummary();
-		Query query = em
-				.createQuery("SELECT SUM(q.price)/count(q) as tradeStockIndexAverage, "
-						+ "SUM(q.open1)/count(q) as tradeStockIndexOpenAverage, "
-						+ "SUM(q.volume) as tradeStockIndexVolume, "
-						+ "SUM(q) as cnt , "
-						+ "SUM(q.change1)"
-						+ "FROM Quote q");
+		Map<String, Long> ms = quoteClient.marketSummary();
+
 		marketSummary.setTradeStockIndexAverage(BigDecimal.ZERO.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 		marketSummary.setTradeStockIndexOpenAverage(BigDecimal.ZERO.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 		marketSummary.setTradeStockIndexVolume(BigDecimal.ZERO.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 		marketSummary.setChange(BigDecimal.ZERO.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
-		@SuppressWarnings("unchecked")
-		List<Object[]> result = query.getResultList();
-		for (Object[] o : result) {
-			if (o[0] != null && o[1] != null && o[2] != null && o[3] != null && o[4] != null) {
-				marketSummary.setTradeStockIndexAverage(((BigDecimal) o[0])
-						.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 
-				marketSummary.setTradeStockIndexOpenAverage(((BigDecimal) o[1])
-						.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
+		marketSummary.setTradeStockIndexAverage(new BigDecimal(ms.get("tradeStockIndexAverage"))
+			.setScale(FinancialUtils.SCALE,	FinancialUtils.ROUND));
 
-				marketSummary.setTradeStockIndexVolume(((BigDecimal) o[2])
-						.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
-				marketSummary.setChange(((BigDecimal) o[4]));
-			}
-		}
+		marketSummary.setTradeStockIndexOpenAverage(new BigDecimal(ms.get("tradeStockIndexOpenAverage"))
+			.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
+
+		marketSummary.setTradeStockIndexVolume(new BigDecimal(ms.get("tradeStockIndexVolume"))
+			.setScale(FinancialUtils.SCALE,	FinancialUtils.ROUND));
+		marketSummary.setChange(new BigDecimal(ms.get("change")));
 
 		return marketSummary;
 	}

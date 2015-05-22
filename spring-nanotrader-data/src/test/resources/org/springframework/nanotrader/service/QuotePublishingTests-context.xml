@@ -5,8 +5,8 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-	<bean id="mockQuoteRepo" class="org.mockito.Mockito" factory-method="mock">
-		<constructor-arg value="org.springframework.nanotrader.data.repository.QuoteRepository"/>
+	<bean id="quoteService" class="org.springframework.nanotrader.data.service.QuoteService" >
+		<constructor-arg value="http://localhost:8080/quoteService" />
 	</bean>
 
 	<bean id="mockARRepo" class="org.mockito.Mockito" factory-method="mock">

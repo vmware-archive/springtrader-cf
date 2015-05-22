@@ -17,16 +17,12 @@ package org.springframework.nanotrader.data.domain.test;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Component;
 
@@ -41,9 +37,6 @@ public class QuoteDataOnDemand {
 
 	@Autowired
     QuoteService quoteService;
-
-	@Autowired
-    QuoteRepository quoteRepository;
 
 	public Quote getNewTransientQuote(int index) {
         Quote obj = new Quote();
@@ -149,23 +142,6 @@ public class QuoteDataOnDemand {
         }
         if (!data.isEmpty()) {
             return;
-        }
-        
-        data = new ArrayList<Quote>();
-        for (int i = 0; i < 10; i++) {
-            Quote obj = getNewTransientQuote(i);
-            try {
-                quoteService.saveQuote(obj);
-            } catch (ConstraintViolationException e) {
-                StringBuilder msg = new StringBuilder();
-                for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
-                    ConstraintViolation<?> cv = iter.next();
-                    msg.append("[").append(cv.getConstraintDescriptor()).append(":").append(cv.getMessage()).append("=").append(cv.getInvalidValue()).append("]");
-                }
-                throw new RuntimeException(msg.toString(), e);
-            }
-            quoteRepository.flush();
-            data.add(obj);
         }
     }
 }
