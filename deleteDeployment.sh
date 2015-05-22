@@ -4,14 +4,19 @@ frontName=traderfront
 webName=traderweb
 backName=traderback
 domain=cfapps.io
-sqlName=stsql
-messagingName=stmessaging
+sqlName=tradersql
+messagingName=tradermessaging
 
 date
-gcf delete -f $frontName
-gcf delete -f $webName
-gcf delete -f $backName
-gcf delete-service -f $frontName
-gcf delete-service -f $sqlName
-gcf delete-service -f $messagingName
+
+cf delete -f $frontName
+cf delete -f $webName
+cf delete -f $backName
+cf delete-service -f $frontName
+cf delete-service -f $sqlName
+cf delete-service -f $messagingName
+cf delete-route $domain -f -n $frontName
+cf delete-route $domain -f -n $webName
+cf delete-route $domain -f -n $backName
+
 date
