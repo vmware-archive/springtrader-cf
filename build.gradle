@@ -15,7 +15,7 @@ buildscript {
 
    dependencies {
 
-       classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.1.5'
+       classpath 'io.spring.gradle:docbook-reference-plugin:0.3.1'
 
    }
 
@@ -60,7 +60,6 @@ subprojects { subproject ->
 	ext.log4jVersion = '1.2.12'
 	ext.mockitoVersion = '1.9.0'
 	ext.springVersion = '3.2.6.RELEASE'
-	ext.springAmqpVersion = '1.1.0.RELEASE'
 	ext.springDataMongoVersion = '1.0.0.RELEASE'
 	ext.springDataRedisVersion = '1.0.0.RELEASE'
 	ext.springGemfireVersion = '1.1.0.RELEASE'
@@ -163,7 +162,7 @@ project('spring-nanotrader-service-support') {
 	description = 'Spring Nanotrader Data Service Support'
 
 	dependencies {
-		testCompile files(project(":spring-nanotrader-data").sourceSets.test.resources.srcDirs)
+		testCompile project(':spring-nanotrader-data').sourceSets.test.output
 		
 		compile project(":spring-nanotrader-data")
 		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion" 
@@ -182,7 +181,6 @@ project('spring-nanotrader-data') {
 		// Spring Cloud
 		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
-	
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.aspectj:aspectjrt:$aspectjVersion"
 		compile "org.springframework:spring-aspects:$springVersion"
@@ -196,9 +194,12 @@ project('spring-nanotrader-data') {
 		compile "org.hibernate:hibernate-core:3.6.8.Final"
 		compile "org.hibernate:hibernate-entitymanager:3.6.8.Final"
 		compile "postgresql:postgresql:9.0-801.jdbc3"
-		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+
+		testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile "com.h2database:h2:$h2Version"
 		compile "mysql:mysql-connector-java:5.1.13"
+		compile "com.netflix.feign:feign-core:6.1.3"
+		compile "com.netflix.feign:feign-jackson:6.1.3"
 	}
 }
 
@@ -231,7 +232,7 @@ project('tools') {
 	}
 
 	dependencies {
-	    groovy localGroovy()
+	    compile localGroovy()
 	    compile 'org.apache.commons:commons-lang3:3.1'
 	    compile 'commons-beanutils:commons-beanutils-core:1.8.3'
 	    compile 'commons-codec:commons-codec:1.4'
