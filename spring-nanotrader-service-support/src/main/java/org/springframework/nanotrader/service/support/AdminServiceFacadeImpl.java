@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.cache.DataCreationProgressCache;
 import org.springframework.nanotrader.service.domain.Order;
@@ -47,6 +48,9 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 	private static Logger log = LoggerFactory.getLogger(AdminServiceFacadeImpl.class);
 
 	@Resource
+	private QuoteService quoteService;
+	
+	@Resource
 	private TradingService tradingService;
 
 	@Resource
@@ -62,7 +66,7 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 	public void recreateData(int count) {
 		tradingService.deleteAll();
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
-		for (org.springframework.nanotrader.data.domain.Quote q : tradingService.findRandomQuotes(5)) {
+		for (org.springframework.nanotrader.data.domain.Quote q : quoteService.findRandomQuotes(5)) {
 			Quote quote = new Quote();
 			mapper.map(q, quote);
 			quotes.add(quote);

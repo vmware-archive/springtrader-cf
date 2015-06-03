@@ -24,25 +24,22 @@ public interface QuoteService {
 
 	public abstract long countAllQuotes();
 
-
 	public abstract void deleteQuote(Quote quote);
 
 	public abstract Quote findQuote(Integer id);
 
-
 	public abstract List<Quote> findAllQuotes();
-
 
 	public abstract List<Quote> findQuoteEntries(int firstResult, int maxResults);
 
-
 	public abstract void saveQuote(Quote quote);
 
-
 	public abstract Quote updateQuote(Quote quote);
-	
+
 	public Quote findBySymbol(String symbol);
-	
+
 	public List<Quote> findBySymbolIn(Set<String> symbols);
+
+	public List<Quote> findRandomQuotes(Integer count);
 
 }

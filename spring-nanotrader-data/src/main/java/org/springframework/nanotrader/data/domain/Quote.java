@@ -127,15 +127,15 @@ public class Quote implements Serializable {
 
 	private static Quote fakeQuote(int i) {
 		Quote q = new Quote();
-		q.setChange1(new BigDecimal(123 + i));
+		q.setChange1(new BigDecimal(123.45 + i));
 		q.setCompanyname("VMware" + i);
-		q.setHigh(new BigDecimal(234 + i));
-		q.setLow(new BigDecimal(345 + i));
-		q.setOpen1(new BigDecimal(456 + i));
-		q.setPrice(new BigDecimal(567 + i));
-		q.setQuoteid(new Integer(42 + i));
+		q.setHigh(new BigDecimal(234.56 + i));
+		q.setLow(new BigDecimal(345.67 + i));
+		q.setOpen1(new BigDecimal(456.78 + i));
+		q.setPrice(new BigDecimal(567.89 + i));
+		q.setQuoteid(new Integer(41 + i));
 		q.setSymbol("VMW" + i);
-		q.setVolume(new BigDecimal(678 + i));
+		q.setVolume(new BigDecimal(678.90 + i));
 
 		return q;
 	}

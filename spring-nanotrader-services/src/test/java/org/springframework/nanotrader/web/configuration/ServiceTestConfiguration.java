@@ -16,7 +16,6 @@
 package org.springframework.nanotrader.web.configuration;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -90,7 +89,7 @@ public class ServiceTestConfiguration  {
 	public static String ORDER_STATUS_CLOSED	=  "closed";
 	
 	//Quote constants
-	public static Integer QUOTE_ID = 1;
+	public static Integer QUOTE_ID = 42;
 	public static String COMPANY_NAME	=  "VMware1";
 	public static BigDecimal HIGH	=   BigDecimal.valueOf(50.02);
 	public static BigDecimal OPEN	=  BigDecimal.valueOf(40.11);
@@ -144,9 +143,6 @@ public class ServiceTestConfiguration  {
 		when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
 		when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class), any(Integer.class), any(Integer.class))).thenReturn(orders());
 		when(tradingService.findOrders(eq(ACCOUNT_ID), any(Integer.class), any(Integer.class))).thenReturn(orders());
-		when(tradingService.findQuoteBySymbol(eq(SYMBOL))).thenReturn(quote());
-		when(tradingService.findRandomQuotes(RANDOM_QUOTES_COUNT)).thenReturn(quotes());
-		when(tradingService.findQuotesBySymbols(anySetOf(String.class))).thenReturn(quotes());
 		when(tradingService.findAccount(eq(ACCOUNT_ID))).thenReturn(account());
 		when(tradingService.findAccountByProfile(any(Accountprofile.class))).thenReturn(account());
 		when(tradingService.findPortfolioSummary(eq(ACCOUNT_ID))).thenReturn(portfolioSummary());

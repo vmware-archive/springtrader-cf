@@ -30,6 +30,7 @@ public class QuoteServiceImpl implements QuoteService {
 
 //	@Autowired
 //    QuoteRepository quoteRepository;
+
 	
 	public long countAllQuotes() {
         //return quoteRepository.count();
@@ -43,7 +44,9 @@ public class QuoteServiceImpl implements QuoteService {
 
 	public Quote findQuote(Integer id) {
         //return quoteRepository.findOne(id);
-		return Quote.fakeQuote();
+		Quote q = Quote.fakeQuote();
+		q.setQuoteid(id);
+		return q;
     }
 
 	public List<Quote> findAllQuotes() {
@@ -72,5 +75,9 @@ public class QuoteServiceImpl implements QuoteService {
 
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
 		return Quote.fakeQuotes();
+	}
+
+	public List<Quote> findRandomQuotes(Integer count) {
+		return findAllQuotes().subList(0, count.intValue());
 	}
 }
