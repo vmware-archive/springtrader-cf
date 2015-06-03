@@ -24,8 +24,10 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Account;
@@ -134,7 +136,7 @@ public class OrderDataOnDemand {
 
 	public void setQuote(Order obj, int index) {
         Quote quote = quoteDataOnDemand.getRandomQuote();
-        obj.setQuote(quote);
+        obj.setQuoteid(quote.getQuoteid());
     }
 
 	public Order getSpecificOrder(int index) {

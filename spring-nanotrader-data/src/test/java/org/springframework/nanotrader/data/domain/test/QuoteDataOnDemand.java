@@ -21,12 +21,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Component;
 
@@ -41,9 +42,6 @@ public class QuoteDataOnDemand {
 
 	@Autowired
     QuoteService quoteService;
-
-	@Autowired
-    QuoteRepository quoteRepository;
 
 	public Quote getNewTransientQuote(int index) {
         Quote obj = new Quote();
@@ -164,7 +162,7 @@ public class QuoteDataOnDemand {
                 }
                 throw new RuntimeException(msg.toString(), e);
             }
-            quoteRepository.flush();
+            //quoteRepository.flush();
             data.add(obj);
         }
     }

@@ -16,6 +16,7 @@
 package org.springframework.nanotrader.data.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.nanotrader.data.domain.Quote;
 
@@ -39,5 +40,9 @@ public interface QuoteService {
 
 
 	public abstract Quote updateQuote(Quote quote);
+	
+	public Quote findBySymbol(String symbol);
+	
+	public List<Quote> findBySymbolIn(Set<String> symbols);
 
 }

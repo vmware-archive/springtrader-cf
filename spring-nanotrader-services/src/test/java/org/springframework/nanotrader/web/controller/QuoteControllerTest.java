@@ -37,7 +37,7 @@ public class QuoteControllerTest extends AbstractSecureControllerTest {
 
 	@Test
 	public void getQuoteBySymbolJson() throws Exception {
-		mockMvc.perform(get("/quote/VMW").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/quote/VMW1").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.quoteid").value(ServiceTestConfiguration.QUOTE_ID))

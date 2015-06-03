@@ -17,127 +17,139 @@ package org.springframework.nanotrader.data.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "QUOTE")
 public class Quote implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "quoteid")
-    private Integer quoteid;
+	private Integer quoteid;
 
 	public Integer getQuoteid() {
-        return this.quoteid;
-    }
+		return this.quoteid;
+	}
 
 	public void setQuoteid(Integer id) {
-        this.quoteid = id;
-    }
+		this.quoteid = id;
+	}
 
-	@Column(name = "low", precision = 14, scale = 2)
-    private BigDecimal low;
+	private BigDecimal low;
 
-	@Column(name = "open1", precision = 14, scale = 2)
-    private BigDecimal open1;
+	private BigDecimal open1;
 
-	@Column(name = "volume")
-    @NotNull
-    private BigDecimal volume;
+	private BigDecimal volume;
 
-	@Column(name = "price", precision = 14, scale = 2)
-    private BigDecimal price;
+	private BigDecimal price;
 
-	@Column(name = "high", precision = 14, scale = 2)
-    private BigDecimal high;
+	private BigDecimal high;
 
-	@Column(name = "companyname", length = 250)
-    private String companyname;
+	private String companyname;
 
-	@Column(name = "symbol", length = 250, unique = true)
-    @NotNull
-    private String symbol;
+	private String symbol;
 
-	@Column(name = "change1")
-    @NotNull
-    private BigDecimal change1;
+	private BigDecimal change1;
 
 	public BigDecimal getLow() {
-        return low;
-    }
+		return low;
+	}
 
 	public void setLow(BigDecimal low) {
-        this.low = low;
-    }
+		this.low = low;
+	}
 
 	public BigDecimal getOpen1() {
-        return open1;
-    }
+		return open1;
+	}
 
 	public void setOpen1(BigDecimal open1) {
-        this.open1 = open1;
-    }
+		this.open1 = open1;
+	}
 
 	public BigDecimal getVolume() {
-        return volume;
-    }
+		return volume;
+	}
 
 	public void setVolume(BigDecimal volume) {
-        this.volume = volume;
-    }
+		this.volume = volume;
+	}
 
 	public BigDecimal getPrice() {
-        return price;
-    }
+		return price;
+	}
 
 	public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+		this.price = price;
+	}
 
 	public BigDecimal getHigh() {
-        return high;
-    }
+		return high;
+	}
 
 	public void setHigh(BigDecimal high) {
-        this.high = high;
-    }
+		this.high = high;
+	}
 
 	public String getCompanyname() {
-        return companyname;
-    }
+		return companyname;
+	}
 
 	public void setCompanyname(String companyname) {
-        this.companyname = companyname;
-    }
+		this.companyname = companyname;
+	}
 
 	public String getSymbol() {
-        return symbol;
-    }
+		return symbol;
+	}
 
 	public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
+		this.symbol = symbol;
+	}
 
 	public BigDecimal getChange1() {
-        return change1;
-    }
+		return change1;
+	}
 
 	public void setChange1(BigDecimal change1) {
-        this.change1 = change1;
-    }
+		this.change1 = change1;
+	}
 
 	@Override
 	public String toString() {
-		return "Quote [quoteid=" + quoteid + ", low=" + low + ", open1=" + open1 + ", volume=" + volume + ", price="
-				+ price + ", high=" + high + ", companyname=" + companyname + ", symbol=" + symbol + ", change1="
-				+ change1 + "]";
+		return "Quote [quoteid=" + quoteid + ", low=" + low + ", open1="
+				+ open1 + ", volume=" + volume + ", price=" + price + ", high="
+				+ high + ", companyname=" + companyname + ", symbol=" + symbol
+				+ ", change1=" + change1 + "]";
+	}
+
+	private static Quote fakeQuote(int i) {
+		Quote q = new Quote();
+		q.setChange1(new BigDecimal(123 + i));
+		q.setCompanyname("VMware" + i);
+		q.setHigh(new BigDecimal(234 + i));
+		q.setLow(new BigDecimal(345 + i));
+		q.setOpen1(new BigDecimal(456 + i));
+		q.setPrice(new BigDecimal(567 + i));
+		q.setQuoteid(new Integer(42 + i));
+		q.setSymbol("VMW" + i);
+		q.setVolume(new BigDecimal(678 + i));
+
+		return q;
+	}
+
+	public static Quote fakeQuote() {
+		return fakeQuote(1);
+	}
+
+	public static List<Quote> fakeQuotes() {
+		List<Quote> qs = new ArrayList<Quote>();
+		for (int i = 0; i < 5; i++) {
+			qs.add(fakeQuote(i));
+		}
+
+		return qs;
 	}
 }

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Account;
 import org.springframework.nanotrader.service.domain.Accountprofile;
@@ -76,9 +77,12 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     private static Integer DEFAULT_PAGE = 0;
     
     private static Integer DEFAULT_PAGE_SIZE = 24;
-    
-    @Resource
+
+    @Autowired
     private TradingService tradingService;
+    
+    @Autowired
+    QuoteService quoteService;
 
     @Resource
     private Mapper mapper;
@@ -205,18 +209,26 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         if (holding == null) {
             throw new NoRecordsFoundException();
         }
-        Set<String> symbol = new HashSet<String>();
-        symbol.add(holding.getQuoteSymbol());
-        Map<String, Quote> currentQuote = getCurrentQuotes(symbol);
-        mapper.map(holding, holdingResponse);
-        holdingResponse.setQuote(currentQuote.get(holding.getQuoteSymbol()));
+
+        org.springframework.nanotrader.data.domain.Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
+        
+        Quote responseQuote = new Quote();
+        mapper.map(quote, responseQuote, QUOTE_MAPPING);
+        
+//        Set<String> symbol = new HashSet<String>();
+//        symbol.add(holding.getQuoteSymbol());
+//        Map<String, Quote> currentQuote = getCurrentQuotes(symbol);
+          mapper.map(holding, holdingResponse);
+//        holdingResponse.setQuote(currentQuote.get(holding.getQuoteSymbol()));
+        
+        holdingResponse.setQuote(responseQuote);
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findHolding - after service call. Payload is: " + holdingResponse);
         }
         return holdingResponse;
     }
-    
-    
+
+
     public CollectionResult findHoldingsByAccountId(Integer accountId, Integer page, Integer pageSize) {
         CollectionResult  collectionResults = new CollectionResult();
         
@@ -224,19 +236,19 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findHoldingsByAccount: id=" + accountId);
         }
-        
-        
+
+
         List<Holding> holdingResponse = new ArrayList<Holding>();
         collectionResults.setTotalRecords(tradingService.findCountOfHoldingsByAccountId(accountId));
         List<org.springframework.nanotrader.data.domain.Holding> holdings = tradingService.findHoldingsByAccountId(accountId, getPage(page), getPageSize(pageSize));
-    
+
         if (holdings != null  &&  holdings.size() > 0) {          
             Set<String> symbols = new HashSet<String>();
             for (org.springframework.nanotrader.data.domain.Holding h: holdings) { 
                 //get unique quotes symbols
                 symbols.add(h.getQuoteSymbol());
             }
-            
+
             Map<String, Quote> currentQuotes = getCurrentQuotes(symbols);
             for(org.springframework.nanotrader.data.domain.Holding h: holdings) {
                 Holding holding = new Holding();
@@ -251,9 +263,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         collectionResults.setPage(getPage(page));
         collectionResults.setPageSize(getPageSize(pageSize));
         collectionResults.setResults(holdingResponse);
-      
-        
-      
+ 
         return collectionResults;
     }
     
@@ -284,11 +294,18 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
             log.debug("TradingServiceFacade.findOrder: orderId=" + orderId + " accountId=" + accountId);
         }
         org.springframework.nanotrader.data.domain.Order order =  tradingService.findOrder(orderId, accountId);
+        
         if (order == null) {
             throw new NoRecordsFoundException();
         }
+        
+        org.springframework.nanotrader.data.domain.Quote quote = quoteService.findQuote(order.getQuoteid());
+        
         Order responseOrder = new Order();
+        Quote responseQuote = new Quote();
         mapper.map(order, responseOrder, ORDER_MAPPING);
+        mapper.map(quote, responseQuote, QUOTE_MAPPING);
+        responseOrder.setQuote(responseQuote);
         return responseOrder;
     }
 
@@ -322,7 +339,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         
             for(org.springframework.nanotrader.data.domain.Order o: orders) {
                 Order order = new Order();
+                Quote quote = new Quote();
+                org.springframework.nanotrader.data.domain.Quote q = quoteService.findQuote(o.getQuoteid());
+                mapper.map(q, quote, QUOTE_MAPPING);
                 mapper.map(o, order, ORDER_MAPPING);
+                order.setQuote(quote);
                 responseOrders.add(order);
             }
         }
@@ -378,7 +399,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     
 
     private Map<String, Quote> getCurrentQuotes(Set<String> symbols) { 
-        List<org.springframework.nanotrader.data.domain.Quote> quotes = tradingService.findQuotesBySymbols(symbols);
+        List<org.springframework.nanotrader.data.domain.Quote> quotes = quoteService.findBySymbolIn(symbols);
         Map<String, Quote> currentQuotes = new HashMap<String, Quote>();
         for (org.springframework.nanotrader.data.domain.Quote q: quotes) {
             Quote quote = new Quote();

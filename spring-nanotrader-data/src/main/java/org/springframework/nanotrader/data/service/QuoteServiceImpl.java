@@ -15,10 +15,11 @@
  */
 package org.springframework.nanotrader.data.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Set;
+
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,35 +28,49 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
 
-	@Autowired
-    QuoteRepository quoteRepository;
-
+//	@Autowired
+//    QuoteRepository quoteRepository;
 	
 	public long countAllQuotes() {
-        return quoteRepository.count();
+        //return quoteRepository.count();
+		return 1;
     }
 
 	public void deleteQuote(Quote quote) {
-        quoteRepository.delete(quote);
+        //quoteRepository.delete(quote);
+		return;
     }
 
 	public Quote findQuote(Integer id) {
-        return quoteRepository.findOne(id);
+        //return quoteRepository.findOne(id);
+		return Quote.fakeQuote();
     }
 
 	public List<Quote> findAllQuotes() {
-        return quoteRepository.findAll();
+        //return quoteRepository.findAll();
+		return Quote.fakeQuotes();
     }
 
 	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-        return quoteRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
-    }
+        //return quoteRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
+		return Quote.fakeQuotes();
+	}
 
 	public void saveQuote(Quote quote) {
-        quoteRepository.save(quote);
+        //quoteRepository.save(quote);
+		return;
     }
 
 	public Quote updateQuote(Quote quote) {
-        return quoteRepository.save(quote);
+        //return quoteRepository.save(quote);
+		return quote;
     }
+
+	public Quote findBySymbol(String symbol) {
+		return Quote.fakeQuote();
+	}
+
+	public List<Quote> findBySymbolIn(Set<String> symbols) {
+		return Quote.fakeQuotes();
+	}
 }

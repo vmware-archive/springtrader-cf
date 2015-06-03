@@ -85,9 +85,8 @@ public class Order implements Serializable {
     @DateTimeFormat(style = "M-")
     private Date opendate;
 	
-	@ManyToOne 
-	@JoinColumn(name = "quote_symbol", referencedColumnName = "symbol")
-    private Quote quote;
+	@Column(name = "quoteid")
+    private Integer quoteid;
 
 
 
@@ -165,12 +164,12 @@ public class Order implements Serializable {
 
 
 
-	public Quote getQuote() {
-		return quote;
+	public Integer getQuoteid() {
+		return quoteid;
 	}
 
-	public void setQuote(Quote quote) {
-		this.quote = quote;
+	public void setQuoteid(Integer i) {
+		this.quoteid = i;
 	}
 
 	@Override

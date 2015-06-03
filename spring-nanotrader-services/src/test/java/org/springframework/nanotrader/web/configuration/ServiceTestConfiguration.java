@@ -43,6 +43,8 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.QuoteService;
+import org.springframework.nanotrader.data.service.QuoteServiceImpl;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -66,7 +68,7 @@ public class ServiceTestConfiguration  {
 	public static Integer HOLDING_ID = 100;
 	public static Integer ACCOUNT_ID = 500;
 	public static BigDecimal PURCHASE_PRICE =  BigDecimal.valueOf(50000);
-	public static String SYMBOL = "VMW";
+	public static String SYMBOL = "VMW1";
 	public static BigDecimal QUANTITY =  BigDecimal.valueOf(200);
 	
 	//Account profile constants
@@ -89,7 +91,7 @@ public class ServiceTestConfiguration  {
 	
 	//Quote constants
 	public static Integer QUOTE_ID = 1;
-	public static String COMPANY_NAME	=  "VMware";
+	public static String COMPANY_NAME	=  "VMware1";
 	public static BigDecimal HIGH	=   BigDecimal.valueOf(50.02);
 	public static BigDecimal OPEN	=  BigDecimal.valueOf(40.11);
 	public static BigDecimal VOLUME	= BigDecimal.valueOf(3000);
@@ -155,6 +157,11 @@ public class ServiceTestConfiguration  {
 
 		doNothing().when(tradingService).logout(any(String.class));
 		return tradingService;
+	}
+	
+	@Bean
+	public QuoteService quoteService() {
+		return new QuoteServiceImpl();
 	}
 	
 	@Bean
@@ -231,7 +238,7 @@ public class ServiceTestConfiguration  {
 		order.setHoldingHoldingid(holding());
 		order.setQuantity(ORDER_QUANTITY);
 		order.setOrderfee(TradingServiceImpl.DEFAULT_ORDER_FEE);
-		order.setQuote(quote());
+		order.setQuoteid(quote().getQuoteid());
 		return order;
 	}
 

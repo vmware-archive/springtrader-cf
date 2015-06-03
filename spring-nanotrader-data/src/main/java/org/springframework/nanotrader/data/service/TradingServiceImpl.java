@@ -16,7 +16,6 @@
 package org.springframework.nanotrader.data.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -48,7 +44,6 @@ import org.springframework.nanotrader.data.repository.HoldingRepository;
 import org.springframework.nanotrader.data.repository.MarketSummaryRepository;
 import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +66,6 @@ public class TradingServiceImpl implements TradingService {
 
 	private static String CANCELLED_STATUS = "cancelled";
 
-	private static Integer TOP_N = 3;
-
 	@Autowired
 	private AccountProfileRepository accountProfileRepository;
 
@@ -86,7 +79,7 @@ public class TradingServiceImpl implements TradingService {
 	private AccountRepository accountRepository;
 
 	@Autowired
-	private QuoteRepository quoteRepository;
+	private QuoteService quoteService;
 
 	@Autowired
 	private PortfolioSummaryRepository portfolioSummaryRepository;
@@ -283,7 +276,10 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-		Quote quote = quoteRepository.findBySymbol(order.getQuote().getSymbol());
+
+		Quote quote = Quote.fakeQuote();
+
+				//quoteRepository.findBySymbol(order.getQuote().getSymbol());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
@@ -314,7 +310,8 @@ public class TradingServiceImpl implements TradingService {
 			throw new DataRetrievalFailureException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
 		}
-		Quote quote = quoteRepository.findBySymbol(holding.getQuoteSymbol());
+		Quote quote = Quote.fakeQuote();
+				//quoteRepository.findBySymbol(holding.getQuoteSymbol());
 		// create order and persist
 		
 		Order createdOrder = createOrder(order, account, holding, quote);
@@ -326,7 +323,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order createOrder(Order order, Account account, Holding holding, Quote quote) {
 		Order createdOrder = null;
 		order.setAccountAccountid(account);
-		order.setQuote(quote);
+		order.setQuoteid(quote.getQuoteid());
 		if (order.getQuantity() == null) {
 			order.setQuantity(holding.getQuantity());
 		}
@@ -348,7 +345,8 @@ public class TradingServiceImpl implements TradingService {
 				holding.setPurchasedate(new Date());
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
-				holding.setQuoteSymbol(order.getQuote().getSymbol());
+				holding.setQuoteSymbol(Quote.fakeQuote().getSymbol());
+				//holding.setQuoteSymbol(order.getQuote().getSymbol());
 				Set<Order> orders = new HashSet<Order>();
 				orders.add(order);
 				holding.setOrders(orders);
@@ -363,9 +361,10 @@ public class TradingServiceImpl implements TradingService {
 		order.setOrderstatus("closed");
 		order.setCompletiondate(new Date());
 
-			
-		updateQuoteMarketData(order.getQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
-	
+
+		//updateQuoteMarketData(order.getQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
+		updateQuoteMarketData(Quote.fakeQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
+		
 		
 		return order;
 	}
@@ -373,7 +372,8 @@ public class TradingServiceImpl implements TradingService {
 	// TODO: Need to clean this up
 	private void updateAccount(Order order) {
 		// update account balance
-		Quote quote = order.getQuote();
+		//Quote quote = order.getQuote();
+		Quote quote = Quote.fakeQuote();
 		Account account = order.getAccountAccountid();
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
@@ -402,7 +402,8 @@ public class TradingServiceImpl implements TradingService {
 	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
 
 		
-			Quote quote = quoteRepository.findBySymbol(symbol);
+			Quote quote = Quote.fakeQuote();
+					//quoteRepository.findBySymbol(symbol);
 			Quote quoteToPublish = new Quote();
 			quoteToPublish.setCompanyname(quote.getCompanyname());
 			quoteToPublish.setQuoteid(quote.getQuoteid());
@@ -433,7 +434,7 @@ public class TradingServiceImpl implements TradingService {
 	
 	@Transactional
 	public void updateQuote(Quote quote) { 
-		quoteRepository.save(quote);
+		quoteService.saveQuote(quote);
 	}
 	
 	@Override
@@ -529,7 +530,7 @@ public class TradingServiceImpl implements TradingService {
 		if (orders != null && orders.size() > 0) {
 			// Loop over the orders to populate the lazy quote fields
 			for (Order order : orders) {
-				order.getQuote();
+				order.getQuoteid();
 			}
 			orderRepository.updateClosedOrders(accountId);
 		}
@@ -538,22 +539,22 @@ public class TradingServiceImpl implements TradingService {
 	
 	@Override
 	public Quote findQuoteBySymbol(String symbol) {
-		return quoteRepository.findBySymbol(symbol);
+		return quoteService.findBySymbol(symbol);
 	}
 
 	@Override
 	public List<Quote> findQuotesBySymbols(Set<String> symbols) {
-		return quoteRepository.findBySymbolIn(symbols);
+		return quoteService.findBySymbolIn(symbols);
 	}
 
 	@Override
 	public List<Quote> findRandomQuotes(Integer count) {
-		return quoteRepository.findAll().subList(0, count.intValue());
+		return quoteService.findAllQuotes().subList(0, count.intValue());
 	}
 
 	@Override
 	public List<Quote> findAllQuotes() {
-		return quoteRepository.findAll();
+		return quoteService.findAllQuotes();
 	}
 
 	@Override
@@ -576,21 +577,25 @@ public class TradingServiceImpl implements TradingService {
 	public MarketSummary findMarketSummary() {
 		MarketSummary marketSummary = marketSummaryRepository.findMarketSummary();
 		// get top losing stocks
-		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
+//		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
+//
+//		// get top gaining stocks
+//		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
+//
+//		List<Quote> topLosers = new ArrayList<Quote>(TOP_N);
+//		for (Quote q : losers) {
+//			topLosers.add(q);
+//		}
+//		List<Quote> topGainers = new ArrayList<Quote>(TOP_N);
+//		for (Quote q : winners) {
+//			topGainers.add(q);
+//		}
 
-		// get top gaining stocks
-		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
-
-		List<Quote> topLosers = new ArrayList<Quote>(TOP_N);
-		for (Quote q : losers) {
-			topLosers.add(q);
-		}
-		List<Quote> topGainers = new ArrayList<Quote>(TOP_N);
-		for (Quote q : winners) {
-			topGainers.add(q);
-		}
-		marketSummary.setTopLosers(topLosers);
-		marketSummary.setTopGainers(topGainers);
+		marketSummary.setTopLosers(quoteService.findAllQuotes());
+		marketSummary.setTopGainers(quoteService.findAllQuotes());
+		
+		//marketSummary.setTopLosers(topLosers);
+		//marketSummary.setTopGainers(topGainers);
 		marketSummary.setSummaryDate(new Date());
 		return marketSummary;
 	}

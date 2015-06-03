@@ -25,6 +25,7 @@ import javax.persistence.Query;
 
 import org.springframework.nanotrader.data.domain.HoldingAggregate;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Repository;
 
@@ -38,7 +39,6 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 		this.em = em;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public HoldingSummary findHoldingAggregated(Integer accountId) {
@@ -46,7 +46,13 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 		HoldingSummary holdingSummary = new HoldingSummary();
 		List<HoldingAggregate> holdingRollups = new ArrayList<HoldingAggregate>();
 		// Filter out the losers (gains =< 0)
-		Query query = em.createQuery("SELECT  h.quoteSymbol, sum(q.price * h.quantity) - SUM(h.purchaseprice * h.quantity) as gain FROM Holding h, Quote q Where h.accountAccountid =:accountId and h.quoteSymbol=q.symbol GROUP BY  h.quoteSymbol HAVING  SUM(q.price * h.quantity) - SUM(h.purchaseprice * h.quantity) > 0 ORDER BY gain desc");
+
+		Quote quote = Quote.fakeQuote();
+		BigDecimal price = quote.getPrice();
+
+		//Query query = em.createQuery("SELECT  h.quoteSymbol, sum(q.price * h.quantity) - SUM(h.purchaseprice * h.quantity) as gain FROM Holding h, Quote q Where h.accountAccountid =:accountId and h.quoteSymbol=q.symbol GROUP BY  h.quoteSymbol HAVING  SUM(q.price * h.quantity) - SUM(h.purchaseprice * h.quantity) > 0 ORDER BY gain desc");
+		Query query = em.createQuery("SELECT  h.quoteSymbol, sum(" + price + " * h.quantity) - SUM(h.purchaseprice * h.quantity) as gain FROM Holding h Where h.accountAccountid =:accountId GROUP BY  h.quoteSymbol HAVING  SUM(" + price + " * h.quantity) - SUM(h.purchaseprice * h.quantity) > 0 ORDER BY gain desc");
+
 		query.setParameter("accountId", accountId);
 		BigDecimal totalGains = BigDecimal.ZERO;
 		totalGains = totalGains.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);
@@ -71,7 +77,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 		HoldingSummary summary = calculatePercentages(holdingSummary, holdingRollups);
 		return summary;
 	}
-	
+
 	private HoldingSummary calculatePercentages(HoldingSummary holdingSummary, List<HoldingAggregate> holdingRollups) { 
 		double hundredPercent = 100;
 		BigDecimal gainsRemainder = holdingSummary.getHoldingsTotalGains();
@@ -80,7 +86,6 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 			ha.setPercent(percent);
 			hundredPercent = hundredPercent- ha.getPercent().doubleValue();
 			gainsRemainder = gainsRemainder.subtract(ha.getGain());
-			
 		}
 		// Since we are only showing the Top N symbols, lump all others into the Other bucket
 		// at this point if we are still @ 100%, then no records were found
@@ -93,7 +98,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 			holdingRollups.add(summary);
 		}
 		holdingSummary.setHoldingRollups(holdingRollups);
-		
+
 		return holdingSummary;
 	}
 }

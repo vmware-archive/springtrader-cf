@@ -61,7 +61,8 @@ public class TradingServiceFacadeTests {
 		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
-		quote.setSymbol(existingOrder.getQuote().getSymbol());
+		//quote.setSymbol(existingOrder.getQuote().getSymbol());
+		quote.setSymbol("GOOG");
 		orderRequest.setQuote(quote);
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
 		Integer id = tradingServiceFacade.saveOrder(orderRequest, true);
@@ -77,7 +78,8 @@ public class TradingServiceFacadeTests {
 		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
-		quote.setSymbol(existingOrder.getQuote().getSymbol());
+		//quote.setSymbol(existingOrder.getQuote().getSymbol());
+		quote.setSymbol("GOOG");
 		orderRequest.setQuote(quote);
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
 		Integer id = tradingServiceFacade.saveOrder(orderRequest, false);
