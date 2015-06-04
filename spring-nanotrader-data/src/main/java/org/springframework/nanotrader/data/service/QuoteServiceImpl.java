@@ -17,67 +17,69 @@ package org.springframework.nanotrader.data.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.nanotrader.data.cloud.QuoteRepository;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
-@Transactional
 public class QuoteServiceImpl implements QuoteService {
 
-//	@Autowired
-//    QuoteRepository quoteRepository;
+	@Autowired
+	QuoteRepository quoteRepository;
 
-	
 	public long countAllQuotes() {
-        //return quoteRepository.count();
-		return 1;
-    }
-
-	public void deleteQuote(Quote quote) {
-        //quoteRepository.delete(quote);
-		return;
-    }
-
-	public Quote findQuote(Integer id) {
-        //return quoteRepository.findOne(id);
-		Quote q = Quote.fakeQuote();
-		q.setQuoteid(id);
-		return q;
-    }
-
-	public List<Quote> findAllQuotes() {
-        //return quoteRepository.findAll();
-		return Quote.fakeQuotes();
-    }
-
-	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-        //return quoteRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
-		return Quote.fakeQuotes();
+		return quoteRepository.countAllQuotes();
 	}
 
-	public void saveQuote(Quote quote) {
-        //quoteRepository.save(quote);
-		return;
-    }
+	public Quote findQuote(Integer id) {
+		return quoteRepository.findQuote(id);
+	}
 
-	public Quote updateQuote(Quote quote) {
-        //return quoteRepository.save(quote);
-		return quote;
-    }
+	public List<Quote> findAllQuotes() {
+		return quoteRepository.findAll();
+	}
+
+	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
+		return quoteRepository.findQuoteEntries(firstResult / maxResults,
+				maxResults);
+	}
+
+	public List<Quote> topGainers() {
+		return quoteRepository.topGainers();
+	}
+
+	public List<Quote> topLosers() {
+		return quoteRepository.topLosers();
+	}
 
 	public Quote findBySymbol(String symbol) {
-		return Quote.fakeQuote();
+		return quoteRepository.findBySymbol(symbol);
 	}
 
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
-		return Quote.fakeQuotes();
+		if(symbols == null || symbols.size() < 1) {
+			return new ArrayList<Quote>();
+		}
+		return quoteRepository.findBySymbolIn(symbols);
 	}
 
 	public List<Quote> findRandomQuotes(Integer count) {
 		return findAllQuotes().subList(0, count.intValue());
+	}
+
+	public Quote saveQuote(Quote quote) {
+		return quoteRepository.save(quote);
+	}
+
+	public Map<String, Long> marketSummary() {
+		return quoteRepository.marketSummary();
+	}
+
+	public void deleteQuote(Quote quote) {
+		quoteRepository.delete(quote);
 	}
 }

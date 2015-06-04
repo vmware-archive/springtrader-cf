@@ -38,7 +38,6 @@ import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
-import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.AccountprofileDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.HoldingDataOnDemand;
@@ -172,7 +171,7 @@ public class TradingServiceTests {
 	public void testFindAccountSummary() {
 		Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
 		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
-		holding.setQuoteSymbol(Quote.fakeQuote().getSymbol());
+		holding.setQuoteSymbol("GOOG");
 		tradingService.saveHolding(holding);
 		entityManager.flush();
 		entityManager.clear(); // force reload

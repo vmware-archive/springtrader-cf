@@ -211,16 +211,10 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         }
 
         org.springframework.nanotrader.data.domain.Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
-        
+
         Quote responseQuote = new Quote();
         mapper.map(quote, responseQuote, QUOTE_MAPPING);
-        
-//        Set<String> symbol = new HashSet<String>();
-//        symbol.add(holding.getQuoteSymbol());
-//        Map<String, Quote> currentQuote = getCurrentQuotes(symbol);
-          mapper.map(holding, holdingResponse);
-//        holdingResponse.setQuote(currentQuote.get(holding.getQuoteSymbol()));
-        
+        mapper.map(holding, holdingResponse);
         holdingResponse.setQuote(responseQuote);
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findHolding - after service call. Payload is: " + holdingResponse);
@@ -284,6 +278,9 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     public Integer saveOrderDirect(Order orderRequest) {
         org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
         mapper.map(orderRequest, order, ORDER_MAPPING);
+        if(orderRequest.getQuote() != null) {
+        	 order.setQuoteid(orderRequest.getQuote().getQuoteid());
+        }
         tradingService.saveOrder(order);
         return order.getOrderid();
     }
@@ -394,9 +391,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         }
         return accountResponse;
     }
-    
-
-    
 
     private Map<String, Quote> getCurrentQuotes(Set<String> symbols) { 
         List<org.springframework.nanotrader.data.domain.Quote> quotes = quoteService.findBySymbolIn(symbols);

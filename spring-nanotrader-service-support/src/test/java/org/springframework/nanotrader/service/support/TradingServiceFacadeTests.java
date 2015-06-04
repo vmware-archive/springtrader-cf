@@ -21,11 +21,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
+import org.dozer.Mapper;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.Quote;
@@ -53,6 +55,12 @@ public class TradingServiceFacadeTests {
 	@Autowired
 	private TradingServiceFacade tradingServiceFacade;
 
+	@Autowired
+	private QuoteService quoteService;
+
+	@Autowired
+    private Mapper mapper;
+
 	@Test
 	public void testSynch() {
 		org.springframework.nanotrader.data.domain.Order existingOrder = 
@@ -61,8 +69,7 @@ public class TradingServiceFacadeTests {
 		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
-		//quote.setSymbol(existingOrder.getQuote().getSymbol());
-		quote.setSymbol("GOOG");
+		mapper.map(quoteService.findBySymbol("GOOG"), quote);
 		orderRequest.setQuote(quote);
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
 		Integer id = tradingServiceFacade.saveOrder(orderRequest, true);

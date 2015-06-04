@@ -277,9 +277,8 @@ public class TradingServiceImpl implements TradingService {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
 
-		Quote quote = Quote.fakeQuote();
+		Quote quote = quoteService.findQuote(order.getQuoteid());
 
-				//quoteRepository.findBySymbol(order.getQuote().getSymbol());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
@@ -310,8 +309,7 @@ public class TradingServiceImpl implements TradingService {
 			throw new DataRetrievalFailureException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
 		}
-		Quote quote = Quote.fakeQuote();
-				//quoteRepository.findBySymbol(holding.getQuoteSymbol());
+		Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
 		// create order and persist
 		
 		Order createdOrder = createOrder(order, account, holding, quote);
@@ -338,6 +336,8 @@ public class TradingServiceImpl implements TradingService {
 
 	// TO DO: refactor this
 	public Order completeOrder(Order order) {
+		Quote quote = quoteService.findQuote(order.getQuoteid());
+
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
@@ -345,8 +345,7 @@ public class TradingServiceImpl implements TradingService {
 				holding.setPurchasedate(new Date());
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
-				holding.setQuoteSymbol(Quote.fakeQuote().getSymbol());
-				//holding.setQuoteSymbol(order.getQuote().getSymbol());
+				holding.setQuoteSymbol(quote.getSymbol());
 				Set<Order> orders = new HashSet<Order>();
 				orders.add(order);
 				holding.setOrders(orders);
@@ -361,19 +360,14 @@ public class TradingServiceImpl implements TradingService {
 		order.setOrderstatus("closed");
 		order.setCompletiondate(new Date());
 
-
-		//updateQuoteMarketData(order.getQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
-		updateQuoteMarketData(Quote.fakeQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
-		
-		
+		updateQuoteMarketData(quote.getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());	
 		return order;
 	}
 
 	// TODO: Need to clean this up
 	private void updateAccount(Order order) {
 		// update account balance
-		//Quote quote = order.getQuote();
-		Quote quote = Quote.fakeQuote();
+		Quote quote = quoteService.findQuote(order.getQuoteid());
 		Account account = order.getAccountAccountid();
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
@@ -400,10 +394,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
-
-		
-			Quote quote = Quote.fakeQuote();
-					//quoteRepository.findBySymbol(symbol);
+			Quote quote = quoteService.findBySymbol(symbol);
 			Quote quoteToPublish = new Quote();
 			quoteToPublish.setCompanyname(quote.getCompanyname());
 			quoteToPublish.setQuoteid(quote.getQuoteid());
@@ -573,29 +564,10 @@ public class TradingServiceImpl implements TradingService {
 		return portfolioSummary;
 	}
 
-	// TODO: Defensive coding
 	public MarketSummary findMarketSummary() {
 		MarketSummary marketSummary = marketSummaryRepository.findMarketSummary();
-		// get top losing stocks
-//		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
-//
-//		// get top gaining stocks
-//		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
-//
-//		List<Quote> topLosers = new ArrayList<Quote>(TOP_N);
-//		for (Quote q : losers) {
-//			topLosers.add(q);
-//		}
-//		List<Quote> topGainers = new ArrayList<Quote>(TOP_N);
-//		for (Quote q : winners) {
-//			topGainers.add(q);
-//		}
-
-		marketSummary.setTopLosers(quoteService.findAllQuotes());
-		marketSummary.setTopGainers(quoteService.findAllQuotes());
-		
-		//marketSummary.setTopLosers(topLosers);
-		//marketSummary.setTopGainers(topGainers);
+		marketSummary.setTopLosers(quoteService.topLosers());
+		marketSummary.setTopGainers(quoteService.topGainers());
 		marketSummary.setSummaryDate(new Date());
 		return marketSummary;
 	}

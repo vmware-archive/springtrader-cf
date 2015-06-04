@@ -1,5 +1,6 @@
 package org.springframework.nanotrader.domain;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.Assert;
@@ -57,5 +58,22 @@ public class QuoteIntegrationTest {
         List<Quote> result = quoteService.findAllQuotes();
         Assert.assertNotNull("Find all method for 'Quote' illegally returned null", result);
         Assert.assertTrue("Find all method for 'Quote' failed to return any data", result.size() > 0);
+    }
+
+	@Test
+    public void testSave() {
+		Quote quote = new Quote();
+		quote.setChange1(new BigDecimal(123));
+		quote.setCompanyname("Foo");
+		quote.setHigh(new BigDecimal(234));
+		quote.setLow(new BigDecimal(345));
+		quote.setOpen1(new BigDecimal(456));
+		quote.setPrice(new BigDecimal(567));
+		quote.setSymbol("FOO" + System.currentTimeMillis());
+		quote.setVolume(new BigDecimal(678));
+		quote = quoteService.saveQuote(quote);
+		Assert.assertNotNull(quote);
+		Assert.assertNotNull(quote.getQuoteid());
+		quoteService.deleteQuote(quote);
     }
 }

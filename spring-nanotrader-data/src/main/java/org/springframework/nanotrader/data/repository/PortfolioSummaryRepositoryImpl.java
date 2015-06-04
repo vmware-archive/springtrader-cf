@@ -16,11 +16,17 @@
 package org.springframework.nanotrader.data.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
+import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -32,31 +38,46 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
+	@Autowired
+	HoldingRepository holdingRepository;
+
+	@Autowired
+	QuoteService quoteService;
+
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
 
 	@Override
 	public PortfolioSummary findPortfolioSummary(Integer accountId) {
-		PortfolioSummary portfolioSummary = new PortfolioSummary();
-//		Query query = em.createQuery("SELECT SUM(h.purchaseprice * h.quantity) as purchaseBasis, sum(q.price * h.quantity) as marketValue, count(h) FROM Holding h, Quote q Where h.accountAccountid =:accountId and h.quoteSymbol=q.symbol  ORDER BY marketValue desc");
-//		query.setParameter("accountId", accountId);
-//		@SuppressWarnings("unchecked")
-//		List<Object[]> result = query.getResultList();
-//		for (Object[] o: result) {
-//			BigDecimal price = (BigDecimal)o[0];
-//			BigDecimal marketValue = (BigDecimal)o[1];
-//			Long countOfHoldings = (Long)o[2];
-//			portfolioSummary.setTotalBasis(price);
-//			portfolioSummary.setTotalMarketValue(marketValue);
-//			portfolioSummary.setNumberOfHoldings(countOfHoldings.intValue());
-//		}
 
-		portfolioSummary.setTotalBasis(new BigDecimal(123));
-		portfolioSummary.setTotalMarketValue(new BigDecimal(234));
-		portfolioSummary.setNumberOfHoldings(1);
+			PortfolioSummary portfolioSummary = new PortfolioSummary();
+			Query query = em.createQuery("SELECT SUM(h.purchaseprice * h.quantity) as purchaseBasis, count(h) FROM Holding h Where h.accountAccountid =:accountId");
 
+			query.setParameter("accountId", accountId);
+			@SuppressWarnings("unchecked")
+			List<Object[]> result = query.getResultList();
+			for (Object[] o: result) {
+				BigDecimal price = (BigDecimal)o[0];
+				Long countOfHoldings = (Long)o[1];
+				portfolioSummary.setTotalBasis(price);
+				portfolioSummary.setTotalMarketValue(getTotalMarketValue(accountId));
+				portfolioSummary.setNumberOfHoldings(countOfHoldings.intValue());
+			}
 		return portfolioSummary;
 	}
+
+	private BigDecimal getTotalMarketValue(Integer accountId) {
+		List<Holding> holdings = holdingRepository.findByAccountAccountid(accountId);
+		float r = 0;
+		for(Holding holding: holdings) {
+			Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
+			float q = holding.getQuantity().floatValue();
+			float p = quote.getPrice().floatValue();
+			r += (q * p);
+		}
+		return new BigDecimal(r);
+	}
+
 }

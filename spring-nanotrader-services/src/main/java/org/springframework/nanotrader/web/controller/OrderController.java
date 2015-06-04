@@ -15,9 +15,11 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.stereotype.Controller;
@@ -36,6 +38,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @Controller
 public class OrderController extends BaseController {
+
+	@Autowired
+	QuoteService quoteService;
 
 	@RequestMapping(value = "/account/{accountId}/orders", method = RequestMethod.GET)
 	public ResponseEntity<CollectionResult> findOrders(
@@ -64,6 +69,16 @@ public class OrderController extends BaseController {
 				HttpStatus.OK);
 	}
 
+	private void loadQuoteid(Order order) {
+		if(order.getQuote() == null) {
+			return;
+		}
+		if(order.getQuote().getQuoteid() != null) {
+			return;
+		}
+		order.getQuote().setQuoteid(quoteService.findBySymbol(order.getQuote().getSymbol()).getQuoteid());
+	}
+
 	@RequestMapping(value = "/account/{accountId}/order", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<String> save(@RequestBody Order orderRequest,
@@ -71,6 +86,8 @@ public class OrderController extends BaseController {
 			UriComponentsBuilder builder) {
 		this.getSecurityUtil().checkAccount(accountId);
 		orderRequest.setAccountid(accountId);
+		loadQuoteid(orderRequest);
+
 		Integer orderId = getTradingServiceFacade().saveOrder(orderRequest,
 				true);
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -85,6 +102,8 @@ public class OrderController extends BaseController {
 	public void saveAsynch(@RequestBody Order orderRequest,
 			@PathVariable("accountId") final Integer accountId) {
 		orderRequest.setAccountid(accountId);
+		loadQuoteid(orderRequest);
+
 		getTradingServiceFacade().saveOrder(orderRequest, false);
 	}
 

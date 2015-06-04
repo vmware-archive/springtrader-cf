@@ -17,8 +17,6 @@ package org.springframework.nanotrader.data.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Id;
 
@@ -125,31 +123,4 @@ public class Quote implements Serializable {
 				+ ", change1=" + change1 + "]";
 	}
 
-	private static Quote fakeQuote(int i) {
-		Quote q = new Quote();
-		q.setChange1(new BigDecimal(123.45 + i));
-		q.setCompanyname("VMware" + i);
-		q.setHigh(new BigDecimal(234.56 + i));
-		q.setLow(new BigDecimal(345.67 + i));
-		q.setOpen1(new BigDecimal(456.78 + i));
-		q.setPrice(new BigDecimal(567.89 + i));
-		q.setQuoteid(new Integer(41 + i));
-		q.setSymbol("VMW" + i);
-		q.setVolume(new BigDecimal(678.90 + i));
-
-		return q;
-	}
-
-	public static Quote fakeQuote() {
-		return fakeQuote(1);
-	}
-
-	public static List<Quote> fakeQuotes() {
-		List<Quote> qs = new ArrayList<Quote>();
-		for (int i = 0; i < 5; i++) {
-			qs.add(fakeQuote(i));
-		}
-
-		return qs;
-	}
 }
