@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
@@ -37,22 +36,20 @@ public class QuoteControllerTest extends AbstractSecureControllerTest {
 
 
 	@Test
-	@Ignore
 	public void getQuoteBySymbolJson() throws Exception {
-		mockMvc.perform(get("/quote/VMW1").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/quote/VMW").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.quoteid").value(ServiceTestConfiguration.QUOTE_ID))
 				.andExpect(jsonPath("$.high").value(ServiceTestConfiguration.HIGH.doubleValue()))
 				.andExpect(jsonPath("$.open1").value(ServiceTestConfiguration.OPEN.doubleValue()))
-				.andExpect(jsonPath("$.volume").value(ServiceTestConfiguration.VOLUME.intValue()))
+				.andExpect(jsonPath("$.volume").value(ServiceTestConfiguration.VOLUME.doubleValue()))
 				.andExpect(jsonPath("$.price").value(ServiceTestConfiguration.CURRENT_PRICE.doubleValue()))
 				.andExpect(jsonPath("$.companyname").value(ServiceTestConfiguration.COMPANY_NAME))
 				.andDo(print());
 	}
 	
 	@Test
-	@Ignore
 	public void getQuoteBySymbolNoRecordsFoundJson() throws Exception {
 		mockMvc.perform(get("/quote/NOT_A_SYMBOL").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())

@@ -22,15 +22,17 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 
 import org.dozer.Mapper;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl.OrderGateway;
 import org.springframework.nanotrader.service.support.config.IntegrationTestConfig;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,7 +61,15 @@ public class TradingServiceFacadeTests {
 	private QuoteService quoteService;
 
 	@Autowired
+	private OrderGateway orderGateway;
+
+	@Autowired
     private Mapper mapper;
+
+	@Before
+	public void setupMocks() {
+		Mockito.doNothing().when(orderGateway).sendOrder(new Order());
+	}
 
 	@Test
 	public void testSynch() {
@@ -77,7 +87,7 @@ public class TradingServiceFacadeTests {
 		assertTrue(id > 0);
 	}
 
-	@Test @Ignore
+	@Test
 	public void testASynch() {
 		org.springframework.nanotrader.data.domain.Order existingOrder = 
 				orderDataOnDemand.getRandomOrder();

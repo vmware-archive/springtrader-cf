@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:spring-configured />
+	<context:component-scan base-package="org.springframework.nanotrader.data, org.springframework.nanotrader.service"/>
+
+	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
+		id="transactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" />
+		
+	<bean id="quotePublisher" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="org.springframework.nanotrader.data.service.TradingServiceImpl$QuotePublisher" />
+    </bean>
+		
+	<bean
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+		id="entityManagerFactory">
+		<property name="dataSource" ref="dataSource" />
+		<property name="persistenceUnitPostProcessors">
+			<array>
+				<bean class="org.springframework.nanotrader.data.util.PUPostProcessor" />
+			</array>
+		</property>
+
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="databasePlatform" value="#{dbPropertiesBean['dialect']}" />
+			</bean>
+		</property>
+		<property name="jpaPropertyMap">
+			<map>
+				<entry key="hibernate.jdbc.use_scrollable_resultset" value="#{dbPropertiesBean['use_scrollable_resultset']}" />
+				<entry key="hibernate.hbm2ddl.auto" value="#{dbPropertiesBean['hb2ddl_auto']}"/>
+				<entry key="hibernate.show_sql" value="true" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="quoteService"
+		class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
+
+	<bean id="quoteRepositoryConnectionCreator"
+		class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
+	
+	<beans profile="test">
+		<util:properties id="dbPropertiesBean">
+			<prop key="use_scrollable_resultset">false</prop>
+			<prop key="dialect">org.hibernate.dialect.H2Dialect</prop>
+			<prop key="hb2ddl_auto">create</prop>
+			<prop key="import_files"></prop>
+		</util:properties>
+		<jdbc:embedded-database id="dataSource" type="H2" />
+
+		<bean id="quoteRepository"
+			class="org.springframework.nanotrader.data.cloud.QuoteRepository"
+			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
+			<constructor-arg type="java.lang.String"
+				value="http://localhost:8080/quoteService" />
+		</bean>
+	</beans>
+
+</beans>

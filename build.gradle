@@ -68,7 +68,7 @@ subprojects { subproject ->
 	ext.springWsVersion = '2.0.3.RELEASE'
 	ext.springIntegrationVersion = '2.2.6.RELEASE'
 	ext.springRooVersion = '1.2.0.RELEASE'
-	ext.springCloudVersion = '1.0.0.RELEASE'
+	ext.springCloudVersion = '1.1.1.RELEASE'
 	ext.javaxInjectVersion = '1'
 	ext.servletApiVersion = '2.5'
 	ext.dozerVersion='5.3.2'
@@ -318,6 +318,8 @@ project('spring-nanotrader-asynch-services') {
 
 	description = 'Spring Nanotrader Asynch Services'
 	dependencies {
+		testCompile project(':spring-nanotrader-data').sourceSets.test.output
+		
 		compile project(":spring-nanotrader-service-support")
 		compile "org.springframework:spring-webmvc:$springVersion"
 		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")

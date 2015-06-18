@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
 import org.springframework.nanotrader.web.security.CustomUser;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -38,8 +38,6 @@ import org.springframework.security.core.userdetails.UserDetails;
  *  @author Brian Dussault 
  *  @author
  */
-
-@Ignore
 public class AbstractSecureControllerTest extends AbstractBaseControllerTest {
 	private static String API_ROLE = "API_USER";
 
@@ -51,10 +49,12 @@ public class AbstractSecureControllerTest extends AbstractBaseControllerTest {
 		Authentication authentication = new TestingAuthenticationToken(user, ServiceTestConfiguration.PASSWORD, (List<GrantedAuthority>)grantedAuthorities );
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
-	
+
 	@After
 	public void logout() {
 		SecurityContextHolder.clearContext();
 	}
 
+	@Test
+	public void placeholder() {}
 }

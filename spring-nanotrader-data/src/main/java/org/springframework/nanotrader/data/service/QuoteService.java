@@ -23,13 +23,13 @@ import org.springframework.nanotrader.data.domain.Quote;
 
 public interface QuoteService {
 
-	public abstract long countAllQuotes();
+	public long countAllQuotes();
 
-	public abstract Quote findQuote(Integer id);
+	public Quote findQuote(Integer id);
 
-	public abstract List<Quote> findAllQuotes();
+	public List<Quote> findAllQuotes();
 
-	public abstract List<Quote> findQuoteEntries(int firstResult, int maxResults);
+	public List<Quote> findQuoteEntries(int firstResult, int maxResults);
 
 	public Quote findBySymbol(String symbol);
 

@@ -1,4 +1,3 @@
-import groovy.util.*
 import groovy.json.JsonSlurper
 import org.codehays.groovy.runtime.*
 import org.nanotrader.*

@@ -93,12 +93,12 @@ public class ServiceTestConfiguration  {
 	public static String ORDER_STATUS_CLOSED	=  "closed";
 	
 	//Quote constants
-	public static Integer QUOTE_ID = 42;
+	public static Integer QUOTE_ID = 95;
 	public static String COMPANY_NAME	=  "VMware";
-	public static BigDecimal HIGH	=   BigDecimal.valueOf(50.02);
-	public static BigDecimal OPEN	=  BigDecimal.valueOf(40.11);
-	public static BigDecimal VOLUME	= BigDecimal.valueOf(3000);
-	public static BigDecimal CURRENT_PRICE	=  BigDecimal.valueOf(48.44);
+	public static BigDecimal HIGH	=   BigDecimal.valueOf(161.18);
+	public static BigDecimal OPEN	=  BigDecimal.valueOf(159.18);
+	public static BigDecimal VOLUME	= BigDecimal.valueOf(1.0);
+	public static BigDecimal CURRENT_PRICE	=  BigDecimal.valueOf(154.18);
 	public static Integer RANDOM_QUOTES_COUNT = 5;
 	public static String QUOTE_SERVICE_URI = "http://localhost:8080/quoteService";
 	

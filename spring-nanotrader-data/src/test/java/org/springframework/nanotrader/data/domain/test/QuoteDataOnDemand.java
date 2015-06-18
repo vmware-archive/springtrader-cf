@@ -162,7 +162,6 @@ public class QuoteDataOnDemand {
                 }
                 throw new RuntimeException(msg.toString(), e);
             }
-            //quoteRepository.flush();
             data.add(obj);
         }
     }

@@ -15,9 +15,18 @@
  */
 package org.springframework.nanotrader.asynch.service;
 
-import org.junit.Ignore;
+import static org.junit.Assert.assertNotNull;
+
+import org.dozer.Mapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
+import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
+import org.springframework.nanotrader.data.service.QuoteService;
+import org.springframework.nanotrader.service.domain.Order;
+import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,16 +38,41 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-jpa.xml",
-		"classpath:/META-INF/spring/integration/amqp-inbound-context.xml"})
+		"classpath:/META-INF/spring/spring-nanotrader-service-support.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
 public class TradingServiceAsynchTests {
 
-	@Test @Ignore
-	public void test() throws Exception {
-		// For now, just wait for the queued request from the service-support test
-		Thread.sleep(60000);
+	@Autowired
+	private TradingServiceFacade tradingServiceFacade;
+
+	@Autowired
+	OrderDataOnDemand orderDataOnDemand;
+
+	@Autowired
+	AccountDataOnDemand accountDataOnDemand;
+
+	@Autowired
+	QuoteService quoteService;
+
+	@Autowired
+	private Mapper mapper;
+
+	@Test
+	public void testService() {
+		Integer accountId = accountDataOnDemand.getRandomAccount().getAccountid();
+		org.springframework.nanotrader.data.domain.Quote dquote = quoteService.findBySymbol("GOOG");
+		Quote quote = new Quote();
+		mapper.map(dquote, quote);
+
+		Order order = new Order();
+		mapper.map(orderDataOnDemand.getRandomOrder(), order);
+		order.setOrdertype("buy");
+		order.setAccountid(accountId);
+		order.setQuote(quote);
+		assertNotNull(order.getAccountid());
+		Integer i = tradingServiceFacade.saveOrderDirect(order);
+		assertNotNull(i);
 	}
-	
-	
+
 }
