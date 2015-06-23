@@ -91,9 +91,6 @@
 	<bean id="quoteService"
 		class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
 
-	<bean id="quoteRepositoryConnectionCreator"
-		class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
-
  	<beans profile="default">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
@@ -106,12 +103,8 @@
 			<cloud:pool pool-size="2" max-wait-time="200" />
 		</cloud:data-source>
 
-		<bean id="quoteRepository"
-			class="org.springframework.nanotrader.data.cloud.QuoteRepository"
-			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
-			<constructor-arg type="java.lang.String"
-				value="http://quote-service.cfapps.io/quoteService" />
-		</bean>
+		<cloud:service id="quoteRepository" service-name="quoteService"
+			connector-type="org.springframework.nanotrader.data.cloud.QuoteRepository"/>
 
 	</beans>
 	
@@ -123,6 +116,9 @@
 			<prop key="import_files"></prop>
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
+
+		<bean id="quoteRepositoryConnectionCreator"
+			class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
 
 		<bean id="quoteRepository"
 			class="org.springframework.nanotrader.data.cloud.QuoteRepository"
