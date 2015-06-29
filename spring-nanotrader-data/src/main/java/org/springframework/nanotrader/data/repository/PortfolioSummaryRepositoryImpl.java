@@ -38,6 +38,7 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 
 	@PersistenceContext
 	private EntityManager em;
+	
 
 	@Autowired
 	HoldingRepository holdingRepository;

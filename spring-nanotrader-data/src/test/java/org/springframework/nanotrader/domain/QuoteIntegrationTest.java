@@ -2,7 +2,6 @@ package org.springframework.nanotrader.domain;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

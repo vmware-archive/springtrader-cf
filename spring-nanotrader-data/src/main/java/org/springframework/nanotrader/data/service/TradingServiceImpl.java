@@ -276,9 +276,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-
 		Quote quote = quoteService.findQuote(order.getQuoteid());
-
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
@@ -337,7 +335,6 @@ public class TradingServiceImpl implements TradingService {
 	// TO DO: refactor this
 	public Order completeOrder(Order order) {
 		Quote quote = quoteService.findQuote(order.getQuoteid());
-
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
@@ -394,6 +391,8 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
+
+
 			Quote quote = quoteService.findBySymbol(symbol);
 			Quote quoteToPublish = new Quote();
 			quoteToPublish.setCompanyname(quote.getCompanyname());

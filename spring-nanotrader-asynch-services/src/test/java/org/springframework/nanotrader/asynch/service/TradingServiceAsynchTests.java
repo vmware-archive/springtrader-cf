@@ -74,5 +74,4 @@ public class TradingServiceAsynchTests {
 		Integer i = tradingServiceFacade.saveOrderDirect(order);
 		assertNotNull(i);
 	}
-
 }

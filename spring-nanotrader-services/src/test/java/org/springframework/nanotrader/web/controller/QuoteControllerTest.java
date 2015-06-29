@@ -40,7 +40,7 @@ public class QuoteControllerTest extends AbstractSecureControllerTest {
 		mockMvc.perform(get("/quote/VMW").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.quoteid").value(ServiceTestConfiguration.QUOTE_ID))
+				.andExpect(jsonPath("$.quoteid").exists())
 				.andExpect(jsonPath("$.high").value(ServiceTestConfiguration.HIGH.doubleValue()))
 				.andExpect(jsonPath("$.open1").value(ServiceTestConfiguration.OPEN.doubleValue()))
 				.andExpect(jsonPath("$.volume").value(ServiceTestConfiguration.VOLUME.doubleValue()))

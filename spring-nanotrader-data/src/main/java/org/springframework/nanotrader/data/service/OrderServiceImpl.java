@@ -16,7 +16,6 @@
 package org.springframework.nanotrader.data.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.repository.OrderRepository;

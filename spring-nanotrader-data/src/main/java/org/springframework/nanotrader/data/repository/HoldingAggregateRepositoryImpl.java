@@ -97,6 +97,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 			ha.setPercent(percent);
 			hundredPercent = hundredPercent- ha.getPercent().doubleValue();
 			gainsRemainder = gainsRemainder.subtract(ha.getGain());
+
 		}
 		// Since we are only showing the Top N symbols, lump all others into the Other bucket
 		// at this point if we are still @ 100%, then no records were found
@@ -109,7 +110,6 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 			holdingRollups.add(summary);
 		}
 		holdingSummary.setHoldingRollups(holdingRollups);
-
 		return holdingSummary;
 	}
 }

@@ -1,4 +1,4 @@
-description = 'Spring Nanotrader'
+description = 'springtrader-cf'
 
 apply plugin: 'base'
 apply plugin: 'idea'
@@ -181,6 +181,7 @@ project('spring-nanotrader-data') {
 		// Spring Cloud
 		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
+
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.aspectj:aspectjrt:$aspectjVersion"
 		compile "org.springframework:spring-aspects:$springVersion"
@@ -194,7 +195,6 @@ project('spring-nanotrader-data') {
 		compile "org.hibernate:hibernate-core:3.6.8.Final"
 		compile "org.hibernate:hibernate-entitymanager:3.6.8.Final"
 		compile "postgresql:postgresql:9.0-801.jdbc3"
-
 		testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile "com.h2database:h2:$h2Version"
 		compile "mysql:mysql-connector-java:5.1.13"
@@ -319,7 +319,6 @@ project('spring-nanotrader-asynch-services') {
 	description = 'Spring Nanotrader Asynch Services'
 	dependencies {
 		testCompile project(':spring-nanotrader-data').sourceSets.test.output
-		
 		compile project(":spring-nanotrader-service-support")
 		compile "org.springframework:spring-webmvc:$springVersion"
 		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")
