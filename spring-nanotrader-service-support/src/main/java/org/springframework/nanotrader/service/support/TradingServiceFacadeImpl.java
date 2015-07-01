@@ -279,7 +279,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
         mapper.map(orderRequest, order, ORDER_MAPPING);
         if(orderRequest.getQuote() != null) {
-        	 order.setQuoteid(orderRequest.getQuote().getQuoteid());
+        	order.setSymbol(orderRequest.getQuote().getSymbol());
         }
         tradingService.saveOrder(order);
         return order.getOrderid();
@@ -294,12 +294,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         if (order == null) {
             throw new NoRecordsFoundException();
         }
-        org.springframework.nanotrader.data.domain.Quote quote = quoteService.findQuote(order.getQuoteid());
         Order responseOrder = new Order();
-        Quote responseQuote = new Quote();
         mapper.map(order, responseOrder, ORDER_MAPPING);
-        mapper.map(quote, responseQuote, QUOTE_MAPPING);
-        responseOrder.setQuote(responseQuote);
+        Quote q = new Quote();
+        q.setSymbol(order.getSymbol());
+        responseOrder.setQuote(q);
         return responseOrder;
     }
 
@@ -333,11 +332,10 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         
             for(org.springframework.nanotrader.data.domain.Order o: orders) {
                 Order order = new Order();
-                Quote quote = new Quote();
-                org.springframework.nanotrader.data.domain.Quote q = quoteService.findQuote(o.getQuoteid());
-                mapper.map(q, quote, QUOTE_MAPPING);
                 mapper.map(o, order, ORDER_MAPPING);
-                order.setQuote(quote);
+                Quote q = new Quote();
+                q.setSymbol(o.getSymbol());
+                order.setQuote(q);
                 responseOrders.add(order);
             }
         }
@@ -346,27 +344,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         collectionResults.setPageSize(getPageSize(pageSize));
         collectionResults.setResults(responseOrders);
         
-        return collectionResults;
-    }
-    
-    public CollectionResult findQuotes() {
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade: findQuotes");
-        }
-        CollectionResult  collectionResults = new CollectionResult();
-        List<org.springframework.nanotrader.data.domain.Quote> quotes = null;
-        Long totalRecords = new Long(tradingService.findAllQuotes().size());
-        collectionResults.setTotalRecords(totalRecords);
-        quotes = tradingService.findAllQuotes(); //get all quotes
-        List<Quote> responseQuotes = new ArrayList<Quote>();
-        if (quotes != null && quotes.size() > 0 ) {
-            for(org.springframework.nanotrader.data.domain.Quote o: quotes) {
-                Quote quote = new Quote();
-                mapper.map(o, quote, QUOTE_MAPPING);
-                responseQuotes.add(quote);
-            }
-        }
-        collectionResults.setResults(responseQuotes);
         return collectionResults;
     }
 

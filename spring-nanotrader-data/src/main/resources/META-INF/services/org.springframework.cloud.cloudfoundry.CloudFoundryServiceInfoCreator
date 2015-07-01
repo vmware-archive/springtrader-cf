@@ -1,1 +1,2 @@
 org.springframework.nanotrader.data.cloud.QuoteWebServiceInfoCreator
+org.springframework.nanotrader.data.cloud.MarketServiceWebServiceInfoCreator

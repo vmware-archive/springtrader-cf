@@ -17,13 +17,11 @@ package org.springframework.nanotrader.web.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.service.domain.Quote;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
@@ -42,12 +40,6 @@ public class QuoteController extends BaseController {
 		return new ResponseEntity<Quote>(responseQuote, getNoCacheHeaders(),
 				HttpStatus.OK);
 
-	}
-
-	@RequestMapping(value = "/quotes", method = RequestMethod.GET)
-	@ResponseBody
-	public CollectionResult findQuotes() {
-		return getTradingServiceFacade().findQuotes();
 	}
 
 	@RequestMapping(value = "/quote", method = RequestMethod.POST)

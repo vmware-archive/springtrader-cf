@@ -1,1 +1,2 @@
 org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator
+org.springframework.nanotrader.data.cloud.MarketServiceRepositoryConnectionCreator

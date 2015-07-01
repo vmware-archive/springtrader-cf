@@ -63,7 +63,7 @@
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<import
-		resource="classpath:/META-INF/spring/integration/amqp-data-outbound-context.xml" />
+		resource="classpath:/META-INF/spring/integration/amqp-common-context.xml" />
 	<bean
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
 		id="entityManagerFactory">
@@ -106,6 +106,9 @@
 		<cloud:service id="quoteRepository" service-name="quoteService"
 			connector-type="org.springframework.nanotrader.data.cloud.QuoteRepository"/>
 
+		<cloud:service id="marketServiceRepository" service-name="marketService"
+			connector-type="org.springframework.nanotrader.data.cloud.MarketServiceRepository"/>
+
 	</beans>
 	
 	<beans profile="test">
@@ -125,6 +128,16 @@
 			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
 			<constructor-arg type="java.lang.String"
 				value="http://localhost:8080/quoteService" />
+		</bean>
+
+		<bean id="marketServiceRepositoryConnectionCreator"
+			class="org.springframework.nanotrader.data.cloud.MarketServiceRepositoryConnectionCreator"/>
+
+		<bean id="marketServiceRepository"
+			class="org.springframework.nanotrader.data.cloud.MarketServiceRepository"
+			factory-bean="marketServiceRepositoryConnectionCreator" factory-method="createRepository">
+			<constructor-arg type="java.lang.String"
+				value="http://localhost:8080/marketService" />
 		</bean>
 	</beans>
 

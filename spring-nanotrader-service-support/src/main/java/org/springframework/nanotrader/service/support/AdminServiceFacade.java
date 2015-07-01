@@ -28,8 +28,6 @@ import org.springframework.nanotrader.service.domain.PerfTestData;
  */
 public interface AdminServiceFacade {
 
-	public abstract void recreateData(int count);
-	
 	public abstract Integer getProgressCount();
 	
 	public abstract void deleteUserAccount(String userid);

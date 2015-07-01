@@ -69,16 +69,6 @@ public class OrderController extends BaseController {
 				HttpStatus.OK);
 	}
 
-	private void loadQuoteid(Order order) {
-		if(order.getQuote() == null) {
-			return;
-		}
-		if(order.getQuote().getQuoteid() != null) {
-			return;
-		}
-		order.getQuote().setQuoteid(quoteService.findBySymbol(order.getQuote().getSymbol()).getQuoteid());
-	}
-
 	@RequestMapping(value = "/account/{accountId}/order", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<String> save(@RequestBody Order orderRequest,
@@ -86,7 +76,6 @@ public class OrderController extends BaseController {
 			UriComponentsBuilder builder) {
 		this.getSecurityUtil().checkAccount(accountId);
 		orderRequest.setAccountid(accountId);
-		loadQuoteid(orderRequest);
 
 		Integer orderId = getTradingServiceFacade().saveOrder(orderRequest,
 				true);
@@ -102,7 +91,6 @@ public class OrderController extends BaseController {
 	public void saveAsynch(@RequestBody Order orderRequest,
 			@PathVariable("accountId") final Integer accountId) {
 		orderRequest.setAccountid(accountId);
-		loadQuoteid(orderRequest);
 
 		getTradingServiceFacade().saveOrder(orderRequest, false);
 	}

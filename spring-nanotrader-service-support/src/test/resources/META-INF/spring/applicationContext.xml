@@ -24,11 +24,7 @@
 	<bean id="orderGateway" class="org.mockito.Mockito" factory-method="mock">
         <constructor-arg value="org.springframework.nanotrader.service.support.TradingServiceFacadeImpl$OrderGateway" />
     </bean>
-    
-    <bean id="quotePublisher" class="org.mockito.Mockito" factory-method="mock">
-        <constructor-arg value="org.springframework.nanotrader.data.service.TradingServiceImpl$QuotePublisher" />
-    </bean>
-		
+
 	<bean
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
 		id="entityManagerFactory">
@@ -58,7 +54,10 @@
 
 	<bean id="quoteRepositoryConnectionCreator"
 		class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
-	
+
+	<bean id="marketServiceRepositoryConnectionCreator"
+		class="org.springframework.nanotrader.data.cloud.MarketServiceRepositoryConnectionCreator"/>
+
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
@@ -73,6 +72,13 @@
 			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
 			<constructor-arg type="java.lang.String"
 				value="http://localhost:8080/quoteService" />
+		</bean>
+
+		<bean id="marketServiceRepository"
+			class="org.springframework.nanotrader.data.cloud.MarketServiceRepository"
+			factory-bean="marketServiceRepositoryConnectionCreator" factory-method="createRepository">
+			<constructor-arg type="java.lang.String"
+				value="http://localhost:8080/marketService" />
 		</bean>
 	</beans>
 

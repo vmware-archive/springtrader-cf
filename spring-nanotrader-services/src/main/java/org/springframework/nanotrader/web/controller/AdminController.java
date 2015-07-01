@@ -27,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.service.domain.PerfTestData;
 import org.springframework.nanotrader.service.domain.ProgressData;
-import org.springframework.nanotrader.service.domain.RecreateData;
 import org.springframework.nanotrader.service.domain.UserId;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,17 +41,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @Controller
 public class AdminController extends BaseController {
-
-	/**
-	 * Creates users & buy orders for the (usercount) number of users
-	 * @param recreateDataRequest
-	 */
-	@RequestMapping(value = "/admin/userdata", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.CREATED)
-	public void recreateData(@RequestBody
-	RecreateData recreateDataRequest) {
-		this.getAdminServiceFacade().recreateData(Integer.parseInt(recreateDataRequest.getUsercount()));
-	}
 
 	/**
 	 * Get the number of users created at the time of request

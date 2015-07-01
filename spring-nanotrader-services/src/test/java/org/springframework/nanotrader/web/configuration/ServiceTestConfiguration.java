@@ -34,7 +34,10 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.cloud.MarketServiceRepository;
+import org.springframework.nanotrader.data.cloud.MarketServiceRepositoryConnectionCreator;
 import org.springframework.nanotrader.data.cloud.QuoteRepository;
+import org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -54,8 +57,6 @@ import org.springframework.nanotrader.service.support.AdminServiceFacade;
 import org.springframework.nanotrader.service.support.AdminServiceFacadeImpl;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl;
-
-import org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator;
 
 /**
  *  ServiceTestConfiguration provides test objects and mock service layer for unit tests.
@@ -101,6 +102,7 @@ public class ServiceTestConfiguration  {
 	public static BigDecimal CURRENT_PRICE	=  BigDecimal.valueOf(154.18);
 	public static Integer RANDOM_QUOTES_COUNT = 5;
 	public static String QUOTE_SERVICE_URI = "http://localhost:8080/quoteService";
+	public static String MARKET_SERVICE_URI = "http://localhost:8080/marketService";
 	
 	//Account constants
 	public static BigDecimal ACCOUNT_OPEN_BALANCE	=   BigDecimal.valueOf(55.02);
@@ -136,6 +138,11 @@ public class ServiceTestConfiguration  {
 		return new QuoteRepositoryConnectionCreator().createRepository(QUOTE_SERVICE_URI);
 	}
 
+	@Bean
+	public MarketServiceRepository marketServiceRepository() {
+		return new MarketServiceRepositoryConnectionCreator().createRepository(MARKET_SERVICE_URI);
+	}
+
 	@Bean 
 	public TradingService tradingService() {
 		TradingService tradingService = Mockito.mock(TradingService.class);
@@ -154,7 +161,6 @@ public class ServiceTestConfiguration  {
 		when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class), any(Integer.class), any(Integer.class))).thenReturn(orders());
 		when(tradingService.findOrders(eq(ACCOUNT_ID), any(Integer.class), any(Integer.class))).thenReturn(orders());
 		when(tradingService.findQuoteBySymbol(eq(SYMBOL))).thenReturn(quote());
-		when(tradingService.findRandomQuotes(RANDOM_QUOTES_COUNT)).thenReturn(quotes());
 		when(tradingService.findQuotesBySymbols(anySetOf(String.class))).thenReturn(quotes());
 		when(tradingService.findAccount(eq(ACCOUNT_ID))).thenReturn(account());
 		when(tradingService.findAccountByProfile(any(Accountprofile.class))).thenReturn(account());
@@ -247,7 +253,7 @@ public class ServiceTestConfiguration  {
 		order.setHoldingHoldingid(holding());
 		order.setQuantity(ORDER_QUANTITY);
 		order.setOrderfee(TradingServiceImpl.DEFAULT_ORDER_FEE);
-		order.setQuoteid(quote().getQuoteid());
+		order.setSymbol(quote().getSymbol());
 		return order;
 	}
 

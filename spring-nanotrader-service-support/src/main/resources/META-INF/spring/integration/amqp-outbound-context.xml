@@ -7,11 +7,12 @@
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+
 	<int:gateway service-interface="org.springframework.nanotrader.service.support.TradingServiceFacadeImpl$OrderGateway"
 		default-request-channel="toAmqpChannel"/>
 
 	<int:channel id="toAmqpChannel" />
-	
+
  	<int:chain input-channel="toAmqpChannel" >
      	<int:header-enricher>
     	 	<int:header name="uniqueId" expression="T(System).nanoTime()"/>

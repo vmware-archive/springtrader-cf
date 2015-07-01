@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.nanotrader.data.cloud.MarketServiceRepository;
 import org.springframework.nanotrader.data.cloud.QuoteRepository;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
@@ -31,29 +32,19 @@ public class QuoteServiceImpl implements QuoteService {
 	@Autowired
 	QuoteRepository quoteRepository;
 
+	@Autowired
+	MarketServiceRepository marketServiceRepository;
+
 	public long countAllQuotes() {
-		return quoteRepository.countAllQuotes();
-	}
-
-	public Quote findQuote(Integer id) {
-		return quoteRepository.findQuote(id);
-	}
-
-	public List<Quote> findAllQuotes() {
-		return quoteRepository.findAll();
-	}
-
-	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-		return quoteRepository.findQuoteEntries(firstResult / maxResults,
-				maxResults);
+		return marketServiceRepository.countAllQuotes();
 	}
 
 	public List<Quote> topGainers() {
-		return quoteRepository.topGainers();
+		return marketServiceRepository.topGainers();
 	}
 
 	public List<Quote> topLosers() {
-		return quoteRepository.topLosers();
+		return marketServiceRepository.topLosers();
 	}
 
 	public Quote findBySymbol(String symbol) {
@@ -61,25 +52,13 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
-		if(symbols == null || symbols.size() < 1) {
+		if (symbols == null || symbols.size() < 1) {
 			return new ArrayList<Quote>();
 		}
 		return quoteRepository.findBySymbolIn(symbols);
 	}
 
-	public List<Quote> findRandomQuotes(Integer count) {
-		return findAllQuotes().subList(0, count.intValue());
-	}
-
-	public Quote saveQuote(Quote quote) {
-		return quoteRepository.save(quote);
-	}
-
 	public Map<String, Long> marketSummary() {
-		return quoteRepository.marketSummary();
-	}
-
-	public void deleteQuote(Quote quote) {
-		quoteRepository.delete(quote);
+		return marketServiceRepository.marketSummary();
 	}
 }

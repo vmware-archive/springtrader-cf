@@ -69,10 +69,6 @@ public interface TradingService {
 	public abstract List<Order> findOrders(Integer accountId, Integer page, Integer pageSize);
 
 	public abstract List<Holding> findHoldingsByAccountId(Integer accountId, Integer page, Integer pageSize);
-	
-	public abstract List<Quote> findRandomQuotes(Integer count);
-
-	public abstract List<Quote> findAllQuotes();
 
 	public abstract Quote findQuoteBySymbol(String symbol);
 
@@ -96,7 +92,5 @@ public interface TradingService {
 	
 	public abstract void deleteAccountByUserid(String userId);
 	
-	public abstract void killServer(); 
-	
-	public void updateQuote(Quote quote);
+	public abstract void killServer();
 }

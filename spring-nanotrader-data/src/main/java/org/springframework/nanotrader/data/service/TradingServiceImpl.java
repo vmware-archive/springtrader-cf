@@ -92,9 +92,6 @@ public class TradingServiceImpl implements TradingService {
 
 	@Autowired 
 	ChaosProceduresRepository chaosProceduresRepository;
-	
-	@Autowired
-	QuotePublisher quotePublisher;
 
 	@Override
 	public Accountprofile login(String username, String password) {
@@ -276,21 +273,21 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-		Quote quote = quoteService.findQuote(order.getQuoteid());
+		//Quote quote = quoteService.findQuote(order.getQuoteid());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
 
 		if ((order.getQuantity() != null && order.getQuantity().intValue() > 0)
-				&& (account.getBalance().subtract(order.getQuantity().multiply(quote.getPrice())).doubleValue() >= 0)) { // cannot
-																															// buy
-			createdOrder = createOrder(order, account, holding, quote);
+				&& (account.getBalance().subtract(order.getQuantity().multiply(order.getPrice())).doubleValue() >= 0)) { // cannot
+
+			createdOrder = createOrder(order, account, holding);
 			// Update account balance and create holding
 			completeOrder(createdOrder);
 		}
 		else {
 			order.setQuantity(new BigDecimal(0));
-			createdOrder = createOrder(order, account, holding, quote);
+			createdOrder = createOrder(order, account, holding);
 			// cancel order
 			createdOrder.setCompletiondate(new Date());
 			createdOrder.setOrderstatus(CANCELLED_STATUS);
@@ -307,26 +304,25 @@ public class TradingServiceImpl implements TradingService {
 			throw new DataRetrievalFailureException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
 		}
-		Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
+
 		// create order and persist
-		
-		Order createdOrder = createOrder(order, account, holding, quote);
+		Order createdOrder = createOrder(order, account, holding);
+
 		// Update account balance and create holding
 		completeOrder(createdOrder);
 		return createdOrder;
 	}
 
-	private Order createOrder(Order order, Account account, Holding holding, Quote quote) {
+	private Order createOrder(Order order, Account account, Holding holding) {
 		Order createdOrder = null;
 		order.setAccountAccountid(account);
-		order.setQuoteid(quote.getQuoteid());
 		if (order.getQuantity() == null) {
 			order.setQuantity(holding.getQuantity());
 		}
 		order.setOrderfee(DEFAULT_ORDER_FEE);
 		order.setOrderstatus(OPEN_STATUS);
 		order.setOpendate(new Date());
-		order.setPrice(quote.getPrice().setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
+		order.setPrice(order.getPrice().setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 		order.setHoldingHoldingid(holding);
 		createdOrder = orderRepository.save(order);
 		return createdOrder;
@@ -334,7 +330,6 @@ public class TradingServiceImpl implements TradingService {
 
 	// TO DO: refactor this
 	public Order completeOrder(Order order) {
-		Quote quote = quoteService.findQuote(order.getQuoteid());
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
@@ -342,7 +337,7 @@ public class TradingServiceImpl implements TradingService {
 				holding.setPurchasedate(new Date());
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
-				holding.setQuoteSymbol(quote.getSymbol());
+				holding.setQuoteSymbol(order.getSymbol());
 				Set<Order> orders = new HashSet<Order>();
 				orders.add(order);
 				holding.setOrders(orders);
@@ -357,16 +352,14 @@ public class TradingServiceImpl implements TradingService {
 		order.setOrderstatus("closed");
 		order.setCompletiondate(new Date());
 
-		updateQuoteMarketData(quote.getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());	
 		return order;
 	}
 
 	// TODO: Need to clean this up
 	private void updateAccount(Order order) {
 		// update account balance
-		Quote quote = quoteService.findQuote(order.getQuoteid());
 		Account account = order.getAccountAccountid();
-		BigDecimal price = quote.getPrice();
+		BigDecimal price = order.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
 		BigDecimal balance = account.getBalance();
 		BigDecimal total = null;
@@ -390,43 +383,6 @@ public class TradingServiceImpl implements TradingService {
 		accountRepository.save(account);
 	}
 
-	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
-
-
-			Quote quote = quoteService.findBySymbol(symbol);
-			Quote quoteToPublish = new Quote();
-			quoteToPublish.setCompanyname(quote.getCompanyname());
-			quoteToPublish.setQuoteid(quote.getQuoteid());
-			quoteToPublish.setSymbol(quote.getSymbol());
-			quoteToPublish.setOpen1(quote.getOpen1());
-			BigDecimal oldPrice = quote.getPrice();
-			if (quote.getPrice().compareTo(FinancialUtils.PENNY_STOCK_PRICE) <= 0) {
-				changeFactor = FinancialUtils.PENNY_STOCK_RECOVERY_MIRACLE_MULTIPLIER;
-			}
-			if (quote.getPrice().compareTo(quote.getLow()) <= 0) { 
-				quoteToPublish.setLow(quote.getPrice());
-			} else { 
-				quoteToPublish.setLow(quote.getLow());
-			}
-			
-			if (quote.getPrice().compareTo(quote.getHigh()) > 0) { 
-				quoteToPublish.setHigh(quote.getPrice());
-			} else { 
-				quoteToPublish.setHigh(quote.getHigh());
-			}
-			
-			BigDecimal newPrice = changeFactor.multiply(oldPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
-			quoteToPublish.setPrice(newPrice);
-			quoteToPublish.setVolume(quote.getVolume().add(sharesTraded));
-			quoteToPublish.setChange1(newPrice.subtract(quote.getOpen1()));
-			this.quotePublisher.publishQuote(quoteToPublish);
-	}
-	
-	@Transactional
-	public void updateQuote(Quote quote) { 
-		quoteService.saveQuote(quote);
-	}
-	
 	@Override
 	public Order updateOrder(Order order) {
 
@@ -518,10 +474,6 @@ public class TradingServiceImpl implements TradingService {
 
 	private List<Order> processOrderResults(List<Order> orders, Integer accountId) { 
 		if (orders != null && orders.size() > 0) {
-			// Loop over the orders to populate the lazy quote fields
-			for (Order order : orders) {
-				order.getQuoteid();
-			}
 			orderRepository.updateClosedOrders(accountId);
 		}
 		return orders;
@@ -535,16 +487,6 @@ public class TradingServiceImpl implements TradingService {
 	@Override
 	public List<Quote> findQuotesBySymbols(Set<String> symbols) {
 		return quoteService.findBySymbolIn(symbols);
-	}
-
-	@Override
-	public List<Quote> findRandomQuotes(Integer count) {
-		return quoteService.findAllQuotes().subList(0, count.intValue());
-	}
-
-	@Override
-	public List<Quote> findAllQuotes() {
-		return quoteService.findAllQuotes();
 	}
 
 	@Override
@@ -629,9 +571,5 @@ public class TradingServiceImpl implements TradingService {
 
 	public void killServer() { 
 		chaosProceduresRepository.killServer();
-	}
-	public static interface QuotePublisher {
-
-		void publishQuote(Quote quote);
 	}
 }

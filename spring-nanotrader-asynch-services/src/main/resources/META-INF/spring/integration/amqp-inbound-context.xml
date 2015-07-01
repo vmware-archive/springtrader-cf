@@ -78,12 +78,12 @@
 
     <task:scheduler id="scheduler" pool-size="10"/>
     
-	<int:service-activator input-channel="toTradingServiceQuoteChannel"
+	<!-- int:service-activator input-channel="toTradingServiceQuoteChannel"
 		output-channel="nullChannel" ref="tradingServiceImpl" method="updateQuote">
 		<int:request-handler-advice-chain>
 			<ref bean="retryAdvice" />
 		</int:request-handler-advice-chain>
-	</int:service-activator>
+	</int:service-activator-->
 	
 
 <!--#################################################################### 

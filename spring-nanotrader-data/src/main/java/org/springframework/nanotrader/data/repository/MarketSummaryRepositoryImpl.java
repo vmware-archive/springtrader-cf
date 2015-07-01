@@ -52,14 +52,11 @@ public class MarketSummaryRepositoryImpl implements MarketSummaryRepository {
 		marketSummary.setTradeStockIndexVolume(BigDecimal.ZERO.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 		marketSummary.setChange(BigDecimal.ZERO.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 
-		marketSummary.setTradeStockIndexAverage(new BigDecimal(ms.get("tradeStockIndexAverage"))
-			.setScale(FinancialUtils.SCALE,	FinancialUtils.ROUND));
+		marketSummary.setTradeStockIndexAverage(new BigDecimal(ms.get("tradeStockIndexAverage")));
 
-		marketSummary.setTradeStockIndexOpenAverage(new BigDecimal(ms.get("tradeStockIndexOpenAverage"))
-			.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
+		marketSummary.setTradeStockIndexOpenAverage(new BigDecimal(ms.get("tradeStockIndexOpenAverage")));
 
-		marketSummary.setTradeStockIndexVolume(new BigDecimal(ms.get("tradeStockIndexVolume"))
-			.setScale(FinancialUtils.SCALE,	FinancialUtils.ROUND));
+		marketSummary.setTradeStockIndexVolume(new BigDecimal(ms.get("tradeStockIndexVolume")));
 		marketSummary.setChange(new BigDecimal(ms.get("change")));
 
 		return marketSummary;

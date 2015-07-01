@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 public class Quote {
 
 
-    private Integer quoteid;
+    private String quoteid;
 
     private BigDecimal low;
 
@@ -109,6 +109,7 @@ public class Quote {
 
 	public void setSymbol(String symbol) {
         this.symbol = symbol;
+        setQuoteid(getSymbol());
     }
 
 	public BigDecimal getChange1() {
@@ -118,11 +119,11 @@ public class Quote {
 	public void setChange1(BigDecimal change1) {
         this.change1 = change1;
     }
-	public Integer getQuoteid() {
+	public String getQuoteid() {
         return this.quoteid;
     }
 
-	public void setQuoteid(Integer id) {
+	public void setQuoteid(String id) {
         this.quoteid = id;
     }
 

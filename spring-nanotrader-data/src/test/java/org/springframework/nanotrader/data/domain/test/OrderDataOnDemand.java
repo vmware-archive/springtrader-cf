@@ -134,7 +134,7 @@ public class OrderDataOnDemand {
 
 	public void setQuote(Order obj, int index) {
         Quote quote = quoteDataOnDemand.getRandomQuote();
-        obj.setQuoteid(quote.getQuoteid());
+        obj.setSymbol(quote.getSymbol());
     }
 
 	public Order getSpecificOrder(int index) {

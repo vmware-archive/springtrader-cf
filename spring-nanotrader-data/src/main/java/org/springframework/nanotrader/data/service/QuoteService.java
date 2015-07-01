@@ -25,25 +25,13 @@ public interface QuoteService {
 
 	public long countAllQuotes();
 
-	public Quote findQuote(Integer id);
-
-	public List<Quote> findAllQuotes();
-
-	public List<Quote> findQuoteEntries(int firstResult, int maxResults);
-
 	public Quote findBySymbol(String symbol);
 
 	public List<Quote> findBySymbolIn(Set<String> symbols);
-
-	public List<Quote> findRandomQuotes(Integer count);
-
-	public Quote saveQuote(Quote quote);
 
 	public Map<String, Long> marketSummary();
 
 	public List<Quote> topGainers();
 
 	public List<Quote> topLosers();
-
-	public void deleteQuote(Quote quote);
 }

@@ -18,22 +18,9 @@ package org.springframework.nanotrader.data.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Id;
-
 public class Quote implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
-	@Id
-	private Integer quoteid;
-
-	public Integer getQuoteid() {
-		return this.quoteid;
-	}
-
-	public void setQuoteid(Integer id) {
-		this.quoteid = id;
-	}
 
 	private BigDecimal low;
 
@@ -117,9 +104,9 @@ public class Quote implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Quote [quoteid=" + quoteid + ", low=" + low + ", open1="
+		return "Quote [symbol=" + symbol + ", low=" + low + ", open1="
 				+ open1 + ", volume=" + volume + ", price=" + price + ", high="
-				+ high + ", companyname=" + companyname + ", symbol=" + symbol
+				+ high + ", companyname=" + companyname
 				+ ", change1=" + change1 + "]";
 	}
 

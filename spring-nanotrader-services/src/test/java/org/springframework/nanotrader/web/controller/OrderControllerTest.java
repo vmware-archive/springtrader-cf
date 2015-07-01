@@ -58,7 +58,6 @@ public class OrderControllerTest extends AbstractSecureControllerTest {
 				.andExpect(jsonPath("$.ordertype").value(ServiceTestConfiguration.ORDER_TYPE_BUY))
 				.andExpect(jsonPath("$.orderstatus").value(ServiceTestConfiguration.ORDER_STATUS_CLOSED))				
 				.andExpect(jsonPath("$.quote.symbol").value(ServiceTestConfiguration.SYMBOL))
-				.andExpect(jsonPath("$.quote.companyname").value(ServiceTestConfiguration.COMPANY_NAME))
 				.andDo(print());
 	}
 
@@ -83,7 +82,6 @@ public class OrderControllerTest extends AbstractSecureControllerTest {
 				.andExpect(jsonPath("$.results.[0].ordertype").value(ServiceTestConfiguration.ORDER_TYPE_BUY))
 				.andExpect(jsonPath("$.results.[0].orderstatus").value(ServiceTestConfiguration.ORDER_STATUS_CLOSED))				
 				.andExpect(jsonPath("$.results.[0].quote.symbol").value(ServiceTestConfiguration.SYMBOL))
-				.andExpect(jsonPath("$.results.[0].quote.companyname").value(ServiceTestConfiguration.COMPANY_NAME))
 				.andDo(print());
 	}
 	
@@ -109,7 +107,6 @@ public class OrderControllerTest extends AbstractSecureControllerTest {
 				.andExpect(jsonPath("$.results.[0].ordertype").value(ServiceTestConfiguration.ORDER_TYPE_BUY))
 				.andExpect(jsonPath("$.results.[0].orderstatus").value(ServiceTestConfiguration.ORDER_STATUS_CLOSED))				
 				.andExpect(jsonPath("$.results.[0].quote.symbol").value(ServiceTestConfiguration.SYMBOL))
-				.andExpect(jsonPath("$.results.[0].quote.companyname").value(ServiceTestConfiguration.COMPANY_NAME))
 				.andDo(print());
 	}
 
@@ -127,9 +124,9 @@ public class OrderControllerTest extends AbstractSecureControllerTest {
 	public void createOrderSellJson() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		Order order = mapper.readValue(new ClassPathResource("create-order-sell.json").getFile(), Order.class);
-		Quote quote = new Quote();
-		quote.setQuoteid(new Integer(42));
-		order.setQuote(quote);
+		Quote q = new Quote();
+		q.setSymbol("GOOG");
+		order.setQuote(q);
 		byte[] jsonRequest = mapper.writeValueAsBytes(order);
 		mockMvc.perform(
 				post("/account/" + ServiceTestConfiguration.ACCOUNT_ID + "/order").accept(MediaType.APPLICATION_JSON).content(jsonRequest)
