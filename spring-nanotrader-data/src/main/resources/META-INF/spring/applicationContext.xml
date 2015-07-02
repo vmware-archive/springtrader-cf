@@ -102,10 +102,6 @@
 			<cloud:connection properties="sessionVariables=sql_mode='ANSI';characterEncoding=UTF-8;defaultTransactionIsolation=2" />
 			<cloud:pool pool-size="2" max-wait-time="200" />
 		</cloud:data-source>
-
-		<cloud:service id="quoteRepository" service-name="quoteService"
-			connector-type="org.springframework.nanotrader.data.cloud.QuoteRepository"/>
-
 	</beans>
 	
 	<beans profile="test">
