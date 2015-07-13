@@ -1,0 +1,11 @@
+---
+applications:
+- name: traderweb
+  memory: 1G
+  instances: 1
+  path: dist/spring-nanotrader-web-1.0.1.BUILD-SNAPSHOT.war
+  services: [ traderfront ]
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    JBP_CONFIG_OPEN_JDK_JRE: 'jre: {version: 1.7.0_+}'
+    JBP_CONFIG_TOMCAT: 'tomcat: {version: 7.0.+}'

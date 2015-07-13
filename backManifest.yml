@@ -1,0 +1,12 @@
+---
+applications:
+- name: traderback
+  memory: 1G
+  instances: 1
+  path: dist/spring-nanotrader-asynch-services-1.0.1.BUILD-SNAPSHOT.war
+  services: [ tradersql, tradermessaging ]
+  env:
+    SPRING_PROFILES_ACTIVE: cloud
+    EUREKA_SERVER: http://jg-eureka-server.cfapps.io/eureka/
+    JBP_CONFIG_OPEN_JDK_JRE: 'jre: {version: 1.7.0_+}'
+    JBP_CONFIG_TOMCAT: 'tomcat: {version: 7.0.+}'
