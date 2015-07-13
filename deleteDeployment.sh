@@ -4,8 +4,6 @@ frontName=traderfront
 webName=traderweb
 backName=traderback
 domain=cfapps.io
-sqlName=tradersql
-messagingName=tradermessaging
 
 date
 

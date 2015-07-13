@@ -26,12 +26,17 @@ import org.springframework.nanotrader.data.cloud.QuoteRepository;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
 
+import com.netflix.discovery.DiscoveryClient;
+
 @Service
 @Profile({"default", "cloud"})
 public class QuoteServiceImpl implements QuoteService {
 
 	@Autowired
 	QuoteRepository quoteRepository;
+
+	@Autowired
+	DiscoveryClient discoveryClient;
 
 	public long countAllQuotes() {
 		return quoteRepository.countAllQuotes();

@@ -6,6 +6,7 @@ backName=traderback
 domain=cfapps.io
 sqlName=tradersql
 messagingName=tradermessaging
+eurekaURI=http://eureka-server.cfapps.io/eureka/
 
 date
 
@@ -19,6 +20,7 @@ cf bind-service $frontName $sqlName
 cf bind-service $frontName $messagingName
 cf set-env $frontName JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}]'
 cf set-env $frontName JBP_CONFIG_TOMCAT '[tomcat: {version: 7.0.+}]'
+cf set-env $frontName EUREKA_SERVER $eurekaURI
 cf push -p dist/spring-nanotrader-services-1.0.1.BUILD-SNAPSHOT.war -m 1G -t 180 -d $domain -n $frontName $frontName
 
 echo Making this app available as a service instance
@@ -37,6 +39,7 @@ cf set-env $backName JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}]'
 cf set-env $backName JBP_CONFIG_TOMCAT '[tomcat: {version: 7.0.+}]'
 cf bind-service $backName $sqlName
 cf bind-service $backName $messagingName
+cf set-env $backName EUREKA_SERVER $eurekaURI
 cf push -p dist/spring-nanotrader-asynch-services-1.0.1.BUILD-SNAPSHOT.war -m 1G -t 180 -d $domain -n $backName $backName
 
 date

@@ -52,9 +52,6 @@
 	<bean id="quoteService"
 			class="org.springframework.nanotrader.data.service.TestQuoteServiceImpl" />
 
-	<bean id="quoteRepositoryConnectionCreator"
-		class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
-	
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
@@ -63,13 +60,6 @@
 			<prop key="import_files"></prop>
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
-
-		<bean id="quoteRepository"
-			class="org.springframework.nanotrader.data.cloud.QuoteRepository"
-			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
-			<constructor-arg type="java.lang.String"
-				value="http://localhost:8080/quoteService" />
-		</bean>
 	</beans>
 
 </beans>
