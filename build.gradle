@@ -260,6 +260,7 @@ project('spring-nanotrader-services') {
 	description = 'Spring Nanotrader Services'
         
 	dependencies {
+		testCompile project(':spring-nanotrader-data').sourceSets.test.output
 		compile project(":spring-nanotrader-service-support")
 		compile project(":spring-nanotrader-chaos")
 		compile "org.springframework:spring-webmvc:$springVersion"

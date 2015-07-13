@@ -88,9 +88,6 @@
 		</property>
 	</bean>
 
-	<bean id="quoteService"
-		class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
-
  	<beans profile="default">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
@@ -102,8 +99,11 @@
 			<cloud:connection properties="sessionVariables=sql_mode='ANSI';characterEncoding=UTF-8;defaultTransactionIsolation=2" />
 			<cloud:pool pool-size="2" max-wait-time="200" />
 		</cloud:data-source>
+
+		<bean id="quoteService"
+			class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
 	</beans>
-	
+
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
@@ -113,15 +113,8 @@
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
 
-		<bean id="quoteRepositoryConnectionCreator"
-			class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
-
-		<bean id="quoteRepository"
-			class="org.springframework.nanotrader.data.cloud.QuoteRepository"
-			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
-			<constructor-arg type="java.lang.String"
-				value="http://localhost:8080/quoteService" />
-		</bean>
+		<bean id="quoteService"
+			class="org.springframework.nanotrader.data.service.TestQuoteServiceImpl" />
 	</beans>
 
 </beans>

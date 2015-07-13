@@ -21,11 +21,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.cloud.QuoteRepository;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile({"default", "cloud"})
 public class QuoteServiceImpl implements QuoteService {
 
 	@Autowired

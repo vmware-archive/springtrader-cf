@@ -50,7 +50,7 @@
 	</bean>
 
 	<bean id="quoteService"
-		class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
+			class="org.springframework.nanotrader.data.service.TestQuoteServiceImpl" />
 
 	<bean id="quoteRepositoryConnectionCreator"
 		class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>

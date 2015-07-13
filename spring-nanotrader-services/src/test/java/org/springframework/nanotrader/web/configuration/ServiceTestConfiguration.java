@@ -16,7 +16,6 @@
 package org.springframework.nanotrader.web.configuration;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -34,7 +33,6 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.nanotrader.data.cloud.QuoteRepository;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -45,7 +43,7 @@ import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.data.service.QuoteServiceImpl;
+import org.springframework.nanotrader.data.service.TestQuoteServiceImpl;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -54,8 +52,6 @@ import org.springframework.nanotrader.service.support.AdminServiceFacade;
 import org.springframework.nanotrader.service.support.AdminServiceFacadeImpl;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl;
-
-import org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator;
 
 /**
  *  ServiceTestConfiguration provides test objects and mock service layer for unit tests.
@@ -71,7 +67,7 @@ public class ServiceTestConfiguration  {
 	public static Integer HOLDING_ID = 100;
 	public static Integer ACCOUNT_ID = 500;
 	public static BigDecimal PURCHASE_PRICE =  BigDecimal.valueOf(50000);
-	public static String SYMBOL = "VMW";
+	public static String SYMBOL = "Foo0";
 	public static BigDecimal QUANTITY =  BigDecimal.valueOf(200);
 	
 	//Account profile constants
@@ -94,13 +90,12 @@ public class ServiceTestConfiguration  {
 	
 	//Quote constants
 	public static Integer QUOTE_ID = 95;
-	public static String COMPANY_NAME	=  "VMware";
+	public static String COMPANY_NAME	=  "Foo0";
 	public static BigDecimal HIGH	=   BigDecimal.valueOf(161.18);
 	public static BigDecimal OPEN	=  BigDecimal.valueOf(159.18);
 	public static BigDecimal VOLUME	= BigDecimal.valueOf(1.0);
 	public static BigDecimal CURRENT_PRICE	=  BigDecimal.valueOf(154.18);
 	public static Integer RANDOM_QUOTES_COUNT = 5;
-	public static String QUOTE_SERVICE_URI = "http://localhost:8080/quoteService";
 	
 	//Account constants
 	public static BigDecimal ACCOUNT_OPEN_BALANCE	=   BigDecimal.valueOf(55.02);
@@ -131,11 +126,6 @@ public class ServiceTestConfiguration  {
 	public static Long RESULT_COUNT  = new Long(1);
 	public static String DATE = new SimpleDateFormat("yyyy-MM-dd").format(new Date(1329759342904l));
 
-	@Bean
-	public QuoteRepository quoteRepository() {
-		return new QuoteRepositoryConnectionCreator().createRepository(QUOTE_SERVICE_URI);
-	}
-
 	@Bean 
 	public TradingService tradingService() {
 		TradingService tradingService = Mockito.mock(TradingService.class);
@@ -153,9 +143,6 @@ public class ServiceTestConfiguration  {
 		when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
 		when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class), any(Integer.class), any(Integer.class))).thenReturn(orders());
 		when(tradingService.findOrders(eq(ACCOUNT_ID), any(Integer.class), any(Integer.class))).thenReturn(orders());
-		when(tradingService.findQuoteBySymbol(eq(SYMBOL))).thenReturn(quote());
-		when(tradingService.findRandomQuotes(RANDOM_QUOTES_COUNT)).thenReturn(quotes());
-		when(tradingService.findQuotesBySymbols(anySetOf(String.class))).thenReturn(quotes());
 		when(tradingService.findAccount(eq(ACCOUNT_ID))).thenReturn(account());
 		when(tradingService.findAccountByProfile(any(Accountprofile.class))).thenReturn(account());
 		when(tradingService.findPortfolioSummary(eq(ACCOUNT_ID))).thenReturn(portfolioSummary());
@@ -170,7 +157,7 @@ public class ServiceTestConfiguration  {
 	
 	@Bean
 	public QuoteService quoteService() {
-		return new QuoteServiceImpl();
+		return new TestQuoteServiceImpl();
 	}
 	
 	@Bean
