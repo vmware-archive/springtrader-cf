@@ -184,6 +184,9 @@ project('spring-nanotrader-data') {
 		compile ("org.springframework.cloud:spring-cloud-starter-eureka:1.0.0.RELEASE") {
 			exclude module: 'spring-cloud-starter'
 		}
+		compile ("org.springframework.cloud:spring-cloud-starter-hystrix:1.0.3.RELEASE") {
+			exclude module: 'spring-cloud-starter'
+		}
 
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.aspectj:aspectjrt:$aspectjVersion"
