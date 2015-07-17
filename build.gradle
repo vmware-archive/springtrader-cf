@@ -206,6 +206,9 @@ project('spring-nanotrader-data') {
 		compile "mysql:mysql-connector-java:5.1.13"
 		compile "com.netflix.feign:feign-core:6.1.3"
 		compile "com.netflix.feign:feign-jackson:6.1.3"
+		compile "com.netflix.feign:feign-gson:8.5.0"
+		compile "com.google.code.gson:gson:2.3.1"
+		compile "com.jayway.jsonpath:json-path:0.9.1"
 	}
 }
 

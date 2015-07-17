@@ -22,7 +22,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.nanotrader.data.cloud.QuoteRepository;
+import org.springframework.nanotrader.data.cloud.DBQuoteRepository;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
 
@@ -31,50 +31,50 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @Service
 @Profile({"default", "cloud"})
-public class QuoteServiceImpl implements QuoteService {
+public class DBQuoteService implements QuoteService {
 
 	@Autowired
-	QuoteRepository quoteRepository;
+	DBQuoteRepository dbQuoteRepository;
 
 	@Autowired
 	DiscoveryClient discoveryClient;
 
-	private final QuoteService fallBackQuoteService = new FallBackQuoteServiceImpl();
+	private final QuoteService fallBackQuoteService = new FallBackQuoteService();
 
 	@HystrixCommand(fallbackMethod = "fallBackCount")
 	public long countAllQuotes() {
-		return quoteRepository.countAllQuotes();
+		return dbQuoteRepository.countAllQuotes();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackFindQuote")
 	public Quote findQuote(Integer id) {
-		return quoteRepository.findQuote(id);
+		return dbQuoteRepository.findQuote(id);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackAllQuotes")
 	public List<Quote> findAllQuotes() {
-		return quoteRepository.findAll();
+		return dbQuoteRepository.findAll();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackQuoteEntries")
 	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-		return quoteRepository.findQuoteEntries(firstResult / maxResults,
+		return dbQuoteRepository.findQuoteEntries(firstResult / maxResults,
 				maxResults);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackGainers")
 	public List<Quote> topGainers() {
-		return quoteRepository.topGainers();
+		return dbQuoteRepository.topGainers();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackLosers")
 	public List<Quote> topLosers() {
-		return quoteRepository.topLosers();
+		return dbQuoteRepository.topLosers();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackBySymbol")
 	public Quote findBySymbol(String symbol) {
-		return quoteRepository.findBySymbol(symbol);
+		return dbQuoteRepository.findBySymbol(symbol);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackBySymbols")
@@ -82,7 +82,7 @@ public class QuoteServiceImpl implements QuoteService {
 		if(symbols == null || symbols.size() < 1) {
 			return new ArrayList<Quote>();
 		}
-		return quoteRepository.findBySymbolIn(symbols);
+		return dbQuoteRepository.findBySymbolIn(symbols);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackRandom")
@@ -92,17 +92,17 @@ public class QuoteServiceImpl implements QuoteService {
 
 	@HystrixCommand(fallbackMethod = "fallBackSave")
 	public Quote saveQuote(Quote quote) {
-		return quoteRepository.save(quote);
+		return dbQuoteRepository.save(quote);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackMarketSummary")
-	public Map<String, Long> marketSummary() {
-		return quoteRepository.marketSummary();
+	public Map<String, Float> marketSummary() {
+		return dbQuoteRepository.marketSummary();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackDelete")
 	public void deleteQuote(Quote quote) {
-		quoteRepository.delete(quote);
+		dbQuoteRepository.delete(quote);
 	}
 
 	public long fallBackCount() {
@@ -145,7 +145,7 @@ public class QuoteServiceImpl implements QuoteService {
 		return fallBackQuoteService.saveQuote(quote);
 	}
 
-	public Map<String, Long> fallBackMarketSummary() {
+	public Map<String, Float> fallBackMarketSummary() {
 		return fallBackQuoteService.marketSummary();
 	}
 

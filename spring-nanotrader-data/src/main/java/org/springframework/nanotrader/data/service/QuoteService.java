@@ -39,7 +39,7 @@ public interface QuoteService {
 
 	public Quote saveQuote(Quote quote);
 
-	public Map<String, Long> marketSummary();
+	public Map<String, Float> marketSummary();
 
 	public List<Quote> topGainers();
 

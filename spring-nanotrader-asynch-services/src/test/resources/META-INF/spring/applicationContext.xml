@@ -50,7 +50,7 @@
 	</bean>
 
 	<bean id="quoteService"
-			class="org.springframework.nanotrader.data.service.TestQuoteServiceImpl" />
+			class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">

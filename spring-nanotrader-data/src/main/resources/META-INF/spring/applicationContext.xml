@@ -101,7 +101,7 @@
 		</cloud:data-source>
 
 		<bean id="quoteService"
-			class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
+			class="org.springframework.nanotrader.data.service.DBQuoteService" />
 	</beans>
 
 	<beans profile="test">
@@ -114,7 +114,7 @@
 		<jdbc:embedded-database id="dataSource" type="H2" />
 
 		<bean id="quoteService"
-			class="org.springframework.nanotrader.data.service.TestQuoteServiceImpl" />
+			class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 	</beans>
 
 </beans>

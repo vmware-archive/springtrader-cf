@@ -42,8 +42,8 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.FallBackQuoteService;
 import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.data.service.TestQuoteServiceImpl;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -157,7 +157,7 @@ public class ServiceTestConfiguration  {
 	
 	@Bean
 	public QuoteService quoteService() {
-		return new TestQuoteServiceImpl();
+		return new FallBackQuoteService();
 	}
 	
 	@Bean

@@ -54,10 +54,7 @@
 	</bean>
 
 	<bean id="quoteService"
-		class="org.springframework.nanotrader.data.service.TestQuoteServiceImpl" />
-
-	<bean id="quoteRepositoryConnectionCreator"
-		class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
+		class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">

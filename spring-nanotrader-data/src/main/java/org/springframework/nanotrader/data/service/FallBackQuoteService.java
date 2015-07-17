@@ -11,7 +11,7 @@ import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TestQuoteServiceImpl implements QuoteService {
+public class FallBackQuoteService implements QuoteService {
 
 	public long countAllQuotes() {
 		return 42;
@@ -61,13 +61,13 @@ public class TestQuoteServiceImpl implements QuoteService {
 		return quote;
 	}
 
-	public Map<String, Long> marketSummary() {
-		Map<String, Long> m = new HashMap<String, Long>();
+	public Map<String, Float> marketSummary() {
+		Map<String, Float> m = new HashMap<String, Float>();
 
-		m.put("tradeStockIndexAverage", new Long(123));
-		m.put("tradeStockIndexOpenAverage", new Long(234));
-		m.put("tradeStockIndexVolume", new Long(345));
-		m.put("change", new Long(456));
+		m.put("tradeStockIndexAverage", new Float(123.45));
+		m.put("tradeStockIndexOpenAverage", new Float(234.56));
+		m.put("tradeStockIndexVolume", new Float(345.67));
+		m.put("change", new Float(456.78));
 
 		return m;
 	}

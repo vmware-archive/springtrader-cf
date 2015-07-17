@@ -12,6 +12,11 @@ import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.DiscoveryManager;
 import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
 
+import feign.Feign;
+import feign.gson.GsonEncoder;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
+
 @EnableEurekaClient
 @EnableAspectJAutoProxy
 @Configuration
@@ -19,11 +24,23 @@ import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
 public class CloudConfiguration {
 
 	@Bean
-	QuoteRepository quoteRepository() {
-		String url = discoveryClient().getNextServerFromEureka("quote-service",
-				false).getHomePageUrl();
-		return new QuoteRepositoryConnectionCreator().createRepository(url
-				+ "quoteService");
+	DBQuoteRepository quoteRepository() {
+		String url = discoveryClient().getNextServerFromEureka(
+				"db-quote-service", false).getHomePageUrl();
+
+		return Feign.builder().encoder(new JacksonEncoder())
+				.decoder(new JacksonDecoder())
+				.target(DBQuoteRepository.class, url + "quoteService");
+	}
+
+	@Bean
+	RealTimeQuoteRepository realTimeQuoteRepository() {
+		String url = discoveryClient().getNextServerFromEureka(
+				"real-time-quote-service", false).getHomePageUrl();
+
+		return Feign.builder().encoder(new GsonEncoder())
+				.decoder(new RealTimeQuoteDecoder())
+				.target(RealTimeQuoteRepository.class, url + "quoteService");
 	}
 
 	@Bean
