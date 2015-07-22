@@ -29,12 +29,15 @@ import org.springframework.stereotype.Service;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
+import feign.Feign;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
+
 @Service
-@Profile({"default", "cloud"})
+@Profile({ "default", "cloud" })
 public class DBQuoteService implements QuoteService {
 
-	@Autowired
-	DBQuoteRepository dbQuoteRepository;
+	private DBQuoteRepository dbQuoteRepository;
 
 	@Autowired
 	DiscoveryClient discoveryClient;
@@ -43,46 +46,46 @@ public class DBQuoteService implements QuoteService {
 
 	@HystrixCommand(fallbackMethod = "fallBackCount")
 	public long countAllQuotes() {
-		return dbQuoteRepository.countAllQuotes();
+		return quoteRepository().countAllQuotes();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackFindQuote")
 	public Quote findQuote(Integer id) {
-		return dbQuoteRepository.findQuote(id);
+		return quoteRepository().findQuote(id);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackAllQuotes")
 	public List<Quote> findAllQuotes() {
-		return dbQuoteRepository.findAll();
+		return quoteRepository().findAll();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackQuoteEntries")
 	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-		return dbQuoteRepository.findQuoteEntries(firstResult / maxResults,
+		return quoteRepository().findQuoteEntries(firstResult / maxResults,
 				maxResults);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackGainers")
 	public List<Quote> topGainers() {
-		return dbQuoteRepository.topGainers();
+		return quoteRepository().topGainers();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackLosers")
 	public List<Quote> topLosers() {
-		return dbQuoteRepository.topLosers();
+		return quoteRepository().topLosers();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackBySymbol")
 	public Quote findBySymbol(String symbol) {
-		return dbQuoteRepository.findBySymbol(symbol);
+		return quoteRepository().findBySymbol(symbol);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackBySymbols")
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
-		if(symbols == null || symbols.size() < 1) {
+		if (symbols == null || symbols.size() < 1) {
 			return new ArrayList<Quote>();
 		}
-		return dbQuoteRepository.findBySymbolIn(symbols);
+		return quoteRepository().findBySymbolIn(symbols);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackRandom")
@@ -92,17 +95,17 @@ public class DBQuoteService implements QuoteService {
 
 	@HystrixCommand(fallbackMethod = "fallBackSave")
 	public Quote saveQuote(Quote quote) {
-		return dbQuoteRepository.save(quote);
+		return quoteRepository().save(quote);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackMarketSummary")
 	public Map<String, Float> marketSummary() {
-		return dbQuoteRepository.marketSummary();
+		return quoteRepository().marketSummary();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackDelete")
 	public void deleteQuote(Quote quote) {
-		dbQuoteRepository.delete(quote);
+		quoteRepository().delete(quote);
 	}
 
 	public long fallBackCount() {
@@ -151,5 +154,18 @@ public class DBQuoteService implements QuoteService {
 
 	public void fallBackDelete(Quote quote) {
 		fallBackQuoteService.deleteQuote(quote);
+	}
+
+	private DBQuoteRepository quoteRepository() {
+		if (this.dbQuoteRepository == null) {
+			String url = discoveryClient.getNextServerFromEureka(
+					"db-quote-service", false).getHomePageUrl();
+
+			this.dbQuoteRepository = Feign.builder()
+					.encoder(new JacksonEncoder())
+					.decoder(new JacksonDecoder())
+					.target(DBQuoteRepository.class, url + "quoteService");
+		}
+		return this.dbQuoteRepository;
 	}
 }

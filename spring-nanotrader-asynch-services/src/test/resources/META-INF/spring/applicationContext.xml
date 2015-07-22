@@ -49,7 +49,7 @@
 		</property>
 	</bean>
 
-	<bean id="quoteService"
+	<bean id="rtQuoteService"
 			class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 
 	<beans profile="test">

@@ -16,15 +16,17 @@
 package org.springframework.nanotrader.data.domain.test;
 
 import java.math.BigDecimal;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Component;
@@ -34,11 +36,10 @@ import org.springframework.stereotype.Component;
 @Configurable
 public class QuoteDataOnDemand {
 
-	private Random rnd = new SecureRandom();
-
 	private List<Quote> data;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
     QuoteService quoteService;
 
 	public Quote getNewTransientQuote(int index) {
@@ -113,23 +114,12 @@ public class QuoteDataOnDemand {
     }
 
 	public Quote getSpecificQuote(int index) {
-        init();
-        if (index < 0) {
-            index = 0;
-        }
-        if (index > (data.size() - 1)) {
-            index = data.size() - 1;
-        }
-        Quote obj = data.get(index);
-        Integer id = obj.getQuoteid();
-        return quoteService.findQuote(id);
+        return quoteService.findBySymbol("GOOG");
     }
 
 	public Quote getRandomQuote() {
         init();
-        Quote obj = data.get(rnd.nextInt(data.size()));
-        Integer id = obj.getQuoteid();
-        return quoteService.findQuote(id);
+        return quoteService.findBySymbol("GOOG");
     }
 
 	public boolean modifyQuote(Quote obj) {

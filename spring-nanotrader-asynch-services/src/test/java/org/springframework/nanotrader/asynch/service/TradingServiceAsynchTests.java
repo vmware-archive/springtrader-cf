@@ -21,6 +21,7 @@ import org.dozer.Mapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.QuoteService;
@@ -53,6 +54,7 @@ public class TradingServiceAsynchTests {
 	AccountDataOnDemand accountDataOnDemand;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
 	QuoteService quoteService;
 
 	@Autowired

@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.service.QuoteService;
@@ -48,6 +49,7 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 	private static Logger log = LoggerFactory.getLogger(AdminServiceFacadeImpl.class);
 
 	@Resource
+	@Qualifier( "rtQuoteService")
 	private QuoteService quoteService;
 	
 	@Resource

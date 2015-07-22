@@ -28,6 +28,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.nanotrader.data.service.QuoteService;
@@ -82,6 +83,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     private TradingService tradingService;
     
     @Autowired
+    @Qualifier( "rtQuoteService")
     QuoteService quoteService;
 
     @Resource
@@ -294,7 +296,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         if (order == null) {
             throw new NoRecordsFoundException();
         }
-        org.springframework.nanotrader.data.domain.Quote quote = quoteService.findQuote(order.getQuoteid());
+        org.springframework.nanotrader.data.domain.Quote quote = quoteService.findBySymbol(order.getQuoteid());
         Order responseOrder = new Order();
         Quote responseQuote = new Quote();
         mapper.map(order, responseOrder, ORDER_MAPPING);
@@ -334,7 +336,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
             for(org.springframework.nanotrader.data.domain.Order o: orders) {
                 Order order = new Order();
                 Quote quote = new Quote();
-                org.springframework.nanotrader.data.domain.Quote q = quoteService.findQuote(o.getQuoteid());
+                org.springframework.nanotrader.data.domain.Quote q = quoteService.findBySymbol(o.getQuoteid());
                 mapper.map(q, quote, QUOTE_MAPPING);
                 mapper.map(o, order, ORDER_MAPPING);
                 order.setQuote(quote);

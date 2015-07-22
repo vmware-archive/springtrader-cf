@@ -55,9 +55,6 @@ public class FallBackQuoteService implements QuoteService {
 	}
 
 	public Quote saveQuote(Quote quote) {
-		if (quote.getQuoteid() == null) {
-			quote.setQuoteid(new Integer(0));
-		}
 		return quote;
 	}
 
@@ -78,7 +75,6 @@ public class FallBackQuoteService implements QuoteService {
 
 	private Quote fakeQuote(Integer id) {
 		Quote q = new Quote();
-		q.setQuoteid(id);
 		q.setChange1(new BigDecimal(id));
 		q.setCompanyname("Foo" + id);
 		q.setHigh(new BigDecimal(id));

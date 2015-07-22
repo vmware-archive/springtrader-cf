@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Repository;
@@ -39,7 +40,8 @@ public class MarketSummaryRepositoryImpl implements MarketSummaryRepository {
 		this.em = em;
 	}
 	
-	@Autowired 
+	@Autowired
+	@Qualifier( "rtQuoteService")
 	QuoteService quoteService;
 
 	public MarketSummary findMarketSummary() {

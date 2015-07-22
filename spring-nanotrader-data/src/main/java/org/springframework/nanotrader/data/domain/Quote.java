@@ -25,14 +25,16 @@ public class Quote implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private Integer quoteid;
+	private String quoteid = "";
 
-	public Integer getQuoteid() {
+	public String getQuoteid() {
 		return this.quoteid;
 	}
 
-	public void setQuoteid(Integer id) {
-		this.quoteid = id;
+	public void setQuoteid(String s) {
+		if(s != null) {
+			this.quoteid = s;
+		}
 	}
 
 	private BigDecimal low;
@@ -47,7 +49,7 @@ public class Quote implements Serializable {
 
 	private String companyname;
 
-	private String symbol;
+	private String symbol = "";
 
 	private BigDecimal change1;
 
@@ -103,8 +105,11 @@ public class Quote implements Serializable {
 		return symbol;
 	}
 
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
+	public void setSymbol(String s) {
+		if(s != null) {
+			this.symbol = s;
+			setQuoteid(s);
+		}
 	}
 
 	public BigDecimal getChange1() {

@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.HoldingAggregate;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
@@ -42,6 +43,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 	private EntityManager em;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
 	QuoteService quoteService;
 
 	@Autowired

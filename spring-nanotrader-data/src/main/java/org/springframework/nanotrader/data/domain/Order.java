@@ -85,8 +85,9 @@ public class Order implements Serializable {
     @DateTimeFormat(style = "M-")
     private Date opendate;
 	
-	@Column(name = "quoteid")
-    private Integer quoteid;
+	@Column(name = "quoteid", length = 250)
+	@NotNull
+    private String quoteid = "";
 
 
 
@@ -164,12 +165,14 @@ public class Order implements Serializable {
 
 
 
-	public Integer getQuoteid() {
+	public String getQuoteid() {
 		return quoteid;
 	}
 
-	public void setQuoteid(Integer i) {
-		this.quoteid = i;
+	public void setQuoteid(String s) {
+		if(s != null) {
+			this.quoteid = s;
+		}
 	}
 
 	@Override

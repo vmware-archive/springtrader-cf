@@ -100,8 +100,11 @@
 			<cloud:pool pool-size="2" max-wait-time="200" />
 		</cloud:data-source>
 
-		<bean id="quoteService"
+		<bean id="dbQuoteService"
 			class="org.springframework.nanotrader.data.service.DBQuoteService" />
+
+		<bean id="rtQuoteService"
+			class="org.springframework.nanotrader.data.service.RealTimeQuoteService" />
 	</beans>
 
 	<beans profile="test">
@@ -113,7 +116,7 @@
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
 
-		<bean id="quoteService"
+		<bean id="rtQuoteService"
 			class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 	</beans>
 

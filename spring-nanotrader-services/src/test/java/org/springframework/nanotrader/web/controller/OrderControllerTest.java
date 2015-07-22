@@ -128,7 +128,7 @@ public class OrderControllerTest extends AbstractSecureControllerTest {
 		ObjectMapper mapper = new ObjectMapper();
 		Order order = mapper.readValue(new ClassPathResource("create-order-sell.json").getFile(), Order.class);
 		Quote quote = new Quote();
-		quote.setQuoteid(new Integer(42));
+		quote.setSymbol("GOOG");
 		order.setQuote(quote);
 		byte[] jsonRequest = mapper.writeValueAsBytes(order);
 		mockMvc.perform(

@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -79,6 +80,7 @@ public class TradingServiceImpl implements TradingService {
 	private AccountRepository accountRepository;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
 	private QuoteService quoteService;
 
 	@Autowired
@@ -276,7 +278,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-		Quote quote = quoteService.findQuote(order.getQuoteid());
+		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
@@ -334,7 +336,7 @@ public class TradingServiceImpl implements TradingService {
 
 	// TO DO: refactor this
 	public Order completeOrder(Order order) {
-		Quote quote = quoteService.findQuote(order.getQuoteid());
+		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
@@ -364,7 +366,7 @@ public class TradingServiceImpl implements TradingService {
 	// TODO: Need to clean this up
 	private void updateAccount(Order order) {
 		// update account balance
-		Quote quote = quoteService.findQuote(order.getQuoteid());
+		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		Account account = order.getAccountAccountid();
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
@@ -396,8 +398,8 @@ public class TradingServiceImpl implements TradingService {
 			Quote quote = quoteService.findBySymbol(symbol);
 			Quote quoteToPublish = new Quote();
 			quoteToPublish.setCompanyname(quote.getCompanyname());
-			quoteToPublish.setQuoteid(quote.getQuoteid());
 			quoteToPublish.setSymbol(quote.getSymbol());
+			quoteToPublish.setQuoteid(quote.getQuoteid());
 			quoteToPublish.setOpen1(quote.getOpen1());
 			BigDecimal oldPrice = quote.getPrice();
 			if (quote.getPrice().compareTo(FinancialUtils.PENNY_STOCK_PRICE) <= 0) {

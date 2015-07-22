@@ -155,7 +155,7 @@ public class ServiceTestConfiguration  {
 		return tradingService;
 	}
 	
-	@Bean
+	@Bean(name="rtQuoteService")
 	public QuoteService quoteService() {
 		return new FallBackQuoteService();
 	}
@@ -239,7 +239,7 @@ public class ServiceTestConfiguration  {
 	}
 
 	public Quote quote() { 
-		return quoteService().findBySymbol("VMW");
+		return quoteService().findBySymbol("Foo0");
 	}
 	
 	public List<Quote> quotes() { 

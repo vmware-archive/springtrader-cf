@@ -73,8 +73,6 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 		q.setSymbol(ctx.read("$.Symbol").toString());
 		q.setVolume(getBigDecimal(ctx, "$.Volume"));
 
-		q.setQuoteid(q.hashCode());
-
 		return q;
 	}
 
@@ -93,8 +91,6 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 			q.setSymbol(ctx.read("$..[" + i + "].Symbol").toString());
 			q.setVolume(getBigDecimal(ctx, "$..[" + i + "].Volume"));
 
-			q.setQuoteid(q.hashCode());
-
 			quotes.add(q);
 		}
 
@@ -106,13 +102,17 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 			return "()";
 		}
 
+		Object[] o = symbols.toArray();
+
 		StringBuffer sb = new StringBuffer("(");
-		for (String s : symbols) {
+		for (int i = 0; i < o.length; i++) {
 			sb.append("\'");
-			sb.append(s);
-			sb.append("\',");
+			sb.append(o[i]);
+			sb.append("\'");
+			if (i < o.length - 1) {
+				sb.append(",");
+			}
 		}
-		sb.deleteCharAt(sb.length() - 1);
 		sb.append(")");
 		return sb.toString();
 	}
