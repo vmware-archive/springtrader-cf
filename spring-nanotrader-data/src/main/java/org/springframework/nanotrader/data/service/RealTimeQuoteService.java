@@ -26,7 +26,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.cloud.RealTimeQuoteDecoder;
 import org.springframework.nanotrader.data.cloud.RealTimeQuoteRepository;
+import org.springframework.nanotrader.data.cloud.ScheduledUpdatable;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.netflix.discovery.DiscoveryClient;
@@ -38,7 +40,7 @@ import feign.gson.GsonEncoder;
 
 @Service
 @Profile({ "default", "cloud" })
-public class RealTimeQuoteService implements QuoteService {
+public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 
 	private static final Logger LOG = Logger
 			.getLogger(RealTimeQuoteService.class);
@@ -58,12 +60,19 @@ public class RealTimeQuoteService implements QuoteService {
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackFindQuote")
-	public Quote findQuote(Integer id) {
+	public Quote findQuote(String id) {
 		return realTimeQuoteRepository().findQuote(id);
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackAllQuotes")
 	public List<Quote> findAllQuotes() {
+		return findAllQuotesDirect();
+	}
+
+	/**
+	 * call this method directly to bypass fallback.
+	 */
+	private List<Quote> findAllQuotesDirect() {
 		return realTimeQuoteRepository().findAll();
 	}
 
@@ -157,7 +166,7 @@ public class RealTimeQuoteService implements QuoteService {
 		return dbQuoteService.countAllQuotes();
 	}
 
-	public Quote fallBackFindQuote(Integer id) {
+	public Quote fallBackFindQuote(String id) {
 		return dbQuoteService.findQuote(id);
 	}
 
@@ -213,5 +222,18 @@ public class RealTimeQuoteService implements QuoteService {
 					.target(RealTimeQuoteRepository.class, url + "quoteService");
 		}
 		return this.realTimeQuoteRepository;
+	}
+
+	@Scheduled(fixedDelay = 6000)
+	public void updateValues() {
+		LOG.info("Updating fallback service quotes.");
+		try {
+			List<Quote> all = findAllQuotesDirect();
+			for (Quote quote : all) {
+				dbQuoteService.saveQuote(quote);
+			}
+		} catch (Throwable t) {
+			LOG.error("Error updating fallback service quotes.", t);
+		}
 	}
 }

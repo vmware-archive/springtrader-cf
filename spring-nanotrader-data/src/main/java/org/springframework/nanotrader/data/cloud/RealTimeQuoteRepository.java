@@ -19,7 +19,7 @@ public interface RealTimeQuoteRepository {
 	public List<Quote> findBySymbolIn(@Param(value = "symbols") String symbols);
 
 	@RequestLine("GET /findById/{id}")
-	public Quote findQuote(@Param(value = "id") Integer id);
+	public Quote findQuote(@Param(value = "id") String id);
 
 	@RequestLine("GET /findAll")
 	public List<Quote> findAll();

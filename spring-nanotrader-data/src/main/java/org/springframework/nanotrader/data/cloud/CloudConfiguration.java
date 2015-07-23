@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.netflix.appinfo.MyDataCenterInstanceConfig;
 import com.netflix.discovery.DefaultEurekaClientConfig;
@@ -14,6 +15,8 @@ import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
 
 @EnableEurekaClient
 @EnableAspectJAutoProxy
+//@EnableAsync
+@EnableScheduling
 @Configuration
 @Profile({ "cloud", "default" })
 public class CloudConfiguration {

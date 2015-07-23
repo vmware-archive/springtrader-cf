@@ -25,7 +25,7 @@ public interface QuoteService {
 
 	public long countAllQuotes();
 
-	public Quote findQuote(Integer id);
+	public Quote findQuote(String id);
 
 	public List<Quote> findAllQuotes();
 

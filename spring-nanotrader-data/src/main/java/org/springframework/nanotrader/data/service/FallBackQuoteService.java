@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.nanotrader.data.domain.Quote;
@@ -13,11 +14,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class FallBackQuoteService implements QuoteService {
 
+	private static final Random RANDOM = new Random();
+
 	public long countAllQuotes() {
 		return 42;
 	}
 
-	public Quote findQuote(Integer id) {
+	public Quote findQuote(String id) {
 		return fakeQuote(id);
 	}
 
@@ -38,7 +41,7 @@ public class FallBackQuoteService implements QuoteService {
 	}
 
 	public Quote findBySymbol(String symbol) {
-		Quote q = fakeQuote(0);
+		Quote q = fakeQuote(symbol);
 		q.setSymbol(symbol);
 		return q;
 	}
@@ -73,16 +76,18 @@ public class FallBackQuoteService implements QuoteService {
 		return;
 	}
 
-	private Quote fakeQuote(Integer id) {
+	private Quote fakeQuote(String id) {
+		int i = RANDOM.nextInt(100);
+
 		Quote q = new Quote();
-		q.setChange1(new BigDecimal(id));
-		q.setCompanyname("Foo" + id);
-		q.setHigh(new BigDecimal(id));
-		q.setLow(new BigDecimal(id));
-		q.setOpen1(new BigDecimal(id));
-		q.setPrice(new BigDecimal(id));
-		q.setSymbol(q.getCompanyname());
-		q.setVolume(new BigDecimal(id));
+		q.setCompanyname(id);
+		q.setChange1(new BigDecimal(RANDOM.nextInt(25)));
+		q.setHigh(q.getChange1().add(new BigDecimal(i)));
+		q.setLow(new BigDecimal(i - 15));
+		q.setOpen1(new BigDecimal(i));
+		q.setPrice(new BigDecimal(i + 5));
+		q.setSymbol(id);
+		q.setVolume(new BigDecimal(id.hashCode()));
 
 		return q;
 	}
@@ -90,7 +95,7 @@ public class FallBackQuoteService implements QuoteService {
 	private List<Quote> fakeQuotes(long size) {
 		List<Quote> q = new ArrayList<Quote>();
 		for (int i = 0; i < size; i++) {
-			q.add(fakeQuote(i));
+			q.add(fakeQuote("Foo" + i));
 		}
 		return q;
 	}

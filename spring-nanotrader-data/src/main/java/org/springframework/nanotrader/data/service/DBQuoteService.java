@@ -30,8 +30,8 @@ import com.netflix.discovery.DiscoveryClient;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import feign.Feign;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
+import feign.gson.GsonDecoder;
+import feign.gson.GsonEncoder;
 
 @Service
 @Profile({ "default", "cloud" })
@@ -50,7 +50,7 @@ public class DBQuoteService implements QuoteService {
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackFindQuote")
-	public Quote findQuote(Integer id) {
+	public Quote findQuote(String id) {
 		return quoteRepository().findQuote(id);
 	}
 
@@ -112,7 +112,7 @@ public class DBQuoteService implements QuoteService {
 		return fallBackQuoteService.countAllQuotes();
 	}
 
-	public Quote fallBackFindQuote(Integer id) {
+	public Quote fallBackFindQuote(String id) {
 		return fallBackQuoteService.findQuote(id);
 	}
 
@@ -162,8 +162,8 @@ public class DBQuoteService implements QuoteService {
 					"db-quote-service", false).getHomePageUrl();
 
 			this.dbQuoteRepository = Feign.builder()
-					.encoder(new JacksonEncoder())
-					.decoder(new JacksonDecoder())
+					.encoder(new GsonEncoder())
+					.decoder(new GsonDecoder())
 					.target(DBQuoteRepository.class, url + "quoteService");
 		}
 		return this.dbQuoteRepository;

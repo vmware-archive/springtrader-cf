@@ -72,11 +72,12 @@
     </bean>
     
     <!--  Run reaper every 1 sec -->
-    <task:scheduled-tasks scheduler="scheduler" >
+    <task:scheduled-tasks scheduler="taskScheduler" >
         <task:scheduled ref="reaper"  method="run" fixed-rate="1000"/>
+        <!-- task:scheduled ref="realTimeQuoteService" method="updateValues" fixed-delay="5000"/-->
     </task:scheduled-tasks>
 
-    <task:scheduler id="scheduler" pool-size="10"/>
+    <!-- task:scheduler id="scheduler" pool-size="10"/-->
     
 	<int:service-activator input-channel="toTradingServiceQuoteChannel"
 		output-channel="nullChannel" ref="tradingServiceImpl" method="updateQuote">

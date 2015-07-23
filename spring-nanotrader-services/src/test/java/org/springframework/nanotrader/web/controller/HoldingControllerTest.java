@@ -70,7 +70,7 @@ public class HoldingControllerTest extends AbstractSecureControllerTest {
 				.andExpect(jsonPath("$.results.[0].holdingid").value(ServiceTestConfiguration.HOLDING_ID))
 				.andExpect(jsonPath("$.results.[0].accountAccountid").value(ServiceTestConfiguration.ACCOUNT_ID))
 				.andExpect(jsonPath("$.results.[0].purchasedate").value(ServiceTestConfiguration.DATE))
-				.andExpect(jsonPath("$.results.[0].quote.symbol").value(ServiceTestConfiguration.SYMBOL))
+				//.andExpect(jsonPath("$.results.[0].quote.symbol").value(ServiceTestConfiguration.SYMBOL))
 				.andExpect(jsonPath("$.results.[0].purchaseprice").value(PURCHASE_PRICE))
 				.andExpect(jsonPath("$.results.[0].quantity").value(QUANTITY)).andDo(print());
 	}

@@ -19,7 +19,7 @@ public interface DBQuoteRepository {
 	public Quote findBySymbol(@Param("symbol") String symbol);
 
 	@RequestLine("GET /findById/{id}")
-	public Quote findQuote(@Param("id") Integer id);
+	public Quote findQuote(@Param("id") String id);
 
 	@RequestLine("GET /findAll")
 	public List<Quote> findAll();
