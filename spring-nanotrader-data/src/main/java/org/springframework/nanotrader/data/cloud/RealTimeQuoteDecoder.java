@@ -50,6 +50,14 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 		}
 		return NumberUtils.parseNumber(o.toString(), BigDecimal.class);
 	}
+	
+	private String getString(ReadContext ctx, String path) {
+		Object o = ctx.read(path);
+		if (o == null) {
+			return "";
+		}
+		return o.toString();
+	}
 
 	private Object processBody(Response.Body body) throws IOException {
 		ReadContext ctx = JsonPath.parse(body.asInputStream());
@@ -65,12 +73,12 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 	private Quote quoteFromJson(ReadContext ctx) {
 		Quote q = new Quote();
 		q.setChange1(getBigDecimal(ctx, "$.Change"));
-		q.setCompanyname(ctx.read("$.Name").toString());
+		q.setCompanyname(getString(ctx, "$.Name"));
 		q.setHigh(getBigDecimal(ctx, "$.DaysHigh"));
 		q.setLow(getBigDecimal(ctx, "$.DaysLow"));
 		q.setOpen1(getBigDecimal(ctx, "$.PreviousClose"));
 		q.setPrice(getBigDecimal(ctx, "$.Price"));
-		q.setSymbol(ctx.read("$.Symbol").toString());
+		q.setSymbol(getString(ctx, "$.Symbol"));
 		q.setVolume(getBigDecimal(ctx, "$.Volume"));
 
 		return q;
@@ -83,12 +91,12 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 		for (int i = 0; i < qs.size(); i++) {
 			Quote q = new Quote();
 			q.setChange1(getBigDecimal(ctx, "$..[" + i + "].Change"));
-			q.setCompanyname(ctx.read("$..[" + i + "].Name").toString());
+			q.setCompanyname(getString(ctx, "$..[" + i + "].Name"));
 			q.setHigh(getBigDecimal(ctx, "$..[" + i + "].DaysHigh"));
 			q.setLow(getBigDecimal(ctx, "$..[" + i + "].DaysLow"));
 			q.setOpen1(getBigDecimal(ctx, "$..[" + i + "].PreviousClose"));
 			q.setPrice(getBigDecimal(ctx, "$..[" + i + "].Price"));
-			q.setSymbol(ctx.read("$..[" + i + "].Symbol").toString());
+			q.setSymbol(getString(ctx,"$..[" + i + "].Symbol"));
 			q.setVolume(getBigDecimal(ctx, "$..[" + i + "].Volume"));
 
 			quotes.add(q);

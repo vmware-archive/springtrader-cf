@@ -28,7 +28,6 @@ import org.springframework.nanotrader.data.cloud.RealTimeQuoteDecoder;
 import org.springframework.nanotrader.data.cloud.RealTimeQuoteRepository;
 import org.springframework.nanotrader.data.cloud.ScheduledUpdatable;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.netflix.discovery.DiscoveryClient;
@@ -224,7 +223,7 @@ public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 		return this.realTimeQuoteRepository;
 	}
 
-	@Scheduled(fixedDelay = 6000)
+	//@Scheduled(fixedDelay = 6000)
 	public void updateValues() {
 		LOG.info("Updating fallback service quotes.");
 		try {
