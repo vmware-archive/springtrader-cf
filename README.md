@@ -1,4 +1,4 @@
-SpringTrader on Cloud Foundry
+SpringTrader Part 1 (complete)
 =============================
 
 This repository holds the SpringTrader application, slightly modified from the [original](https://github.com/vFabric/springtrader), so that the application component war files are deployed to Cloud Foundry with bindings to database and AMQP services.  The links below point to the original Application Overview, which, at a high level, continues to apply to this new version, the original Getting Started Guide and a new Getting Started Guide.  Comparing the old and new versions of this document is telling - the former requires the installation of numerous components including an application server, database, AMQP messaging server and more. For deployment to Cloud Foundry, the PaaS provides all of these things and the deployment involves creation of database and AMQP instances (no SW installation required) and deployment of the war files (again, no SW installation); all of this is accomplished with only a few commands. 
@@ -7,8 +7,6 @@ This repository holds the SpringTrader application, slightly modified from the [
 * See (original) [Application Overview](https://github.com/vFabric/springtrader/wiki/Application-Overview)
 * See (original) [Getting Started Guide](https://github.com/vFabric/springtrader/wiki/Getting-Started-Guide)
 
-Known Limitations
-=================
 
 The following current limitations will be eliminated shortly (pull requests welcome!!):
 
