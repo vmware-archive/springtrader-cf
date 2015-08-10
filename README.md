@@ -29,7 +29,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 24.75-b04, mixed mode)
 ```
 If you still have the project set up as per the baseline README, go to that directory.
 
-If not refer to the instructions in the baseline branch to get you started ([here](https://github.com/cf-platform-eng/springtrader-cf/blob/baseline/README.md)).
+If not refer to the instructions in the baseline branch to get you started [here](https://github.com/cf-platform-eng/springtrader-cf/blob/baseline/README.md).
 
 check out the part1 branch:
 ```bash
@@ -42,7 +42,7 @@ $ ./gradlew clean build release
 ```
 The app should build, and the tests should pass.
 
-Edit the deployApp.sh file as described in the master branch documentation [here]((https://github.com/cf-platform-eng/springtrader-cf/wiki/Getting-Started-Guide).
+Edit the deployApp.sh file as described in the master branch documentation [here](https://github.com/cf-platform-eng/springtrader-cf/wiki/Getting-Started-Guide).
 
 deploy the app:
 ```bash
@@ -64,6 +64,6 @@ mytraderfront             started           1/1         1G       1G     mytrader
 mytraderweb               started           1/1         1G       1G     mytraderweb.cfapps.io   
 ```
 
-In the above case, the UI is running under the mytraderweb url (mytraderweb.cfapps.io), so we would open this in the browser.
+In the above case, the UI is running under the mytraderweb url (mytraderweb.cfapps.io), so we would open this in a browser.
 
 Full documentation on using the application can be found in the README files on the master branch [here](https://github.com/cf-platform-eng/springtrader-cf).
