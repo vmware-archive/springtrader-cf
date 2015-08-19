@@ -10,14 +10,14 @@ messagingName=tradermessaging
 date
 
 echo Creating service instances
-cf create-service cleardb spark tradersql
-cf create-service cloudamqp lemur tradermessaging
+cf create-service cleardb spark $sqlName
+cf create-service cloudamqp lemur $messagingName
 
 echo Deploying front end services tier
 cf push -p dist/spring-nanotrader-services-1.0.1.BUILD-SNAPSHOT.war -m 1G -t 180 -d $domain -n $frontName --no-start $frontName
 cf bind-service $frontName $sqlName
 cf bind-service $frontName $messagingName
-cf set-env $frontName JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}]'c
+cf set-env $frontName JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}]'
 cf set-env $frontName JBP_CONFIG_TOMCAT '[tomcat: {version: 7.0.+}]'
 cf push -p dist/spring-nanotrader-services-1.0.1.BUILD-SNAPSHOT.war -m 1G -t 180 -d $domain -n $frontName $frontName
 
