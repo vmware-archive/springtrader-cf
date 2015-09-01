@@ -45,7 +45,6 @@ import org.springframework.nanotrader.data.domain.test.HoldingDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.repository.AccountRepository;
 import org.springframework.nanotrader.data.repository.HoldingRepository;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,9 +80,6 @@ public class TradingServiceTests {
 
 	@Autowired
 	HoldingRepository holdingRepository;
-	
-	@Autowired
-    QuoteRepository quoteRepository;
 	
 	@Autowired
     QuoteService quoteService;

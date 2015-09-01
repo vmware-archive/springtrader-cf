@@ -16,28 +16,32 @@
 package org.springframework.nanotrader.data.service;
 
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.nanotrader.data.domain.Quote;
 
 public interface QuoteService {
 
-	public abstract long countAllQuotes();
+	long countAllQuotes();
 
+	void deleteQuote(Quote quote);
 
-	public abstract void deleteQuote(Quote quote);
+	Quote findQuote(Integer id);
 
-	public abstract Quote findQuote(Integer id);
+	List<Quote> findAllQuotes();
 
+	Page<Quote> findAllQuotes(PageRequest pageRequest);
 
-	public abstract List<Quote> findAllQuotes();
+	List<Quote> findBySymbolIn(Set<String> symbols);
 
+	List<Quote> findQuoteEntries(int firstResult, int maxResults);
 
-	public abstract List<Quote> findQuoteEntries(int firstResult, int maxResults);
+	void saveQuote(Quote quote);
 
+	Quote updateQuote(Quote quote);
 
-	public abstract void saveQuote(Quote quote);
-
-
-	public abstract Quote updateQuote(Quote quote);
+	Quote findBySymbol(String symbol);
 
 }

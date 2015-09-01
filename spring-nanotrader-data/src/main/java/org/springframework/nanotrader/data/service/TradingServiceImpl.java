@@ -48,7 +48,6 @@ import org.springframework.nanotrader.data.repository.HoldingRepository;
 import org.springframework.nanotrader.data.repository.MarketSummaryRepository;
 import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +85,7 @@ public class TradingServiceImpl implements TradingService {
 	private AccountRepository accountRepository;
 
 	@Autowired
-	private QuoteRepository quoteRepository;
+	private QuoteService quoteService;
 
 	@Autowired
 	private PortfolioSummaryRepository portfolioSummaryRepository;
@@ -283,7 +282,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-		Quote quote = quoteRepository.findBySymbol(order.getQuote().getSymbol());
+		Quote quote = quoteService.findBySymbol(order.getQuote().getSymbol());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
@@ -314,7 +313,7 @@ public class TradingServiceImpl implements TradingService {
 			throw new DataRetrievalFailureException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
 		}
-		Quote quote = quoteRepository.findBySymbol(holding.getQuoteSymbol());
+		Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
 		// create order and persist
 		
 		Order createdOrder = createOrder(order, account, holding, quote);
@@ -402,7 +401,7 @@ public class TradingServiceImpl implements TradingService {
 	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
 
 		
-			Quote quote = quoteRepository.findBySymbol(symbol);
+			Quote quote = quoteService.findBySymbol(symbol);
 			Quote quoteToPublish = new Quote();
 			quoteToPublish.setCompanyname(quote.getCompanyname());
 			quoteToPublish.setQuoteid(quote.getQuoteid());
@@ -433,7 +432,7 @@ public class TradingServiceImpl implements TradingService {
 	
 	@Transactional
 	public void updateQuote(Quote quote) { 
-		quoteRepository.save(quote);
+		quoteService.saveQuote(quote);
 	}
 	
 	@Override
@@ -538,22 +537,22 @@ public class TradingServiceImpl implements TradingService {
 	
 	@Override
 	public Quote findQuoteBySymbol(String symbol) {
-		return quoteRepository.findBySymbol(symbol);
+		return quoteService.findBySymbol(symbol);
 	}
 
 	@Override
 	public List<Quote> findQuotesBySymbols(Set<String> symbols) {
-		return quoteRepository.findBySymbolIn(symbols);
+		return quoteService.findBySymbolIn(symbols);
 	}
 
 	@Override
 	public List<Quote> findRandomQuotes(Integer count) {
-		return quoteRepository.findAll().subList(0, count.intValue());
+		return quoteService.findAllQuotes().subList(0, count.intValue());
 	}
 
 	@Override
 	public List<Quote> findAllQuotes() {
-		return quoteRepository.findAll();
+		return quoteService.findAllQuotes();
 	}
 
 	@Override
@@ -576,10 +575,10 @@ public class TradingServiceImpl implements TradingService {
 	public MarketSummary findMarketSummary() {
 		MarketSummary marketSummary = marketSummaryRepository.findMarketSummary();
 		// get top losing stocks
-		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
+		Page<Quote> losers = quoteService.findAllQuotes(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
 
 		// get top gaining stocks
-		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
+		Page<Quote> winners = quoteService.findAllQuotes(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
 
 		List<Quote> topLosers = new ArrayList<Quote>(TOP_N);
 		for (Quote q : losers) {

@@ -16,7 +16,11 @@
 package org.springframework.nanotrader.data.service;
 
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
@@ -58,4 +62,18 @@ public class QuoteServiceImpl implements QuoteService {
 	public Quote updateQuote(Quote quote) {
         return quoteRepository.save(quote);
     }
+
+	public Quote findBySymbol(String symbol) {
+		return quoteRepository.findBySymbol(symbol);
+	}
+
+	@Override
+	public List<Quote> findBySymbolIn(Set<String> symbols) {
+		return quoteRepository.findBySymbolIn(symbols);
+	}
+
+	@Override
+	public Page<Quote> findAllQuotes(PageRequest pageRequest) {
+		return quoteRepository.findAll(pageRequest);
+	}
 }

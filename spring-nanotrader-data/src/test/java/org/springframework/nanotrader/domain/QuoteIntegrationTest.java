@@ -1,6 +1,7 @@
 package org.springframework.nanotrader.domain;
 
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.domain.test.QuoteDataOnDemand;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -30,9 +30,6 @@ public class QuoteIntegrationTest {
 
 	@Autowired
     QuoteService quoteService;
-
-	@Autowired
-    QuoteRepository quoteRepository;
 
 	@Test
     public void testCountAllQuotes() {
@@ -81,7 +78,6 @@ public class QuoteIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Quote' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Quote' identifier to be null", obj.getQuoteid());
         quoteService.saveQuote(obj);
-        quoteRepository.flush();
         Assert.assertNotNull("Expected 'Quote' identifier to no longer be null", obj.getQuoteid());
     }
 
@@ -93,7 +89,6 @@ public class QuoteIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Quote' failed to provide an identifier", id);
         obj = quoteService.findQuote(id);
         quoteService.deleteQuote(obj);
-        quoteRepository.flush();
         Assert.assertNull("Failed to remove 'Quote' with identifier '" + id + "'", quoteService.findQuote(id));
     }
 }

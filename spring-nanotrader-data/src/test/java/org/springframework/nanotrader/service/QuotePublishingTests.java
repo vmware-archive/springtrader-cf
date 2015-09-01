@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,7 +48,7 @@ public class QuotePublishingTests {
 	private TradingService tradingService;
 
 	@Autowired
-	QuoteRepository quoteRepository;
+	QuoteService quoteService;
 
 	@Before
 	public void setupMocks() {
@@ -59,7 +59,7 @@ public class QuotePublishingTests {
 		quote.setOpen1(BigDecimal.valueOf(115.0));
 		quote.setHigh(BigDecimal.valueOf(130.0));
 		quote.setLow(BigDecimal.valueOf(1.0));
-		Mockito.when(quoteRepository.findBySymbol("VMW")).thenReturn(quote);
+		Mockito.when(quoteService.findBySymbol("VMW")).thenReturn(quote);
 	}
 
 	@Test

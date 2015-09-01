@@ -36,12 +36,14 @@
 	<bean id="mockHARepo" class="org.mockito.Mockito" factory-method="mock">
 		<constructor-arg value="org.springframework.nanotrader.data.repository.HoldingAggregateRepository"/>
 	</bean>
-	
+
 	<bean id="mockChaosRepo" class="org.mockito.Mockito" factory-method="mock">
 		<constructor-arg value="org.springframework.nanotrader.data.repository.ChaosProceduresRepository"/>
 	</bean>
 
 	<bean id="tradingService" class="org.springframework.nanotrader.data.service.TradingServiceImpl" />
+
+	<bean id="quoteService" class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
 
 	<import resource="classpath:/META-INF/spring/integration/amqp-data-outbound-context.xml" />
 
