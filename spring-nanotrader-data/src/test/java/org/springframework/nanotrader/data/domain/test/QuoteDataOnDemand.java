@@ -141,7 +141,7 @@ public class QuoteDataOnDemand {
 	public void init() {
         int from = 0;
         int to = 10;
-        data = quoteService.findQuoteEntries(from, to);
+        data = quoteService.findAllQuotes();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Quote' illegally returned null");
         }

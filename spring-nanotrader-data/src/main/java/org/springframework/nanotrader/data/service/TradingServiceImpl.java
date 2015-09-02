@@ -16,7 +16,6 @@
 package org.springframework.nanotrader.data.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -69,8 +65,6 @@ public class TradingServiceImpl implements TradingService {
 	private static String OPEN_STATUS = "open";
 
 	private static String CANCELLED_STATUS = "cancelled";
-
-	private static Integer TOP_N = 3;
 
 	@Autowired
 	private AccountProfileRepository accountProfileRepository;
@@ -574,22 +568,8 @@ public class TradingServiceImpl implements TradingService {
 	// TODO: Defensive coding
 	public MarketSummary findMarketSummary() {
 		MarketSummary marketSummary = marketSummaryRepository.findMarketSummary();
-		// get top losing stocks
-		Page<Quote> losers = quoteService.findAllQuotes(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
-
-		// get top gaining stocks
-		Page<Quote> winners = quoteService.findAllQuotes(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
-
-		List<Quote> topLosers = new ArrayList<Quote>(TOP_N);
-		for (Quote q : losers) {
-			topLosers.add(q);
-		}
-		List<Quote> topGainers = new ArrayList<Quote>(TOP_N);
-		for (Quote q : winners) {
-			topGainers.add(q);
-		}
-		marketSummary.setTopLosers(topLosers);
-		marketSummary.setTopGainers(topGainers);
+		marketSummary.setTopLosers(quoteService.topLosers());
+		marketSummary.setTopGainers(quoteService.topGainers());
 		marketSummary.setSummaryDate(new Date());
 		return marketSummary;
 	}

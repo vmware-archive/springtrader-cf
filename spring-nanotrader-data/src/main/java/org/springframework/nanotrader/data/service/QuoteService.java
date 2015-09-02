@@ -18,8 +18,6 @@ package org.springframework.nanotrader.data.service;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.nanotrader.data.domain.Quote;
 
 public interface QuoteService {
@@ -32,15 +30,13 @@ public interface QuoteService {
 
 	List<Quote> findAllQuotes();
 
-	Page<Quote> findAllQuotes(PageRequest pageRequest);
+	List<Quote> topGainers();
+
+	List<Quote> topLosers();
 
 	List<Quote> findBySymbolIn(Set<String> symbols);
 
-	List<Quote> findQuoteEntries(int firstResult, int maxResults);
-
 	void saveQuote(Quote quote);
-
-	Quote updateQuote(Quote quote);
 
 	Quote findBySymbol(String symbol);
 

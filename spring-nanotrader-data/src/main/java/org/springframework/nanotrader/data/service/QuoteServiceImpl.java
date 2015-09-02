@@ -15,12 +15,15 @@
  */
 package org.springframework.nanotrader.data.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class QuoteServiceImpl implements QuoteService {
+
+	public static final Integer TOP_N = 3;
 
 	@Autowired
     QuoteRepository quoteRepository;
@@ -51,16 +56,8 @@ public class QuoteServiceImpl implements QuoteService {
         return quoteRepository.findAll();
     }
 
-	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-        return quoteRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
-    }
-
 	public void saveQuote(Quote quote) {
         quoteRepository.save(quote);
-    }
-
-	public Quote updateQuote(Quote quote) {
-        return quoteRepository.save(quote);
     }
 
 	public Quote findBySymbol(String symbol) {
@@ -69,11 +66,29 @@ public class QuoteServiceImpl implements QuoteService {
 
 	@Override
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
+		if(symbols == null || symbols.size() < 1) {
+			return new ArrayList<Quote>();
+		}
 		return quoteRepository.findBySymbolIn(symbols);
 	}
 
 	@Override
-	public Page<Quote> findAllQuotes(PageRequest pageRequest) {
-		return quoteRepository.findAll(pageRequest);
+	public List<Quote> topGainers() {
+		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
+		List<Quote> l = new ArrayList<Quote>(TOP_N);
+		for (Quote q : winners) {
+			l.add(q);
+		}
+		return l;
+	}
+
+	@Override
+	public List<Quote> topLosers() {
+		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
+		List<Quote> l = new ArrayList<Quote>(TOP_N);
+		for (Quote q : losers) {
+			l.add(q);
+		}
+		return l;
 	}
 }
