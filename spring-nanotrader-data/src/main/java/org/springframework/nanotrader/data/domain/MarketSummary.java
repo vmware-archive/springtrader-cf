@@ -19,8 +19,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.nanotrader.data.util.FinancialUtils;
-
 
 public class MarketSummary {
 	
@@ -38,6 +36,8 @@ public class MarketSummary {
 
 	private BigDecimal change;
 	
+	private BigDecimal percentGain;
+	
 	public BigDecimal getChange() {
 		return change;
 	}
@@ -47,7 +47,7 @@ public class MarketSummary {
 	}
 
 	public BigDecimal getPercentGain() {
-		return FinancialUtils.computeGainPercent(getTradeStockIndexAverage(), getTradeStockIndexOpenAverage()).setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);
+		return percentGain;
 	}
 
 	
@@ -108,6 +108,10 @@ public class MarketSummary {
 				+ tradeStockIndexOpenAverage + ", topLosers=" + topLosers
 				+ ", topGainers=" + topGainers + ", summaryDate=" + summaryDate
 				+ ", percentGain=" + getPercentGain() + "]";
+	}
+
+	public void setPercentGain(BigDecimal percentGain) {
+		this.percentGain = percentGain;
 	}
 	
 

@@ -21,8 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigDecimal;
-
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
@@ -43,7 +41,7 @@ public class MarketSummaryControllerTest extends AbstractBaseControllerTest {
 				.andExpect(jsonPath("$.tradeStockIndexAverage").value(ServiceTestConfiguration.MARKET_INDEX.doubleValue()))
 				.andExpect(jsonPath("$.tradeStockIndexOpenAverage").value(ServiceTestConfiguration.MARKET_OPENING.doubleValue()))
 				.andExpect(jsonPath("$.tradeStockIndexVolume").value(ServiceTestConfiguration.MARKET_VOLUME.doubleValue()))
-				.andExpect(jsonPath("$.percentGain").value(new BigDecimal(184).doubleValue()))
+				.andExpect(jsonPath("$.percentGain").value(ServiceTestConfiguration.MARKET_GAIN.doubleValue()))
 				.andDo(print());
 	}
 	

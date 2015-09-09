@@ -67,6 +67,7 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 		m.setTradeStockIndexAverage(getBigDecimal(ctx, "$.average"));
 		m.setTradeStockIndexOpenAverage(getBigDecimal(ctx, "$.open"));
 		m.setTradeStockIndexVolume(getBigDecimal(ctx, "$.volume"));
+		m.setPercentGain(getBigDecimal(ctx, "$.percentGain"));
 
 		return m;
 	}

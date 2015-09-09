@@ -118,6 +118,7 @@ public class ServiceTestConfiguration  {
 	public static BigDecimal MARKET_INDEX =  	BigDecimal.valueOf(100.25);
 	public static BigDecimal MARKET_OPENING =   BigDecimal.valueOf(35.25);
 	public static BigDecimal MARKET_VOLUME =   	BigDecimal.valueOf(40.45);
+	public static BigDecimal MARKET_GAIN =   	BigDecimal.valueOf(1.23);
 	
 	//Holding Summary
 	public static BigDecimal HOLDING_SUMMARY_GAINS =   BigDecimal.valueOf(1000.54);
@@ -294,6 +295,7 @@ public class ServiceTestConfiguration  {
 		marketSummary.setTradeStockIndexAverage(MARKET_INDEX);
 		marketSummary.setTradeStockIndexOpenAverage(MARKET_OPENING);
 		marketSummary.setTradeStockIndexVolume(MARKET_VOLUME);
+		marketSummary.setPercentGain(MARKET_GAIN);
 		List<Quote> loserQuotes = new ArrayList<Quote>();
 		loserQuotes.add(quote());
 		marketSummary.setTopLosers(loserQuotes);
