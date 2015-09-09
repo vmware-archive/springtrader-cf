@@ -668,6 +668,18 @@ nano.utils.getPaginationInterval = function (currentPage, pageCount) {
     return interval;
 };
 
+nano.utils.addCommas = function (nStr) {
+	nStr += '';
+	x = nStr.split('.');
+	x1 = x[0];
+	x2 = x.length > 1 ? '.' + x[1] : '';
+	var rgx = /(\d+)(\d{3})/;
+	while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	}
+	return x1 + x2;
+}
+
 /*
  * Reset form
  * @author Ilayaperumal Gopinathan
@@ -685,3 +697,4 @@ var translate = nano.utils.translate;
 var printCurrency = nano.utils.printCurrency;
 var printDate = nano.utils.printDate;
 var round = nano.utils.round;
+var addCommas = nano.utils.addCommas;

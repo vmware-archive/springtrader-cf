@@ -65,7 +65,7 @@ nano.views.MarketSummary = Backbone.View.extend({
             topGainers = model.get('topGainers'),
             topLosers = model.get('topLosers');
         this.elements.index.html( round(model.get('tradeStockIndexAverage')) );
-        this.elements.volume.html( round(model.get('tradeStockIndexVolume')) );
+        this.elements.volume.html( addCommas(round(model.get('tradeStockIndexVolume'))) );
         if ( model.get('percentGain') > 0 ) {
             this.elements.change.html( '+' + nano.utils.round(model.get('percentGain')) + '% ' );
             this.elements.change.removeClass('red-color');
