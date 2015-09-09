@@ -17,14 +17,21 @@ package org.springframework.nanotrader.data.repository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.HoldingAggregate;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
+import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Repository;
 
@@ -34,39 +41,50 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 	@PersistenceContext
 	private EntityManager em;
 
+	@Autowired
+	QuoteService quoteService;
+
+	@Autowired
+	HoldingRepository holdingRepository;
+
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
 
-	
-	@SuppressWarnings("unchecked")
 	@Override
 	public HoldingSummary findHoldingAggregated(Integer accountId) {
 	
 		HoldingSummary holdingSummary = new HoldingSummary();
 		List<HoldingAggregate> holdingRollups = new ArrayList<HoldingAggregate>();
-		// Filter out the losers (gains =< 0)
-		Query query = em.createQuery("SELECT  h.quoteSymbol, sum(q.price * h.quantity) - SUM(h.purchaseprice * h.quantity) as gain FROM Holding h, Quote q Where h.accountAccountid =:accountId and h.quoteSymbol=q.symbol GROUP BY  h.quoteSymbol HAVING  SUM(q.price * h.quantity) - SUM(h.purchaseprice * h.quantity) > 0 ORDER BY gain desc");
-		query.setParameter("accountId", accountId);
+		List<Holding> holdings = holdingRepository.findByAccountAccountid(accountId);
+
 		BigDecimal totalGains = BigDecimal.ZERO;
 		totalGains = totalGains.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);
-		List<Object[]> result = query.getResultList();
-		int counter = 0;
-		// Need to loop over all the aggregated symbols to calculate the totalGain of all the stocks
-		// but only want the top N stocks returned.
-		for (Object[] o : result) {
-			HoldingAggregate summary = new HoldingAggregate();
-			String symbol = (String) o[0];
-			BigDecimal gain = (BigDecimal) o[1];
-			gain = gain.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);
-			totalGains = totalGains.add(gain);
-			if (counter < TOP_N) { 
-				summary.setSymbol(symbol);
+
+		Map<BigDecimal, HoldingAggregate> hMap = new HashMap<BigDecimal, HoldingAggregate>();
+		for (Holding h : holdings) {
+			Quote quote = quoteService.findBySymbol(h.getQuoteSymbol());
+			BigDecimal gain = quote.getPrice().multiply(h.getQuantity()).subtract(h.getPurchaseprice().multiply(h.getQuantity()));
+			gain.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);
+
+			// Filter out the losers (gains =< 0)
+			if(gain.floatValue() > 0) {
+				totalGains = totalGains.add(gain);
+				HoldingAggregate summary = new HoldingAggregate();
+				summary.setSymbol(h.getQuoteSymbol());
 				summary.setGain(gain);
-				holdingRollups.add(summary);
+				hMap.put(gain, summary);
 			}
-			counter++;
 		}
+
+		TreeMap<BigDecimal, HoldingAggregate> sortedMap = new TreeMap<BigDecimal, HoldingAggregate>(hMap);
+		for(int i = 0; i < TOP_N;i++) {
+			Entry<BigDecimal, HoldingAggregate> e = sortedMap.pollLastEntry();
+			if(e != null) {
+				holdingRollups.add(e.getValue());
+			}
+		}
+
 		holdingSummary.setHoldingsTotalGains(totalGains);
 		HoldingSummary summary = calculatePercentages(holdingSummary, holdingRollups);
 		return summary;

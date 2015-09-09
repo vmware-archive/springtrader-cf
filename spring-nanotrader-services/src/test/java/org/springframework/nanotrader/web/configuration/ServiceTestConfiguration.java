@@ -34,6 +34,8 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.cloud.QuoteRepository;
+import org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -43,6 +45,8 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.QuoteService;
+import org.springframework.nanotrader.data.service.QuoteServiceImpl;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -88,13 +92,14 @@ public class ServiceTestConfiguration  {
 	public static String ORDER_STATUS_CLOSED	=  "closed";
 	
 	//Quote constants
-	public static Integer QUOTE_ID = 1;
-	public static String COMPANY_NAME	=  "VMware";
+	public static String QUOTE_ID = "VMW";
+	public static String COMPANY_NAME	=  "Vmware, Inc. Common stock, Clas";
 	public static BigDecimal HIGH	=   BigDecimal.valueOf(50.02);
 	public static BigDecimal OPEN	=  BigDecimal.valueOf(40.11);
 	public static BigDecimal VOLUME	= BigDecimal.valueOf(3000);
 	public static BigDecimal CURRENT_PRICE	=  BigDecimal.valueOf(48.44);
 	public static Integer RANDOM_QUOTES_COUNT = 5;
+	public static String QUOTE_SERVICE_URI = "http://localhost:8080/quotes";
 	
 	//Account constants
 	public static BigDecimal ACCOUNT_OPEN_BALANCE	=   BigDecimal.valueOf(55.02);
@@ -124,7 +129,17 @@ public class ServiceTestConfiguration  {
 	public static String TOTAL_RECORDS = "totalRecords";
 	public static Long RESULT_COUNT  = new Long(1);
 	public static String DATE = new SimpleDateFormat("yyyy-MM-dd").format(new Date(1329759342904l));
-	
+
+	@Bean
+	public QuoteRepository quoteRepository() {
+		return new QuoteRepositoryConnectionCreator().createRepository(QUOTE_SERVICE_URI);
+	}
+
+	@Bean
+	public QuoteService quoteService() {
+		return new QuoteServiceImpl();
+	}
+
 	@Bean 
 	public TradingService tradingService() {
 		TradingService tradingService = Mockito.mock(TradingService.class);
@@ -231,13 +246,12 @@ public class ServiceTestConfiguration  {
 		order.setHoldingHoldingid(holding());
 		order.setQuantity(ORDER_QUANTITY);
 		order.setOrderfee(TradingServiceImpl.DEFAULT_ORDER_FEE);
-		order.setQuote(quote());
+		order.setQuoteid(quote().getSymbol());
 		return order;
 	}
 
 	public Quote quote() { 
 		Quote quote = new Quote();
-		quote.setQuoteid(QUOTE_ID);
 		quote.setSymbol(SYMBOL);
 		quote.setCompanyname(COMPANY_NAME);
 		quote.setHigh(HIGH);

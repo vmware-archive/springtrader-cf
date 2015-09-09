@@ -84,12 +84,17 @@ public class Order implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(style = "M-")
     private Date opendate;
-	
-	@ManyToOne 
-	@JoinColumn(name = "quote_symbol", referencedColumnName = "symbol")
-    private Quote quote;
 
+	@Column(name = "quoteid")
+	private String quoteid;
 
+	public String getQuoteid() {
+		return quoteid;
+	}
+
+	public void setQuoteid(String s) {
+		this.quoteid = s;
+	}
 
 	public Account getAccountAccountid() {
         return accountAccountid;
@@ -162,16 +167,6 @@ public class Order implements Serializable {
 	public void setOpendate(Date opendate) {
         this.opendate = opendate;
     }
-
-
-
-	public Quote getQuote() {
-		return quote;
-	}
-
-	public void setQuote(Quote quote) {
-		this.quote = quote;
-	}
 
 	@Override
 	public String toString() {

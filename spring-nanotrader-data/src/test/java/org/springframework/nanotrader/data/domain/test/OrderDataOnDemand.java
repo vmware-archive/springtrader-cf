@@ -34,6 +34,7 @@ import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.service.OrderService;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Component;
 
 
@@ -52,7 +53,7 @@ public class OrderDataOnDemand {
     private HoldingDataOnDemand holdingDataOnDemand;
 
 	@Autowired
-	private QuoteDataOnDemand quoteDataOnDemand;
+	private QuoteService quoteService;
 
 	@Autowired
     OrderService orderService;
@@ -133,8 +134,8 @@ public class OrderDataOnDemand {
     }
 
 	public void setQuote(Order obj, int index) {
-        Quote quote = quoteDataOnDemand.getRandomQuote();
-        obj.setQuote(quote);
+        Quote quote = quoteService.findBySymbol("GOOG");
+        obj.setQuoteid(quote.getSymbol());
     }
 
 	public Order getSpecificOrder(int index) {
@@ -154,7 +155,13 @@ public class OrderDataOnDemand {
         init();
         Order obj = data.get(rnd.nextInt(data.size()));
         Integer id = obj.getOrderid();
-        return orderService.findOrder(id);
+        Order ret = orderService.findOrder(id);
+        if(ret.getAccountAccountid().getBalance() == null) {
+            ret.getAccountAccountid().setBalance(new BigDecimal(12345));
+        }
+        ret.setQuoteid("GOOG");
+
+        return ret;
     }
 
 	public boolean modifyOrder(Order obj) {

@@ -67,7 +67,7 @@ subprojects { subproject ->
 	ext.springWsVersion = '2.0.3.RELEASE'
 	ext.springIntegrationVersion = '2.2.6.RELEASE'
 	ext.springRooVersion = '1.2.0.RELEASE'
-	ext.springCloudVersion = '1.0.0.RELEASE'
+	ext.springCloudVersion = '1.2.0.RELEASE'
 	ext.javaxInjectVersion = '1'
 	ext.servletApiVersion = '2.5'
 	ext.dozerVersion='5.3.2'
@@ -197,6 +197,9 @@ project('spring-nanotrader-data') {
 		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile "com.h2database:h2:$h2Version"
 		compile "mysql:mysql-connector-java:5.1.13"
+		compile "com.netflix.feign:feign-gson:8.5.0"
+		compile "com.google.code.gson:gson:2.3.1"
+		compile "com.jayway.jsonpath:json-path:0.9.1"
 	}
 }
 

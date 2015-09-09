@@ -19,76 +19,77 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.nanotrader.data.cloud.QuoteRepository;
+import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
-@Transactional
 public class QuoteServiceImpl implements QuoteService {
 
-	public static final Integer TOP_N = 3;
+	private static final Logger LOG = Logger.getLogger(QuoteServiceImpl.class);
 
 	@Autowired
     QuoteRepository quoteRepository;
 
 	
 	public long countAllQuotes() {
-        return quoteRepository.count();
-    }
-
-	public void deleteQuote(Quote quote) {
-        quoteRepository.delete(quote);
-    }
-
-	public Quote findQuote(Integer id) {
-        return quoteRepository.findOne(id);
-    }
+		return quoteRepository.symbols().size();
+	}
 
 	public List<Quote> findAllQuotes() {
         return quoteRepository.findAll();
     }
 
-	public void saveQuote(Quote quote) {
-        quoteRepository.save(quote);
-    }
+	public List<Quote> topGainers() {
+		return quoteRepository.topGainers();
+	}
+
+	public List<Quote> topLosers() {
+		return quoteRepository.topLosers();
+	}
 
 	public Quote findBySymbol(String symbol) {
+		if(symbol == null || symbol.length() < 1) {
+			return null;
+		}
 		return quoteRepository.findBySymbol(symbol);
 	}
 
-	@Override
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
-		if(symbols == null || symbols.size() < 1) {
-			return new ArrayList<Quote>();
+		ArrayList<Quote> ret = new ArrayList<Quote>();
+
+		if (symbols == null || symbols.size() < 1) {
+			return ret;
 		}
-		return quoteRepository.findBySymbolIn(symbols);
+
+		List<Quote> all = findAllQuotes();
+		for (Quote q : all) {
+			if (symbols.contains(q.getSymbol())) {
+				ret.add(q);
+			}
+		}
+
+		return ret;
+	}
+
+	public MarketSummary marketSummary() {
+		MarketSummary m = quoteRepository.marketSummary();
+		m.setTopGainers(topGainers());
+		m.setTopLosers(topLosers());
+
+		return m;
+	}
+
+	public void deleteQuote(Quote quote) {
+		LOG.info("delete not supported for " + getClass());
 	}
 
 	@Override
-	public List<Quote> topGainers() {
-		Page<Quote> winners = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.DESC, "change1")));
-		List<Quote> l = new ArrayList<Quote>(TOP_N);
-		for (Quote q : winners) {
-			l.add(q);
-		}
-		return l;
-	}
+	public void saveQuote(Quote quote) {
+		LOG.info("save not supported for " + getClass());
 
-	@Override
-	public List<Quote> topLosers() {
-		Page<Quote> losers = quoteRepository.findAll(new PageRequest(0, TOP_N, new Sort(Direction.ASC, "change1")));
-		List<Quote> l = new ArrayList<Quote>(TOP_N);
-		for (Quote q : losers) {
-			l.add(q);
-		}
-		return l;
 	}
 }

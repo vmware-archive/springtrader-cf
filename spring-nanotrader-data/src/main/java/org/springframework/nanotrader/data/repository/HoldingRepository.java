@@ -34,8 +34,10 @@ public interface HoldingRepository extends JpaSpecificationExecutor<Holding>, Jp
 	
 	public List<Holding> findByAccountAccountid(Integer accountId, Pageable pageable);
 	
-	public Holding findByHoldingidAndAccountAccountid(Integer holdingId, Integer accountId);
+	public List<Holding> findByAccountAccountid(Integer accountId);
 	
+	public Holding findByHoldingidAndAccountAccountid(Integer holdingId, Integer accountId);
+
 	@Query("SELECT count(h) FROM Holding h WHERE h.accountAccountid = ?1")
 	public Long findCountOfHoldings(Integer accountId);
 	

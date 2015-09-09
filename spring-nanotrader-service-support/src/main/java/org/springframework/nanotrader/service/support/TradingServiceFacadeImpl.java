@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Account;
 import org.springframework.nanotrader.service.domain.Accountprofile;
@@ -79,6 +80,9 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     
     @Resource
     private TradingService tradingService;
+
+    @Resource
+    private QuoteService quoteService;
 
     @Resource
     private Mapper mapper;
@@ -274,6 +278,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     public Integer saveOrderDirect(Order orderRequest) {
         org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
         mapper.map(orderRequest, order, ORDER_MAPPING);
+        order.setQuoteid(orderRequest.getQuote().getQuoteid());
         tradingService.saveOrder(order);
         return order.getOrderid();
     }
@@ -289,6 +294,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         }
         Order responseOrder = new Order();
         mapper.map(order, responseOrder, ORDER_MAPPING);
+
+        Quote q = new Quote();
+        mapper.map(quoteService.findBySymbol(order.getQuoteid()), q);
+
+        responseOrder.setQuote(q);
         return responseOrder;
     }
 
@@ -298,6 +308,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         }
         org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
         mapper.map(orderRequest, order, ORDER_MAPPING);
+        order.setQuoteid(orderRequest.getQuote().getQuoteid());
         tradingService.updateOrder(order);
     }
 
@@ -323,6 +334,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
             for(org.springframework.nanotrader.data.domain.Order o: orders) {
                 Order order = new Order();
                 mapper.map(o, order, ORDER_MAPPING);
+
+                Quote q = new Quote();
+                mapper.map(quoteService.findBySymbol(o.getQuoteid()), q);
+
+                order.setQuote(q);
                 responseOrders.add(order);
             }
         }

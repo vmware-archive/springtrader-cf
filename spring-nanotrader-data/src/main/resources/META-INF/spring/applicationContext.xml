@@ -83,23 +83,28 @@
 			<map>
 				<entry key="hibernate.jdbc.use_scrollable_resultset" value="#{dbPropertiesBean['use_scrollable_resultset']}" />
 				<entry key="hibernate.hbm2ddl.auto" value="#{dbPropertiesBean['hb2ddl_auto']}"/>
-				<entry key="hibernate.hbm2ddl.import_files" value="#{dbPropertiesBean['import_files']}" />
 				<entry key="hibernate.show_sql" value="true" />
 			</map>
 		</property>
 	</bean>
+
+	<bean id="quoteService"
+		class="org.springframework.nanotrader.data.service.QuoteServiceImpl" />
 
  	<beans profile="default">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
 			<prop key="dialect">org.hibernate.dialect.MySQLDialect</prop>
 			<prop key="hb2ddl_auto">create-drop</prop>
-			<prop key="import_files">/importrefdata.sql</prop>
 		</util:properties>
 		<cloud:data-source id="dataSource">
 			<cloud:connection properties="sessionVariables=sql_mode='ANSI';characterEncoding=UTF-8;defaultTransactionIsolation=2" />
 			<cloud:pool pool-size="2" max-wait-time="200" />
 		</cloud:data-source>
+
+		<cloud:service id="quoteRepository" service-name="quoteService"
+			connector-type="org.springframework.nanotrader.data.cloud.QuoteRepository"/>
+
 	</beans>
 	
 	<beans profile="test">
@@ -107,9 +112,19 @@
 			<prop key="use_scrollable_resultset">false</prop>
 			<prop key="dialect">org.hibernate.dialect.H2Dialect</prop>
 			<prop key="hb2ddl_auto">create</prop>
-			<prop key="import_files"></prop>
 		</util:properties>
 		<jdbc:embedded-database id="dataSource" type="H2" />
+
+		<bean id="quoteRepositoryConnectionCreator"
+			class="org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator"/>
+
+		<bean id="quoteRepository"
+			class="org.springframework.nanotrader.data.cloud.QuoteRepository"
+			factory-bean="quoteRepositoryConnectionCreator" factory-method="createRepository">
+			<constructor-arg type="java.lang.String"
+				value="http://localhost:8080/quotes" />
+		</bean>
+
 	</beans>
 
 </beans>

@@ -41,7 +41,6 @@ import org.springframework.nanotrader.data.repository.AccountRepository;
 import org.springframework.nanotrader.data.repository.ChaosProceduresRepository;
 import org.springframework.nanotrader.data.repository.HoldingAggregateRepository;
 import org.springframework.nanotrader.data.repository.HoldingRepository;
-import org.springframework.nanotrader.data.repository.MarketSummaryRepository;
 import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -83,9 +82,6 @@ public class TradingServiceImpl implements TradingService {
 
 	@Autowired
 	private PortfolioSummaryRepository portfolioSummaryRepository;
-
-	@Autowired
-	private MarketSummaryRepository marketSummaryRepository;
 
 	@Autowired
 	private HoldingAggregateRepository holdingAggregateRepository;
@@ -276,10 +272,14 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
-		Quote quote = quoteService.findBySymbol(order.getQuote().getSymbol());
+		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
+
+		if(quote == null) {
+			throw new RuntimeException("null quote");
+		}
 
 		if ((order.getQuantity() != null && order.getQuantity().intValue() > 0)
 				&& (account.getBalance().subtract(order.getQuantity().multiply(quote.getPrice())).doubleValue() >= 0)) { // cannot
@@ -319,7 +319,7 @@ public class TradingServiceImpl implements TradingService {
 	private Order createOrder(Order order, Account account, Holding holding, Quote quote) {
 		Order createdOrder = null;
 		order.setAccountAccountid(account);
-		order.setQuote(quote);
+		order.setQuoteid(quote.getSymbol());
 		if (order.getQuantity() == null) {
 			order.setQuantity(holding.getQuantity());
 		}
@@ -341,7 +341,7 @@ public class TradingServiceImpl implements TradingService {
 				holding.setPurchasedate(new Date());
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
-				holding.setQuoteSymbol(order.getQuote().getSymbol());
+				holding.setQuoteSymbol(order.getQuoteid());
 				Set<Order> orders = new HashSet<Order>();
 				orders.add(order);
 				holding.setOrders(orders);
@@ -357,7 +357,7 @@ public class TradingServiceImpl implements TradingService {
 		order.setCompletiondate(new Date());
 
 			
-		updateQuoteMarketData(order.getQuote().getSymbol(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
+		updateQuoteMarketData(order.getQuoteid(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
 	
 		
 		return order;
@@ -366,7 +366,7 @@ public class TradingServiceImpl implements TradingService {
 	// TODO: Need to clean this up
 	private void updateAccount(Order order) {
 		// update account balance
-		Quote quote = order.getQuote();
+		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		Account account = order.getAccountAccountid();
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
@@ -398,7 +398,6 @@ public class TradingServiceImpl implements TradingService {
 			Quote quote = quoteService.findBySymbol(symbol);
 			Quote quoteToPublish = new Quote();
 			quoteToPublish.setCompanyname(quote.getCompanyname());
-			quoteToPublish.setQuoteid(quote.getQuoteid());
 			quoteToPublish.setSymbol(quote.getSymbol());
 			quoteToPublish.setOpen1(quote.getOpen1());
 			BigDecimal oldPrice = quote.getPrice();
@@ -520,10 +519,6 @@ public class TradingServiceImpl implements TradingService {
 
 	private List<Order> processOrderResults(List<Order> orders, Integer accountId) { 
 		if (orders != null && orders.size() > 0) {
-			// Loop over the orders to populate the lazy quote fields
-			for (Order order : orders) {
-				order.getQuote();
-			}
 			orderRepository.updateClosedOrders(accountId);
 		}
 		return orders;
@@ -565,13 +560,8 @@ public class TradingServiceImpl implements TradingService {
 		return portfolioSummary;
 	}
 
-	// TODO: Defensive coding
 	public MarketSummary findMarketSummary() {
-		MarketSummary marketSummary = marketSummaryRepository.findMarketSummary();
-		marketSummary.setTopLosers(quoteService.topLosers());
-		marketSummary.setTopGainers(quoteService.topGainers());
-		marketSummary.setSummaryDate(new Date());
-		return marketSummary;
+		return quoteService.marketSummary();
 	}
 
 	@Override

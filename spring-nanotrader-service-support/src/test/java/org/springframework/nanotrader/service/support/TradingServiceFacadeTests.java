@@ -21,14 +21,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
-import org.junit.Ignore;
+import org.dozer.Mapper;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl.OrderGateway;
 import org.springframework.nanotrader.service.support.config.IntegrationTestConfig;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -53,23 +57,39 @@ public class TradingServiceFacadeTests {
 	@Autowired
 	private TradingServiceFacade tradingServiceFacade;
 
+	@Autowired
+	private QuoteService quoteService;
+
+	@Autowired
+	private OrderGateway orderGateway;
+
+	@Autowired
+    private Mapper mapper;
+
+	@Before
+	public void setupMocks() {
+		Mockito.doNothing().when(orderGateway).sendOrder(new Order());
+	}
+
 	@Test
 	public void testSynch() {
 		org.springframework.nanotrader.data.domain.Order existingOrder = 
 				orderDataOnDemand.getRandomOrder();
+		assertNotNull(existingOrder.getQuoteid());
 		Order orderRequest = new Order();
 		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
-		quote.setSymbol(existingOrder.getQuote().getSymbol());
+		mapper.map(quoteService.findBySymbol("GOOG"), quote);
 		orderRequest.setQuote(quote);
+		assertNotNull(orderRequest.getQuote().getQuoteid());
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
 		Integer id = tradingServiceFacade.saveOrder(orderRequest, true);
 		assertNotNull(id);
 		assertTrue(id > 0);
 	}
 
-	@Test @Ignore
+	@Test
 	public void testASynch() {
 		org.springframework.nanotrader.data.domain.Order existingOrder = 
 				orderDataOnDemand.getRandomOrder();
@@ -77,7 +97,7 @@ public class TradingServiceFacadeTests {
 		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
-		quote.setSymbol(existingOrder.getQuote().getSymbol());
+		quote.setSymbol("GOOG");
 		orderRequest.setQuote(quote);
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
 		Integer id = tradingServiceFacade.saveOrder(orderRequest, false);

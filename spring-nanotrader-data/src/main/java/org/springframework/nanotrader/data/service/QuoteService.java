@@ -18,6 +18,7 @@ package org.springframework.nanotrader.data.service;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Quote;
 
 public interface QuoteService {
@@ -25,8 +26,6 @@ public interface QuoteService {
 	long countAllQuotes();
 
 	void deleteQuote(Quote quote);
-
-	Quote findQuote(Integer id);
 
 	List<Quote> findAllQuotes();
 
@@ -39,5 +38,7 @@ public interface QuoteService {
 	void saveQuote(Quote quote);
 
 	Quote findBySymbol(String symbol);
+
+	MarketSummary marketSummary();
 
 }

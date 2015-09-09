@@ -23,10 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
+import org.springframework.nanotrader.service.domain.Order;
+import org.springframework.nanotrader.service.domain.Quote;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
 import org.springframework.util.FileCopyUtils;
 
@@ -122,7 +125,12 @@ public class OrderControllerTest extends AbstractSecureControllerTest {
 
 	@Test
 	public void createOrderSellJson() throws Exception {
-		byte[] jsonRequest = FileCopyUtils.copyToByteArray(new ClassPathResource("create-order-sell.json").getFile());
+		ObjectMapper mapper = new ObjectMapper();
+		Order order = mapper.readValue(new ClassPathResource("create-order-sell.json").getFile(), Order.class);
+		Quote quote = new Quote();
+		quote.setQuoteid("GOOG");
+		order.setQuote(quote);
+		byte[] jsonRequest = mapper.writeValueAsBytes(order);
 		mockMvc.perform(
 				post("/account/" + ServiceTestConfiguration.ACCOUNT_ID + "/order").accept(MediaType.APPLICATION_JSON).content(jsonRequest)
 						.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()) // HTTP 201 - Created

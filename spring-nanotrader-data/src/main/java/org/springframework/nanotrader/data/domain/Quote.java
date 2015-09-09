@@ -18,57 +18,37 @@ package org.springframework.nanotrader.data.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "QUOTE")
 public class Quote implements Serializable {
-	@Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "quoteid")
-    private Integer quoteid;
 
-	public Integer getQuoteid() {
-        return this.quoteid;
-    }
+	private static final long serialVersionUID = 1L;
 
-	public void setQuoteid(Integer id) {
-        this.quoteid = id;
-    }
+	private String quoteid = "";
 
-	@Column(name = "low", precision = 14, scale = 2)
-    private BigDecimal low;
+	public String getQuoteid() {
+		return this.quoteid;
+	}
 
-	@Column(name = "open1", precision = 14, scale = 2)
-    private BigDecimal open1;
+	public void setQuoteid(String id) {
+		if (id != null) {
+			this.quoteid = id;
+		}
+	}
 
-	@Column(name = "volume")
-    @NotNull
-    private BigDecimal volume;
+	private BigDecimal low;
 
-	@Column(name = "price", precision = 14, scale = 2)
-    private BigDecimal price;
+	private BigDecimal open1;
 
-	@Column(name = "high", precision = 14, scale = 2)
-    private BigDecimal high;
+	private BigDecimal volume;
 
-	@Column(name = "companyname", length = 250)
-    private String companyname;
+	private BigDecimal price;
 
-	@Column(name = "symbol", length = 250, unique = true)
-    @NotNull
-    private String symbol;
+	private BigDecimal high;
 
-	@Column(name = "change1")
-    @NotNull
-    private BigDecimal change1;
+	private String companyname;
+
+	private String symbol = "";
+
+	private BigDecimal change1;
 
 	public BigDecimal getLow() {
         return low;
@@ -123,8 +103,11 @@ public class Quote implements Serializable {
     }
 
 	public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
+		if (symbol != null) {
+			this.symbol = symbol;
+			setQuoteid(symbol);
+		}
+	}
 
 	public BigDecimal getChange1() {
         return change1;
@@ -140,4 +123,16 @@ public class Quote implements Serializable {
 				+ price + ", high=" + high + ", companyname=" + companyname + ", symbol=" + symbol + ", change1="
 				+ change1 + "]";
 	}
+
+	public int hashCode() {
+		return getQuoteid().hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if( o == null || (! o.getClass().equals(getClass())) ) {
+			return false;
+		}
+		return o.hashCode() == hashCode();
+	}
+
 }

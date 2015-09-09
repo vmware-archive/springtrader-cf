@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
+import org.springframework.nanotrader.data.domain.HoldingSummary;
 import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
@@ -172,22 +173,25 @@ public class TradingServiceTests {
 	public void testFindAccountSummary() {
 		Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
 		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
+		holding.setQuoteSymbol("GOOG");
 		tradingService.saveHolding(holding);
 		entityManager.flush();
 		entityManager.clear(); // force reload
-        Quote quote = new Quote();
-        quote.setSymbol("quoteSymbol_100");
-        quote.setPrice(BigDecimal.valueOf(50.00));
-        quote.setChange1(BigDecimal.valueOf(5.00));
-        quote.setVolume( BigDecimal.valueOf(50000));
-        quoteService.saveQuote(quote);
-        entityManager.flush();
-		entityManager.clear(); // force reload
-        Assert.assertNotNull("Expected 'Quote' identifier to no longer be null", quote.getQuoteid());
 		PortfolioSummary portfolioSummary = tradingService.findPortfolioSummary(100);
 		Assert.assertTrue("Expected 'PortfolioSummary' holding count to be equal to 1", portfolioSummary.getNumberOfHoldings() == 1);
+	}
 
-
+	@Test
+	public void testHoldingAggregateSummary() {
+		Holding holding = holdingDataOnDemand.getNewTransientHolding(102);
+		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
+		holding.setQuoteSymbol("GOOG");
+		tradingService.saveHolding(holding);
+		entityManager.flush();
+		entityManager.clear(); // force reload
+		HoldingSummary holdingSummary = tradingService.findHoldingSummary(new Integer(102));
+		Assert.assertNotNull(holdingSummary);
+		Assert.assertTrue(holdingSummary.getHoldingsTotalGains().floatValue() != 0.0f);
 	}
 	
 	
