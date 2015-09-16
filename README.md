@@ -13,7 +13,7 @@ To see what was done in part 2, consult the diff: [here](https://github.com/cf-p
 * Upgraded Spring Cloud to version 1.2.0 and added Feign and other JSON  libraries to support calls to the new quote-service.
 
 ### deleteDeployment.sh and deployApp.sh
-* Added creation/deletion and binding for new user provided service for external quote-service.
+* Added creation/deletion and binding for new user provided service for external quote-service. Externalize config info into its own file.
 
 ### gradle changes (gradle-wrapper.jar, gradle-wrapper.properties, gradlew, gradlew.bat)
 * Updates to the gradle build wrapper to bring it up to date. These were generated using the "gradle wrapper" command and can be safely ignored.
