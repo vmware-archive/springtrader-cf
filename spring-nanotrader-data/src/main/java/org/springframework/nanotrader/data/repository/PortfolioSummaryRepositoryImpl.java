@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
@@ -44,6 +45,7 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 	HoldingRepository holdingRepository;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
 	QuoteService quoteService;
 
 	public void setEntityManager(EntityManager em) {

@@ -34,8 +34,6 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.nanotrader.data.cloud.QuoteRepository;
-import org.springframework.nanotrader.data.cloud.QuoteRepositoryConnectionCreator;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -45,8 +43,8 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.FallBackQuoteService;
 import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.data.service.QuoteServiceImpl;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -93,7 +91,7 @@ public class ServiceTestConfiguration  {
 	
 	//Quote constants
 	public static String QUOTE_ID = "VMW";
-	public static String COMPANY_NAME	=  "Vmware, Inc. Common stock, Clas";
+	public static String COMPANY_NAME	=  "VMW";
 	public static BigDecimal HIGH	=   BigDecimal.valueOf(50.02);
 	public static BigDecimal OPEN	=  BigDecimal.valueOf(40.11);
 	public static BigDecimal VOLUME	= BigDecimal.valueOf(3000);
@@ -131,16 +129,6 @@ public class ServiceTestConfiguration  {
 	public static Long RESULT_COUNT  = new Long(1);
 	public static String DATE = new SimpleDateFormat("yyyy-MM-dd").format(new Date(1329759342904l));
 
-	@Bean
-	public QuoteRepository quoteRepository() {
-		return new QuoteRepositoryConnectionCreator().createRepository(QUOTE_SERVICE_URI);
-	}
-
-	@Bean
-	public QuoteService quoteService() {
-		return new QuoteServiceImpl();
-	}
-
 	@Bean 
 	public TradingService tradingService() {
 		TradingService tradingService = Mockito.mock(TradingService.class);
@@ -172,17 +160,22 @@ public class ServiceTestConfiguration  {
 		doNothing().when(tradingService).logout(any(String.class));
 		return tradingService;
 	}
-	
+
+	@Bean(name="rtQuoteService")
+	public QuoteService quoteService() {
+		return new FallBackQuoteService();
+	}
+
 	@Bean
 	public TradingServiceFacade tradingServiceFacade() {
 		return new TradingServiceFacadeImpl();
 	}
-	
+
 	@Bean
 	public AdminServiceFacade adminServiceFacade() {
 		return new AdminServiceFacadeImpl();
 	}
-	
+
 	@Bean
 	public DataCreationProgressCache getProgressCache() {
 		return new DataCreationProgressCache();

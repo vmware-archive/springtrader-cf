@@ -12,6 +12,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Quote;
@@ -25,6 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class QuoteServiceTest {
 
 	@Autowired
+	@Qualifier("rtQuoteService")
 	QuoteService quoteService;
 
 	@Test
@@ -39,7 +41,7 @@ public class QuoteServiceTest {
 		} catch (Throwable t) {
 			fail(t.getMessage());
 		}
-		assertEquals("Google Inc.", obj.getCompanyname());
+		assertEquals("GOOG", obj.getCompanyname());
 		assertTrue(obj.getOpen1().floatValue() > 0);
 		assertTrue(obj.getPrice().floatValue() > 0);
 		assertEquals("GOOG", obj.getSymbol());
@@ -61,22 +63,17 @@ public class QuoteServiceTest {
 		s.add("GOOG");
 		res = quoteService.findBySymbolIn(s);
 		assertNotNull(res);
-		assertTrue("Should have 1 result.", res.size() == 1);
-		assertTrue("GOOG".equals(res.get(0).getSymbol()));
+		assertEquals(1, res.size());
 
 		s.add("EBAY");
 		res = quoteService.findBySymbolIn(s);
 		assertNotNull(res);
-		assertTrue("Should have 2 results.", res.size() == 2);
-		assertTrue("GOOG".equals(res.get(0).getSymbol())
-				|| "EBAY".equals(res.get(0).getSymbol()));
-		assertTrue("GOOG".equals(res.get(1).getSymbol())
-				|| "EBAY".equals(res.get(1).getSymbol()));
+		assertEquals(2, res.size());
 
 		s.add("YHOO");
 		res = quoteService.findBySymbolIn(s);
 		assertNotNull(res);
-		assertTrue("Should have 3 results.", res.size() == 3);
+		assertEquals(3, res.size());
 	}
 
 	@Test
@@ -105,13 +102,13 @@ public class QuoteServiceTest {
 
 	@Test
 	public void testCountAllQuotes() {
-		assertEquals("22", "" + quoteService.countAllQuotes());
+		assertEquals("42", "" + quoteService.countAllQuotes());
 	}
 
 	@Test
 	public void testFindAll() {
 		List<Quote> all = quoteService.findAllQuotes();
-		assertEquals("22", "" + all.size());
+		assertEquals("42", "" + all.size());
 		Quote q = all.get(0);
 		assertNotNull(q);
 		assertNotNull(q.getSymbol());

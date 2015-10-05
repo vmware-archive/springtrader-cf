@@ -161,7 +161,7 @@ project('spring-nanotrader-service-support') {
 	description = 'Spring Nanotrader Data Service Support'
 
 	dependencies {
-    testCompile project(':spring-nanotrader-data').sourceSets.test.output
+		testCompile project(':spring-nanotrader-data').sourceSets.test.output
 		
 		compile project(":spring-nanotrader-data")
 		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion" 
@@ -180,7 +180,13 @@ project('spring-nanotrader-data') {
 		// Spring Cloud
 		compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
 		compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
-	
+		compile ("org.springframework.cloud:spring-cloud-starter-eureka:1.0.0.RELEASE") {
+			exclude module: 'spring-cloud-starter'
+		}
+		compile ("org.springframework.cloud:spring-cloud-starter-hystrix:1.0.3.RELEASE") {
+			exclude module: 'spring-cloud-starter'
+		}
+
 		compile "org.springframework:spring-tx:$springVersion"
 		compile "org.aspectj:aspectjrt:$aspectjVersion"
 		compile "org.springframework:spring-aspects:$springVersion"
@@ -194,9 +200,11 @@ project('spring-nanotrader-data') {
 		compile "org.hibernate:hibernate-core:3.6.8.Final"
 		compile "org.hibernate:hibernate-entitymanager:3.6.8.Final"
 		compile "postgresql:postgresql:9.0-801.jdbc3"
-		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+		testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile "com.h2database:h2:$h2Version"
 		compile "mysql:mysql-connector-java:5.1.13"
+		compile "com.netflix.feign:feign-core:6.1.3"
+		compile "com.netflix.feign:feign-jackson:6.1.3"
 		compile "com.netflix.feign:feign-gson:8.5.0"
 		compile "com.google.code.gson:gson:2.3.1"
 		compile "com.jayway.jsonpath:json-path:0.9.1"
@@ -257,6 +265,7 @@ project('spring-nanotrader-services') {
 	description = 'Spring Nanotrader Services'
         
 	dependencies {
+		testCompile project(':spring-nanotrader-data').sourceSets.test.output
 		compile project(":spring-nanotrader-service-support")
 		compile project(":spring-nanotrader-chaos")
 		compile "org.springframework:spring-webmvc:$springVersion"
@@ -318,6 +327,7 @@ project('spring-nanotrader-asynch-services') {
 
 	description = 'Spring Nanotrader Asynch Services'
 	dependencies {
+		testCompile project(':spring-nanotrader-data').sourceSets.test.output
 		compile project(":spring-nanotrader-service-support")
 		compile "org.springframework:spring-webmvc:$springVersion"
 		providedCompile  ("javax.servlet:servlet-api:$servletApiVersion")

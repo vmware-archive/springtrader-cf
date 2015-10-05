@@ -1,0 +1,142 @@
+/*
+ * Copyright 2002-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.nanotrader.data.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.cloud.DBQuoteRepository;
+import org.springframework.nanotrader.data.domain.MarketSummary;
+import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.stereotype.Service;
+
+import com.netflix.discovery.DiscoveryClient;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+
+import feign.Feign;
+import feign.gson.GsonDecoder;
+import feign.gson.GsonEncoder;
+
+@Service
+@Profile("cloud")
+public class DBQuoteService implements QuoteService {
+
+	private DBQuoteRepository dbQuoteRepository;
+
+	@Autowired
+	DiscoveryClient discoveryClient;
+
+	private final QuoteService fallBackQuoteService = new FallBackQuoteService();
+
+	@HystrixCommand(fallbackMethod = "fallBackCount")
+	public long countAllQuotes() {
+		return quoteRepository().countAllQuotes();
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackAllQuotes")
+	public List<Quote> findAllQuotes() {
+		return quoteRepository().findAll();
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackGainers")
+	public List<Quote> topGainers() {
+		return quoteRepository().topGainers();
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackLosers")
+	public List<Quote> topLosers() {
+		return quoteRepository().topLosers();
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackBySymbol")
+	public Quote findBySymbol(String symbol) {
+		return quoteRepository().findBySymbol(symbol);
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackBySymbols")
+	public List<Quote> findBySymbolIn(Set<String> symbols) {
+		if (symbols == null || symbols.size() < 1) {
+			return new ArrayList<Quote>();
+		}
+		return quoteRepository().findBySymbolIn(symbols);
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackSave")
+	public Quote saveQuote(Quote quote) {
+		return quoteRepository().save(quote);
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackMarketSummary")
+	public MarketSummary marketSummary() {
+		return quoteRepository().marketSummary();
+	}
+
+	@HystrixCommand(fallbackMethod = "fallBackDelete")
+	public void deleteQuote(Quote quote) {
+		quoteRepository().delete(quote);
+	}
+
+	public long fallBackCount() {
+		return fallBackQuoteService.countAllQuotes();
+	}
+
+	public List<Quote> fallBackAllQuotes() {
+		return fallBackQuoteService.findAllQuotes();
+	}
+
+	public List<Quote> fallBackGainers() {
+		return fallBackQuoteService.topGainers();
+	}
+
+	public List<Quote> fallBackLosers() {
+		return fallBackQuoteService.topLosers();
+	}
+
+	public Quote fallBackBySymbol(String symbol) {
+		return fallBackQuoteService.findBySymbol(symbol);
+	}
+
+	public List<Quote> fallBackBySymbols(Set<String> symbols) {
+		return fallBackQuoteService.findBySymbolIn(symbols);
+	}
+
+	public Quote fallBackSave(Quote quote) {
+		return fallBackQuoteService.saveQuote(quote);
+	}
+
+	public MarketSummary fallBackMarketSummary() {
+		return fallBackQuoteService.marketSummary();
+	}
+
+	public void fallBackDelete(Quote quote) {
+		fallBackQuoteService.deleteQuote(quote);
+	}
+
+	private DBQuoteRepository quoteRepository() {
+		if (this.dbQuoteRepository == null) {
+			String url = discoveryClient.getNextServerFromEureka(
+					"db-quote-service", false).getHomePageUrl();
+
+			this.dbQuoteRepository = Feign.builder().encoder(new GsonEncoder())
+					.decoder(new GsonDecoder())
+					.target(DBQuoteRepository.class, url + "quoteService");
+		}
+		return this.dbQuoteRepository;
+	}
+}

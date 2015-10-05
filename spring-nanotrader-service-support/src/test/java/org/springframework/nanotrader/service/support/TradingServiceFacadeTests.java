@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
@@ -58,6 +59,7 @@ public class TradingServiceFacadeTests {
 	private TradingServiceFacade tradingServiceFacade;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
 	private QuoteService quoteService;
 
 	@Autowired

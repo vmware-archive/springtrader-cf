@@ -28,6 +28,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.nanotrader.data.service.QuoteService;
@@ -78,11 +79,12 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     
     private static Integer DEFAULT_PAGE_SIZE = 24;
     
-    @Resource
+    @Autowired
     private TradingService tradingService;
 
-    @Resource
-    private QuoteService quoteService;
+    @Autowired
+    @Qualifier( "rtQuoteService")
+    QuoteService quoteService;
 
     @Resource
     private Mapper mapper;

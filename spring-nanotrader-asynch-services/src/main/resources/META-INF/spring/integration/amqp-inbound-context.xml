@@ -4,8 +4,8 @@
 	xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
-		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.2.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
@@ -71,9 +71,9 @@
         <property name="timeout" value="2000"/>
     </bean>
     
-    <!--  Run reaper every 1 sec -->
-    <task:scheduled-tasks scheduler="scheduler" >
+    <task:scheduled-tasks scheduler="taskScheduler" >
         <task:scheduled ref="reaper"  method="run" fixed-rate="1000"/>
+        <task:scheduled ref="realTimeQuoteService" method="updateValues" fixed-delay="60000"/>
     </task:scheduled-tasks>
 
     <task:scheduler id="scheduler" pool-size="10"/>

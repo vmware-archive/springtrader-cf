@@ -1,5 +1,3 @@
-package org.nanotrader
-
 import groovyx.net.http.RESTClient
 import groovy.util.slurpersupport.GPathResult
 import groovy.json.JsonSlurper

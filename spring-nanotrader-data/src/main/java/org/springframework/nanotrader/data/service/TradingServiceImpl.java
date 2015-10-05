@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -78,6 +79,7 @@ public class TradingServiceImpl implements TradingService {
 	private AccountRepository accountRepository;
 
 	@Autowired
+	@Qualifier( "rtQuoteService")
 	private QuoteService quoteService;
 
 	@Autowired

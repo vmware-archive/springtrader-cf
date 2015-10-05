@@ -10,7 +10,7 @@ import feign.Param;
 import feign.RequestLine;
 
 @Repository
-public interface QuoteRepository {
+public interface RealTimeQuoteRepository {
 
 	@RequestLine("GET /{symbol}")
 	public Quote findBySymbol(@Param(value = "symbol") String symbol);
