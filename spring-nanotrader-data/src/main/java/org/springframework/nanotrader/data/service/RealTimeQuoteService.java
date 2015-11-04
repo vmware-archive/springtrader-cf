@@ -31,13 +31,14 @@ import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
 
 import com.netflix.discovery.DiscoveryClient;
+//import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 import feign.Feign;
 import feign.gson.GsonEncoder;
 
 @Service
-@Profile("cloud")
+@Profile({ "default", "cloud" })
 public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 
 	private static final Logger LOG = Logger
@@ -52,9 +53,12 @@ public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 	@Qualifier("dbQuoteService")
 	QuoteService dbQuoteService;
 
+	@Autowired
+	String liveQuoteServiceEurekaName;
+
 	@HystrixCommand(fallbackMethod = "fallBackCount")
 	public long countAllQuotes() {
-		return realTimeQuoteRepository().symbols().size();
+		return findAllQuotes().size();
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackAllQuotes")
@@ -86,11 +90,12 @@ public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 
 	@HystrixCommand(fallbackMethod = "fallBackBySymbols")
 	public List<Quote> findBySymbolIn(Set<String> symbols) {
+		ArrayList<Quote> ret = new ArrayList<Quote>();
+
 		if (symbols == null || symbols.size() < 1) {
-			return new ArrayList<Quote>();
+			return ret;
 		}
 
-		List<Quote> ret = new ArrayList<Quote>();
 		List<Quote> all = realTimeQuoteRepository.findAll();
 		for (Quote q : all) {
 			if (symbols.contains(q.getSymbol())) {
@@ -108,7 +113,10 @@ public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 
 	@HystrixCommand(fallbackMethod = "fallBackMarketSummary")
 	public MarketSummary marketSummary() {
-		return realTimeQuoteRepository().marketSummary();
+		MarketSummary ms = realTimeQuoteRepository().marketSummary();
+		ms.setTopGainers(topGainers());
+		ms.setTopLosers(topLosers());
+		return ms;
 	}
 
 	@HystrixCommand(fallbackMethod = "fallBackDelete")
@@ -154,19 +162,22 @@ public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 
 	private RealTimeQuoteRepository realTimeQuoteRepository() {
 		if (this.realTimeQuoteRepository == null) {
+			LOG.info("initializing real-time-quote-repository.");
 			String url = discoveryClient.getNextServerFromEureka(
-					"real-time-quote-service", false).getHomePageUrl();
+					liveQuoteServiceEurekaName, false).getHomePageUrl();
 
-			this.realTimeQuoteRepository = Feign
-					.builder()
+			LOG.info("real-time-quote-repository url is: " + url);
+
+			this.realTimeQuoteRepository = Feign.builder()
 					.encoder(new GsonEncoder())
 					.decoder(new RealTimeQuoteDecoder())
-					.target(RealTimeQuoteRepository.class, url + "quoteService");
+					.target(RealTimeQuoteRepository.class, url + "quotes");
+
+			LOG.info("real-time-quote-repository initialization complete.");
 		}
 		return this.realTimeQuoteRepository;
 	}
 
-	// @Scheduled(fixedDelay = 6000)
 	public void updateValues() {
 		LOG.info("Updating fallback service quotes.");
 		try {

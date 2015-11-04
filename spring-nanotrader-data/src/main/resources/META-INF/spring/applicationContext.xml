@@ -88,7 +88,7 @@
 		</property>
 	</bean>
 
- 	<beans profile="default">
+ 	<beans profile="cloud">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>
 			<prop key="dialect">org.hibernate.dialect.MySQLDialect</prop>

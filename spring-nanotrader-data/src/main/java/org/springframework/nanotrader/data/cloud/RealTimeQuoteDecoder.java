@@ -12,7 +12,6 @@ import net.minidev.json.JSONArray;
 
 import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.util.NumberUtils;
 
 import com.google.gson.reflect.TypeToken;
 import com.jayway.jsonpath.JsonPath;
@@ -54,42 +53,46 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 		if (o == null) {
 			return new BigDecimal(0);
 		}
-		return NumberUtils.parseNumber(o.toString(), BigDecimal.class);
-	}
-
-	private Object processMarketSummaryBody(Response.Body body)
-			throws IOException {
-		ReadContext ctx = JsonPath.parse(body.asInputStream());
-
-		MarketSummary m = new MarketSummary();
-		m.setChange(getBigDecimal(ctx, "$.change"));
-		m.setSummaryDate(new Date());
-		m.setTradeStockIndexAverage(getBigDecimal(ctx, "$.average"));
-		m.setTradeStockIndexOpenAverage(getBigDecimal(ctx, "$.open"));
-		m.setTradeStockIndexVolume(getBigDecimal(ctx, "$.volume"));
-		m.setPercentGain(getBigDecimal(ctx, "$.percentGain"));
-
-		return m;
+		return new BigDecimal(o.toString());
 	}
 
 	private Object processQuoteBody(Response.Body body) throws IOException {
 		ReadContext ctx = JsonPath.parse(body.asInputStream());
 
-		// is this a single quote, or a collection?
-		if (ctx.read("$.").getClass().equals(JSONArray.class)) {
+		Object o = ctx.read("$");
+		if (o instanceof JSONArray) {
 			return quotesFromJson(ctx);
 		}
 
 		return quoteFromJson(ctx);
 	}
 
+	private MarketSummary processMarketSummaryBody(Response.Body body)
+			throws IOException {
+		ReadContext ctx = JsonPath.parse(body.asInputStream());
+
+		MarketSummary ms = new MarketSummary();
+		ms.setChange(getBigDecimal(ctx, "$.change"));
+		ms.setPercentGain(getBigDecimal(ctx, "$.percentGain"));
+		ms.setSummaryDate(new Date());
+		ms.setTradeStockIndexAverage(getBigDecimal(ctx, "$.average"));
+		ms.setTradeStockIndexOpenAverage(getBigDecimal(ctx, "$.open"));
+		ms.setTradeStockIndexVolume(getBigDecimal(ctx, "$.volume"));
+
+		return ms;
+	}
+
 	private Quote quoteFromJson(ReadContext ctx) {
 		Quote q = new Quote();
 		q.setChange1(getBigDecimal(ctx, "$.Change"));
-		q.setCompanyname(ctx.read("$.Name").toString());
+		String name = ctx.read("$.Name");
+		if (name != null) {
+			q.setCompanyname(name);
+		}
+		q.setOpen1(getBigDecimal(ctx, "$.PreviousClose"));
 		q.setHigh(getBigDecimal(ctx, "$.DaysHigh"));
 		q.setLow(getBigDecimal(ctx, "$.DaysLow"));
-		q.setOpen1(getBigDecimal(ctx, "$.Open"));
+		q.setOpen1(getBigDecimal(ctx, "$.PreviousClose"));
 		q.setPrice(getBigDecimal(ctx, "$.Price"));
 		q.setSymbol(ctx.read("$.Symbol").toString());
 		q.setVolume(getBigDecimal(ctx, "$.Volume"));
@@ -100,18 +103,20 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 	private List<Quote> quotesFromJson(ReadContext ctx) {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
 
-		JSONArray qs = ctx.read("$..");
+		JSONArray qs = ctx.read("$");
 		for (int i = 0; i < qs.size(); i++) {
 			Quote q = new Quote();
-			q.setChange1(getBigDecimal(ctx, "$..[" + i + "].Change"));
-			q.setCompanyname(ctx.read("$..[" + i + "].Name").toString());
-			q.setHigh(getBigDecimal(ctx, "$..[" + i + "].DaysHigh"));
-			q.setLow(getBigDecimal(ctx, "$..[" + i + "].DaysLow"));
-			q.setOpen1(getBigDecimal(ctx, "$..[" + i + "].PreviousClose"));
-			q.setPrice(getBigDecimal(ctx, "$..[" + i + "].Price"));
-			q.setSymbol(ctx.read("$..[" + i + "].Symbol").toString());
-			q.setVolume(getBigDecimal(ctx, "$..[" + i + "].Volume"));
-
+			q.setChange1(getBigDecimal(ctx, "$.[" + i + "].Change"));
+			String name = ctx.read("$.[" + i + "].Name");
+			if (name != null) {
+				q.setCompanyname(name);
+			}
+			q.setOpen1(getBigDecimal(ctx, "$.[" + i + "].PreviousClose"));
+			q.setHigh(getBigDecimal(ctx, "$.[" + i + "].DaysHigh"));
+			q.setLow(getBigDecimal(ctx, "$.[" + i + "].DaysLow"));
+			q.setPrice(getBigDecimal(ctx, "$.[" + i + "].Price"));
+			q.setSymbol(ctx.read("$.[" + i + "].Symbol").toString());
+			q.setVolume(getBigDecimal(ctx, "$.[" + i + "].Volume"));
 			quotes.add(q);
 		}
 
@@ -123,17 +128,13 @@ public class RealTimeQuoteDecoder extends GsonDecoder {
 			return "()";
 		}
 
-		Object[] o = symbols.toArray();
-
 		StringBuffer sb = new StringBuffer("(");
-		for (int i = 0; i < o.length; i++) {
-			sb.append("\'");
-			sb.append(o[i]);
-			sb.append("\'");
-			if (i < o.length - 1) {
-				sb.append(",");
-			}
+		for (String s : symbols) {
+			sb.append("\"");
+			sb.append(s);
+			sb.append("\",");
 		}
+		sb.deleteCharAt(sb.length() - 1);
 		sb.append(")");
 		return sb.toString();
 	}

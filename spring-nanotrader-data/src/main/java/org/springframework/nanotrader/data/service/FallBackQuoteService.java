@@ -20,16 +20,8 @@ public class FallBackQuoteService implements QuoteService {
 		return 42;
 	}
 
-	public Quote findQuote(String id) {
-		return fakeQuote(id);
-	}
-
 	public List<Quote> findAllQuotes() {
 		return fakeQuotes(countAllQuotes());
-	}
-
-	public List<Quote> findQuoteEntries(int firstResult, int maxResults) {
-		return fakeQuotes(maxResults);
 	}
 
 	public List<Quote> topGainers() {
@@ -51,10 +43,6 @@ public class FallBackQuoteService implements QuoteService {
 			return fakeQuotes(0);
 		}
 		return fakeQuotes(symbols.size());
-	}
-
-	public List<Quote> findRandomQuotes(Integer count) {
-		return findAllQuotes().subList(0, count.intValue());
 	}
 
 	public Quote saveQuote(Quote quote) {
