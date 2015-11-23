@@ -1,5 +1,5 @@
 # SpringTrader Part 3
-This is the readme for the branch representing the "solution" to Part 3 for the *Refactoring a Monolith into a Cloud-Native Application* blog. For the "real" application documentation, please check out the master branch and refer to its README.md
+This is the readme for the branch representing the "solution" to Part 3 for the *Refactoring a Monolith into a Cloud-Native Application* blog. For the "real" application documentation please check out the master branch and refer to its README.md
 
 To see what was done in part 3, consult the diff: [here](https://github.com/cf-platform-eng/springtrader-cf/compare/part2...part3).
 
@@ -8,20 +8,21 @@ To see what was done in part 3, consult the diff: [here](https://github.com/cf-p
 * Edits related to the creation of this very README file, including these very words.
 
 ### build.gradle
-* Adding in the Hystrix and Eureka libraries, plus some feign functionality as well.
+* Adding in the Hystrix and Eureka libraries, plus some feign functionality.
 
 ### config.sh, deleteDeployment.sh and deployApp.sh
-* Remove quote service URI and user provided service. Figuring these out is handled by Eureka now.
-* Read in env variables to use to set the db and live quote service names. These are set in the manifest and used to look up the services in Eureka. 
+* Moved all editable stuff into a separate config.sh file
+* Remove quote service URI and user provided service: Eureka takes care of this now.
+* Read in env variables to set the db and live quote service names. These are defined in the manifest and will be used to look up services in Eureka. 
 
 ### changes to spring-nanotrader-asynch-services/...
 
-* **xml and other config files**:  Tie schema to specific version, needed because we are using a mixture of older and newer spring classes. Also register a task scheduler to update our DB Quote service with the latest info from our Live quote service on a regular basis ( every minute). Plus some log config cleanups.
+* **xml and other config files**:  Tie schema to specific version, needed because we are using a mixture of older and newer spring classes. Also register a task scheduler to update our DB Quote service with the latest info from our Live quote service once a minute. Plus some log config cleanups.
 
 * **additional tests and test configurations**: added test and related configuration files.
 
 ### changes to spring-nanotrader-data/...
-* **CloudConfiguration**: annotations for Eureka, and code to register the discover client, hystrix, and the names of the live and db quote services as registered in Eureka (pulled from env). Spring-Cloud would have made this a lot easier.
+* **CloudConfiguration**: annotations for Eureka, and code to register the DiscoveryClient, Hystrix, and the names of the live and db quote services as registered in Eureka. Spring-Cloud would have made this a lot easier.
 
 * **DBQuoteDecoder**: code to translate HATEOAS JSON coming from the DB Quote Service into our Quote and MarketSummary domain objects.
 
@@ -29,35 +30,37 @@ To see what was done in part 3, consult the diff: [here](https://github.com/cf-p
 
 * **QuoteRepositoryConnectionCreator, QuoteWebServiceInfoCreator, WebServiceInfo**: get rid of these, no longer needed now that we are using Eureka!
 
-* **RealTimeQuoteDecoder, RealTimeQuoteRepository**: Renamed from "QuoteDecoder" and "QuoteRepository" since we now have a bunch of different types of these and need to differentiate them. Decoder to translate JSON coming from the Real Time (Yhoo) Quote Service into our Quote and MarketSummary domain objects. Some cleanups and updates. Repo is a feign repository that fronts calls to the Real Time Quote microservice.
+* **RealTimeQuoteDecoder, RealTimeQuoteRepository**: Renamed from "QuoteDecoder" and "QuoteRepository" since we now have a bunch of different services and need to differentiate between them. Decoder translates JSON coming from the Real Time (YHOO) Quote Service into our Quote and MarketSummary domain objects. Some cleanups and updates. Repo is a feign repository that fronts calls to the Real Time Quote microservice.
 
 * **ScheduledUpdatable**: Spring task scheduler uses this (see above).
 
-* **HoldingAggregateRepositoryImpl, PortfolioSummaryRepositoryImpl, TradingServiceImpl**: now that we have multiple services registered that implement the QuoyeService interface we need to differentiate them via "Qualifiers."
+* **HoldingAggregateRepositoryImpl, PortfolioSummaryRepositoryImpl, TradingServiceImpl**: now that we have multiple services registered that implement the QuoteService interface we need to differentiate them via "Qualifiers."
 
-* **DBQuoteService**: the implementation code used by the monolith to interact with the DBQuote service. Note the use of DiscoveryClient to look up the proper service at startup, and the use of the @HystrixCommand annotation to register fallback methods if service calls fail. The mechanism used to look up the service would be a lot simpler if we could use Spring-Cloud. Maybe in the future?
+* **DBQuoteService**: the implementation code used by the monolith to interact with the DBQuote microservice. Note the use of DiscoveryClient to look up the proper service at startup, and the use of the @HystrixCommand annotation to register fallback methods if service calls fail. The mechanism used to look up the service would be a lot simpler if we could use Spring-Cloud. Maybe in the future?
 
 * **FallBackQuoteService**: This is the "service of last resort that can't fail" that provides random quote values. Probably not useful in a real application, but kind of fun here.
 
-* **QuoteServiceImpl**: renamed to "RealTimeQuoteService." See the comments for DBQuoteService, above. Implements "ScheduledUpdatable" som we can call this from a teask scheduler. This allows us to update the DB quote database with real time values at regular intervals. Then, if we lose th real time quote service the db quote service has recent values.
+* **QuoteServiceImpl**: renamed to "RealTimeQuoteService." See the comments for DBQuoteService, above. Implements "ScheduledUpdatable" so we can call this from a task scheduler. This allows us to update the DB Quote microservice's database with real time values at regular intervals.
 
 * **xml and config changes**: register db and real time quotes services using qualified names so we can keep them straight. remove previous spring-connector configs. Fake out the tests by using the fallback service in place of the real time service for test purposes.
 
 ### spring-nanotrader-data/src/main/resources/...
-* **eureka.client.properties** Note hard-coded URL for Eureka server. Could not find a way around this, would not be needed if we were able to use Spring-Cloud. Not a proud moment.
+* **eureka.client.properties** Note hard-coded URL for Eureka server. Could not find a way around this. Did I mention that this kind of stuff would not be needed if we were able to use Spring-Cloud?
 
 ### everything else...
-* Some test code changes, some more changes related to qualifying the name of the service to use (see above), log config cleanups, and other minor fixes, etc.
+* Test code, more changes related to qualifying service names (see above), log config cleanups, minor fixes, etc.
 
 ## To build
 ### The microservices
 There are two microservices and a simplified Eureka server that need to be deployed and running for this version of SpringTrader. These can be found at the links below. Instructions for building and deploying are included within their respective README files.
 
 [standalone eureka service] (https://github.com/cf-platform-eng/standalone-eureka)
+
 [real-time quote service] (https://github.com/cf-platform-eng/quote-service) : make sure to check out the "part3live" branch!
+
 [db quote service](https://github.com/cf-platform-eng/quote-service) : make sure to check out the "part3db" branch!
 
-Once you get these configured and deployed, a cf apps cli command should result in something that looks like the following:
+Once you get these configured and deployed, "cf apps" should result in something that looks like the following:
 
 ```bash
 $ cf apps
