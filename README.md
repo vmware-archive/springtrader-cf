@@ -5,7 +5,7 @@ To see what was done in part 3, consult the diff: [here](https://github.com/cf-p
 
 ## The Changes
 ###README.md
-* Edits related to the acreation of this very README file, including these very words.
+* Edits related to the creation of this very README file, including these very words.
 
 ### build.gradle
 * Adding in the Hystrix and Eureka libraries, plus some feign functionality as well.
@@ -46,14 +46,32 @@ To see what was done in part 3, consult the diff: [here](https://github.com/cf-p
 ### spring-nanotrader-data/src/main/resources/...
 * **eureka.client.properties** Note hard-coded URL for Eureka server. Could not find a way around this, would not be needed if we were able to use Spring-Cloud. Not a proud moment.
 
-### Everything else...
+### everything else...
 * Some test code changes, some more changes related to qualifying the name of the service to use (see above), log config cleanups, and other minor fixes, etc.
 
 ## To build
+### The microservices
+There are two microservices and a simplified Eureka server that need to be deployed and running for this version of SpringTrader. These can be found at the links below. Instructions for building and deploying are included within their respective README files.
 
-You will need to have a quote-service microservice running locally on your machine in order for the unit tests to pass, now that the app is distributed. As we add more services it might be a good idea to have this mocked out so we don't have this dependency, but for now, please see the instructions [here](https://github.com/cf-platform-eng/quote-service/tree/part2) on how to get this running (see the "To run the service locally..." part).
+[standalone eureka service] (https://github.com/cf-platform-eng/standalone-eureka)
+[real-time quote service] (https://github.com/cf-platform-eng/quote-service) : make sure to check out the "part3live" branch!
+[db quote service](https://github.com/cf-platform-eng/quote-service) : make sure to check out the "part3db" branch!
 
-Once quote-service is running locally, to build SpringTrader make sure you are using JDK 7:
+Once you get these configured and deployed, a cf apps cli command should result in something that looks like the following:
+
+```bash
+$ cf apps
+Getting apps in org your-org / space your-space as you@foo.bar...
+OK
+
+name                 requested state   instances   memory   disk   urls   
+your-db-quote-service     started           1/1         512M     1G     your-db-quote-service.cfapps.io   
+your-live-quote-service   started           1/1         512M     1G     your-live-quote-service.cfapps.io   
+your-standalone-eureka    started           1/1         512M     1G     your-standalone-eureka.cfapps.io
+```
+
+### Configuring SpringTrader
+To build this version of SpringTrader, make sure you are using JDK 7:
 ```bash
 $ java -version
 java version "1.7.0_75"
@@ -61,27 +79,44 @@ Java(TM) SE Runtime Environment (build 1.7.0_75-b13)
 Java HotSpot(TM) 64-Bit Server VM (build 24.75-b04, mixed mode)
 ```
 
-From a clean directory, check out the part2 branch:
+From a clean directory, check out the part3 branch:
 ```bash
 git clone git@github.com:cf-platform-eng/springtrader-cf.git
 cd springtrader-cf
-git checkout part2
+git checkout part3
 ```
 
-build the app:
+You will need to edit the spring-nanotrader-data/src/main/resources/eureka.client.properties file to set the url of the Eureka server to your specific instance. In the example above, this might look like:
+
+```
+eureka.registration.enabled=false
+eureka.serviceUrl.default=http://your-standalone-eureka.cfapps.io/eureka/
+```
+
+Then, build the app (from the root of the project):
 ```bash
 $ ./gradlew clean build release
 ```
 
 The app should build, and the tests should pass. For additional details on configuration, please refer to the main branch documentation [here](https://github.com/cf-platform-eng/springtrader-cf/wiki/Getting-Started-Guide).
 
-Once SpringTrader is built, you will need to deploy the quote-service to cloud foundry by editing its manifest to give the app a unique name, and then doing a cf push.
+Finally, edit the config.sh file (in the root of the project) to set the various service names and references. Something like the following:
 
-Then, edit the SperingTrader deployApp.sh file as described in the master branch documentation [here](https://github.com/cf-platform-eng/springtrader-cf/wiki/Getting-Started-Guide).
+```
+#!/bin/sh
 
-Make sure to change the quoteServiceuri entry on line 16 of the deployApp.sh file so that it points to the quote-service you just deployed.
+export frontName=your-traderfront
+export webName=your-traderweb
+export backName=your-traderback
+export domain=cfapps.io
+export sqlName=your-tradersql
+export messagingName=your-tradermessaging
+export version=1.0.1.BUILD-SNAPSHOT
+export liveQuoteServiceEurekaName=your-live-quote-service
+export dbQuoteServiceEurekaName=your-db-quote-service
+```
 
-Then, deploy the SpringTrader:
+At this point you should be ready to deploy SpringTrader:
 ```bash
 $ ./deployApp.sh
 ```
@@ -92,15 +127,18 @@ Try the app out. The front end URL can be determined by running the cf apps comm
 
 ```bash
 $ cf apps
-Getting apps in org foo / space bar as foo@bar.bazz...
+Getting apps in org your-org / space your-space as you@foo.bar...
 OK
 
-name                      requested state   instances   memory   disk   urls   
-mytraderback              started           1/1         1G       1G     mytraderback.cfapps.io   
-mytraderfront             started           1/1         1G       1G     mytraderfront.cfapps.io   
-mytraderweb               started           1/1         1G       1G     mytraderweb.cfapps.io   
+name                 requested state   instances   memory   disk   urls   
+your-db-quote-service   started           1/1         512M     1G     your-db-quote-service.cfapps.io   
+your-traderback         started           1/1         1G       1G     your-traderback.cfapps.io   
+your-traderfront        started           1/1         1G       1G     your-traderfront.cfapps.io   
+your-traderweb          started           1/1         1G       1G     your-traderweb.cfapps.io   
+your-live-quote-service started           1/1         512M     1G     your-live-quote-service.cfapps.io   
+your-standalone-eureka  started           1/1         512M     1G     your-standalone-eureka.cfapps.io   
 ```
 
-In the above case, the UI is running under the mytraderweb url (mytraderweb.cfapps.io), so we would open this in a browser.
+In the above case, the UI is running under the your-traderweb url (your-traderweb.cfapps.io), so we would open this in a browser.
 
 Full documentation on using the application can be found in the README files on the master branch [here](https://github.com/cf-platform-eng/springtrader-cf).
