@@ -1,68 +1,53 @@
-# SpringTrader Part 2
-This is the readme for the branch representing the "solution" to Part 2 for the *Refactoring a Monolith into a Cloud-Native Application* blog. For the "real" application documentation, please check out the master branch and refer to its README.md
+# SpringTrader Part 3
+This is the readme for the branch representing the "solution" to Part 3 for the *Refactoring a Monolith into a Cloud-Native Application* blog. For the "real" application documentation, please check out the master branch and refer to its README.md
 
-To see what was done in part 2, consult the diff: [here](https://github.com/cf-platform-eng/springtrader-cf/compare/part1...part2).
+To see what was done in part 3, consult the diff: [here](https://github.com/cf-platform-eng/springtrader-cf/compare/part2...part3).
 
 ## The Changes
 ###README.md
-* Edits related to the creation of this very README file, including these very words.
+* Edits related to the acreation of this very README file, including these very words.
 
 ### build.gradle
-* Some minor updates needed to get the build running using updated gradle wrapper (see below).
+* Adding in the Hystrix and Eureka libraries, plus some feign functionality as well.
 
-* Upgraded Spring Cloud to version 1.2.0 and added Feign and other JSON  libraries to support calls to the new quote-service.
+### config.sh, deleteDeployment.sh and deployApp.sh
+* Remove quote service URI and user provided service. Figuring these out is handled by Eureka now.
+* Read in env variables to use to set the db and live quote service names. These are set in the manifest and used to look up the services in Eureka. 
 
-### deleteDeployment.sh and deployApp.sh
-* Added creation/deletion and binding for new user provided service for external quote-service. Externalize config info into its own file.
+### changes to spring-nanotrader-asynch-services/...
 
-### gradle changes (gradle-wrapper.jar, gradle-wrapper.properties, gradlew, gradlew.bat)
-* Updates to the gradle build wrapper to bring it up to date. These were generated using the "gradle wrapper" command and can be safely ignored.
+* **xml and other config files**:  Tie schema to specific version, needed because we are using a mixture of older and newer spring classes. Also register a task scheduler to update our DB Quote service with the latest info from our Live quote service on a regular basis ( every minute). Plus some log config cleanups.
 
-### the classes added to spring-nanotrader-data/main/java/org/springframework/nanotrader/data/cloud
+* **additional tests and test configurations**: added test and related configuration files.
 
-* **QuoteRepository**:  replacement for the JPA version of QuoteRepository. This is using Feign and is calling out to the new quote-service microservice via the @RequestLine annotations. Feign does all of the heavy lifting so we don't need to code any HTTP interactions or JSON marshalling directly.
+### changes to spring-nanotrader-data/...
+* **CloudConfiguration**: annotations for Eureka, and code to register the discover client, hystrix, and the names of the live and db quote services as registered in Eureka (pulled from env). Spring-Cloud would have made this a lot easier.
 
-* **QuoteRepositoryConnectionCreator**: makes use of Spring Cloud Connector functionality to set up the Feign repository based on the URL configured within the quote-service user provided service (defined in the deployApp.sh script).
+* **DBQuoteDecoder**: code to translate HATEOAS JSON coming from the DB Quote Service into our Quote and MarketSummary domain objects.
 
-* **QuoteWebServiceInfoCreator** and **WebServiceInfo**: boilerplate needed to make use of Spring Cloud Connectors.
+* **DBQuoteRepository**: Feign repository that fronts calls to the DB Quote microservice.
 
-* **RealTimeQuoteDecoder**: Used to marshall JSON into our Quote and MarketSummary domain objects. This is where we handle some of the semantic differences between SpringTrader domain and our new quote-service domain. We can isolate 3rd party API  changes within this class.
+* **QuoteRepositoryConnectionCreator, QuoteWebServiceInfoCreator, WebServiceInfo**: get rid of these, no longer needed now that we are using Eureka!
 
-### changes to spring-nanotrader-data/main/java/org/springframework/nanotrader/data/domain/...
-* **MarketSummary**: we now get more information from the API so we don't need to calculate certain values.
+* **RealTimeQuoteDecoder, RealTimeQuoteRepository**: Renamed from "QuoteDecoder" and "QuoteRepository" since we now have a bunch of different types of these and need to differentiate them. Decoder to translate JSON coming from the Real Time (Yhoo) Quote Service into our Quote and MarketSummary domain objects. Some cleanups and updates. Repo is a feign repository that fronts calls to the Real Time Quote microservice.
 
-* **Order**: detatch the Quote table from the Order table, and just store the quoteid (the symbol) instead.
+* **ScheduledUpdatable**: Spring task scheduler uses this (see above).
 
-* **Quote**: Quote is no longer a table, it's just a DTO. Keep the same structure to minimize effects on the rest of SpringTrader though, but changing the "id" to be a string, and set it to the Quote's symbol. Also implemented hash() and equals() based on symbol so we can safely add Quotes to collections.
+* **HoldingAggregateRepositoryImpl, PortfolioSummaryRepositoryImpl, TradingServiceImpl**: now that we have multiple services registered that implement the QuoyeService interface we need to differentiate them via "Qualifiers."
 
-* **HoldingAggregateRepositoryImpl**, **HoldingRepository**: get rid of embedded SQL (an anti-pattern). Holding domain objects should not need to understand persistance semantics for Quote domain objects.
+* **DBQuoteService**: the implementation code used by the monolith to interact with the DBQuote service. Note the use of DiscoveryClient to look up the proper service at startup, and the use of the @HystrixCommand annotation to register fallback methods if service calls fail. The mechanism used to look up the service would be a lot simpler if we could use Spring-Cloud. Maybe in the future?
 
-* **MarketSummaryRepository**, **MarketSummaryRepositoryImpl**: more embedded SQL, but these classes are no longer needed. The functionality has been taken over by the new quote-service, so we can delete.
+* **FallBackQuoteService**: This is the "service of last resort that can't fail" that provides random quote values. Probably not useful in a real application, but kind of fun here.
 
-* **PortfolioSummaryRepositoryImpl**: replace embedded SQL with QuoteService calls.
+* **QuoteServiceImpl**: renamed to "RealTimeQuoteService." See the comments for DBQuoteService, above. Implements "ScheduledUpdatable" som we can call this from a teask scheduler. This allows us to update the DB quote database with real time values at regular intervals. Then, if we lose th real time quote service the db quote service has recent values.
 
-* **QuoteRepository**: delete the JPA repository for Quotes. Replaced with the Feign repository in the cloud package.
-
-* **QuoteService**: This is the interface the rest of SpringTrader will use to get to Quotes. The changes in the interface were to consolidate Quote functionality that was previously scattered in other classes. These were discovered as we went through the code to clean up QuoteRepository leakages.
-
-* **QuoteServiceImpl**: changed to speak to the new external service. Mostly the implementation just defers to QuoteRepository. We continue to need  the worrying findBySymbolIn(Set<String> symbols) method since this is called throughout the rest of SpringTrader (as is the findAll() method). Ideally we would refactor this since returning large colllections via remote calls and then throwing most of the results away is not a good idea. But other existing code in the app relies on this functionality: maybe we can fix this in future interations?
-
-* **TradingServiceImpl**: get rid of references to QuoteRepository, defer to QuoteService for market summary processing.
+* **xml and config changes**: register db and real time quotes services using qualified names so we can keep them straight. remove previous spring-connector configs. Fake out the tests by using the fallback service in place of the real time service for test purposes.
 
 ### spring-nanotrader-data/src/main/resources/...
-* addition of files as part of the Spring Cloud Connector configuration.
+* **eureka.client.properties** Note hard-coded URL for Eureka server. Could not find a way around this, would not be needed if we were able to use Spring-Cloud. Not a proud moment.
 
-* application.xml: get rid of Quote database table-loads on startup (no longer needed, no more Quote table). Register quoteServiceImpl as a bean, and tell Spring how to initialize it in the cloud (under the "default" profile) and when running test cases (under the "test" profile).
-
-* other misc. configruation changes and file cleanups.
-
-### spring-nanotrader-data/src/test/...
-* misc test updates, replace mocked Quote data with calls to the actual service.
-
-### spring-nanotrader-service-support/src/main/java/org/springframework/nanotrader/service/domain/...
-* for some reason SpringTrader has classes (mostly) duplicated from the spring-nanotrader-data/main/java/org/springframework/nanotrader/data/domain package, but with with some changes. These are used to communicate with the UI layer and [dozer](http://dozer.sourceforge.net/) converts them back and forth. We need to update these classes as per what was done in the other domain package. Would be nice to not need these at all, maybe remediate at a future date?
-
-* other changes were made to replace QuoteRepository with QuoteService references, and update tests.
+### Everything else...
+* Some test code changes, some more changes related to qualifying the name of the service to use (see above), log config cleanups, and other minor fixes, etc.
 
 ## To build
 
