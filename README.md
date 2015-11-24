@@ -144,4 +144,20 @@ your-standalone-eureka  started           1/1         512M     1G     your-stand
 
 In the above case, the UI is running under the your-traderweb url (your-traderweb.cfapps.io), so we would open this in a browser.
 
+Once the application and services are running, individual services can be controlled using simple cf commands:
+```
+$ cf stop your-live-quote-service
+```
+App will fail over to using the your-db-quote-service. UI will stop showing updates to Quotes.
+```
+$ cf stop your-db-quote-service
+```
+App will fail over to the internal "foo" service. UI will reflect this.
+```
+$ cf start your-live-quote-service
+```
+App will start showing live quotes again.
+
+...etc.
+
 Full documentation on using the application can be found in the README files on the master branch [here](https://github.com/cf-platform-eng/springtrader-cf).
