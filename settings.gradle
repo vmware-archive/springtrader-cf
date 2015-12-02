@@ -1,9 +1,7 @@
-rootProject.name = 'spring-nanotrader'
+rootProject.name = 'springtrader-cf'
 
 include 'spring-nanotrader-data'
 include 'spring-nanotrader-services'
 include 'spring-nanotrader-asynch-services'
 include 'spring-nanotrader-service-support'
 include 'spring-nanotrader-web'
-include 'spring-nanotrader-chaos'
-include 'tools'

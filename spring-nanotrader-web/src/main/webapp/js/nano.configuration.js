@@ -39,9 +39,6 @@ nano.conf.urls = {
     quote : nano.conf.urlRoot + 'quote',
     quotes : nano.conf.urlRoot + 'quotes',
     adminUserData : nano.conf.urlRoot + 'admin/userdata',
-    killTCServer : nano.conf.urlRoot + 'chaos/kill',
-    crashTCServer : nano.conf.urlRoot + 'chaos/oom',
-    killSqlFireServer: nano.conf.urlRoot + '/chaos/killsql',
     perfTest : nano.conf.urlRoot + 'admin/perftest'
 };
 
