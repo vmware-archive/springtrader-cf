@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.Account;
+import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,5 +58,10 @@ public class AccountServiceImpl implements AccountService {
 	public Account updateAccount(Account account) {
         return accountRepository.save(account);
     }
+
+	@Override
+	public Account findByProfile(Accountprofile accountprofile) {
+		return accountRepository.findByProfileProfileid(accountprofile);
+	}
 
 }

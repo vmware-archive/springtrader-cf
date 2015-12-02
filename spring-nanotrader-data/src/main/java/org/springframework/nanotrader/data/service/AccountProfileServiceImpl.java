@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountProfileServiceImpl implements AccountProfileService {
 	@Autowired
     AccountProfileRepository accountProfileRepository;
-	
+
 	@Override
 	public long countAllAccountProfiles() {
 		return accountProfileRepository.count();
@@ -53,12 +53,11 @@ public class AccountProfileServiceImpl implements AccountProfileService {
 	@Override
 	public List<Accountprofile> findAccountProfileEntries(int firstResult, int maxResults) {
 		 return accountProfileRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
-		
 	}
 
 	@Override
-	public void saveAccountProfile(Accountprofile accountProfile) {
-		accountProfileRepository.save(accountProfile);
+	public Accountprofile saveAccountProfile(Accountprofile accountProfile) {
+		return accountProfileRepository.save(accountProfile);
 
 	}
 
@@ -70,6 +69,16 @@ public class AccountProfileServiceImpl implements AccountProfileService {
 	@Override
 	public Accountprofile findByUseridAndPasswd(String userId, String passwd) {
 		return accountProfileRepository.findByUseridAndPasswd(userId, passwd);
+	}
+
+	@Override
+	public Accountprofile findByUserid(String username) {
+		return accountProfileRepository.findByUserid(username);
+	}
+
+	@Override
+	public Accountprofile findByAuthtoken(String authtoken) {
+		return accountProfileRepository.findByAuthtoken(authtoken);
 	}
 
 }

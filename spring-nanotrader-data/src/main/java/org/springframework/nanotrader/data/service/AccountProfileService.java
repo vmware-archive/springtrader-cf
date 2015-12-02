@@ -15,26 +15,30 @@
  */
 package org.springframework.nanotrader.data.service;
 
-
 import java.util.List;
 
 import org.springframework.nanotrader.data.domain.Accountprofile;
 
 public interface AccountProfileService {
 
-	public abstract long countAllAccountProfiles();
+	long countAllAccountProfiles();
 
-	public abstract void deletelAccountProfile(Accountprofile accountProfile);
+	void deletelAccountProfile(Accountprofile accountProfile);
 
-	public abstract Accountprofile findAccountProfile(Integer id);
+	Accountprofile findAccountProfile(Integer id);
 
-	public abstract List<Accountprofile> findAllAccountProfiles();
+	List<Accountprofile> findAllAccountProfiles();
 
-	public abstract List<Accountprofile> findAccountProfileEntries(int firstResult, int maxResults);
+	List<Accountprofile> findAccountProfileEntries(int firstResult,
+			int maxResults);
 
-	public abstract void saveAccountProfile(Accountprofile accountProfile);
+	Accountprofile saveAccountProfile(Accountprofile accountProfile);
 
-	public abstract Accountprofile updateAccountProfile(Accountprofile accountProfile);
-	
-	public abstract Accountprofile findByUseridAndPasswd(String userId, String passwd);
+	Accountprofile updateAccountProfile(Accountprofile accountProfile);
+
+	Accountprofile findByUserid(String username);
+
+	Accountprofile findByUseridAndPasswd(String userId, String passwd);
+
+	Accountprofile findByAuthtoken(String authtoken);
 }

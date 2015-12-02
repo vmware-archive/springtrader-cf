@@ -37,8 +37,6 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.AccountProfileRepository;
-import org.springframework.nanotrader.data.repository.AccountRepository;
 import org.springframework.nanotrader.data.repository.HoldingAggregateRepository;
 import org.springframework.nanotrader.data.repository.HoldingRepository;
 import org.springframework.nanotrader.data.repository.OrderRepository;
@@ -66,7 +64,7 @@ public class TradingServiceImpl implements TradingService {
 	private static String CANCELLED_STATUS = "cancelled";
 
 	@Autowired
-	private AccountProfileRepository accountProfileRepository;
+	private AccountProfileService accountProfileService;
 
 	@Autowired
 	private HoldingRepository holdingRepository;
@@ -75,7 +73,7 @@ public class TradingServiceImpl implements TradingService {
 	private OrderRepository orderRepository;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private AccountService accountService;
 
 	@Autowired
 	@Qualifier( "rtQuoteService")
@@ -92,15 +90,15 @@ public class TradingServiceImpl implements TradingService {
 
 	@Override
 	public Accountprofile login(String username, String password) {
-		Accountprofile accountProfile = accountProfileRepository.findByUseridAndPasswd(username, password);
+		Accountprofile accountProfile = accountProfileService.findByUseridAndPasswd(username, password);
 		if (accountProfile != null) {
 			accountProfile.setAuthtoken(UUID.randomUUID().toString());
-			accountProfile = accountProfileRepository.save(accountProfile); // persist new auth token
+			accountProfile = accountProfileService.saveAccountProfile(accountProfile); // persist new auth token
 			Set<Account> accounts = accountProfile.getAccounts();
 			for (Account account : accounts) {
 				account.setLogincount(account.getLogincount() + 1);
 				account.setLastlogin(new Date());
-				accountRepository.save(account);
+				accountService.saveAccount(account);
 			}
 			return accountProfile;
 		}
@@ -109,14 +107,14 @@ public class TradingServiceImpl implements TradingService {
 
 	@Override
 	public void logout(String authtoken) {
-		Accountprofile accountProfile = accountProfileRepository.findByAuthtoken(authtoken);
+		Accountprofile accountProfile = accountProfileService.findByAuthtoken(authtoken);
 		if (accountProfile != null) {
 	 		accountProfile.setAuthtoken(null); // remove token
-			accountProfileRepository.save(accountProfile);
+	 		accountProfileService.saveAccountProfile(accountProfile);
 			Set<Account> accounts = accountProfile.getAccounts();
 			for (Account account : accounts) {
 				account.setLogoutcount(account.getLogoutcount() + 1);
-				accountRepository.save(account);
+				accountService.saveAccount(account);
 			}			
 		}
 	}
@@ -126,7 +124,7 @@ public class TradingServiceImpl implements TradingService {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findAccountProfile: accountProfileId=" + id);
 		}
-		Accountprofile accountProfile = accountProfileRepository.findOne(id);
+		Accountprofile accountProfile = accountProfileService.findAccountProfile(id);
 		if (accountProfile != null) {
 			accountProfile.getAccounts().iterator(); // fetch accounts
 
@@ -148,11 +146,11 @@ public class TradingServiceImpl implements TradingService {
 		account.setLogoutcount(0);
 		account.setBalance(account.getOpenbalance());
 		account.setCreationdate(new Date());
-		Accountprofile createdAccountProfile = accountProfileRepository.save(accountProfile);
+		Accountprofile createdAccountProfile = accountProfileService.saveAccountProfile(accountProfile);
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.saveAccountProfile: accountProfile saved.");
 		}
-		accountRepository.save(account);
+		accountService.saveAccount(account);
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.saveAccountProfile: completed successfully.");
 		}
@@ -162,11 +160,11 @@ public class TradingServiceImpl implements TradingService {
 	@Override
 	public Accountprofile updateAccountProfile(Accountprofile accountProfile, String username) {
 		Accountprofile accountProfileResponse = null;
-		Accountprofile acctProfile = accountProfileRepository.findByUserid(username);
+		Accountprofile acctProfile = accountProfileService.findByUserid(username);
 		// make sure that the primary key hasn't been altered
 		if (acctProfile != null) {
 			accountProfile.setAuthtoken(acctProfile.getAuthtoken());
-			accountProfileResponse = accountProfileRepository.save(accountProfile);
+			accountProfileResponse = accountProfileService.saveAccountProfile(accountProfile);
 		}
 		return accountProfileResponse;
 	}
@@ -269,7 +267,7 @@ public class TradingServiceImpl implements TradingService {
 
 	private Order buy(Order order) {
 		
-		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
+		Account account = accountService.findAccount(order.getAccountAccountid().getAccountid());
 		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		Holding holding = null;
 		// create order and persist
@@ -298,7 +296,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	private Order sell(Order order) {
-		Account account = accountRepository.findOne(order.getAccountAccountid().getAccountid());
+		Account account = accountService.findAccount(order.getAccountAccountid().getAccountid());
 		Holding holding = holdingRepository.findByHoldingidAndAccountAccountid(order.getHoldingHoldingid()
 				.getHoldingid(), account.getAccountid());
 		if (holding == null) {
@@ -387,7 +385,7 @@ public class TradingServiceImpl implements TradingService {
 			order.setHoldingHoldingid(null);
 			holdingRepository.delete(holdingId);
 		}
-		accountRepository.save(account);
+		accountService.saveAccount(account);
 	}
 
 	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
@@ -544,12 +542,12 @@ public class TradingServiceImpl implements TradingService {
 
 	@Override
 	public Account findAccount(Integer accountId) {
-		return accountRepository.findOne(accountId);
+		return accountService.findAccount(accountId);
 	}
 
 	@Override
 	public Account findAccountByProfile(Accountprofile ap) {
-		return accountRepository.findByProfileProfileid(ap);
+		return accountService.findByProfile(ap);
 	}
 
 	@Override
@@ -570,7 +568,7 @@ public class TradingServiceImpl implements TradingService {
 
 	@Override
 	public Accountprofile findAccountByUserId(String id) {
-		return accountProfileRepository.findByUserid(id);
+		return accountProfileService.findByUserid(id);
 	}
 
 	@Override
@@ -579,7 +577,7 @@ public class TradingServiceImpl implements TradingService {
 			log.debug("TradingServices.findByAuthtoken: token=" + token);
 		}
 
-		Accountprofile accountProfile = accountProfileRepository.findByAuthtoken(token);
+		Accountprofile accountProfile = accountProfileService.findByAuthtoken(token);
 		if (accountProfile != null) {
 			Set<Account> accounts = accountProfile.getAccounts();
 			accounts.iterator();
@@ -600,8 +598,6 @@ public class TradingServiceImpl implements TradingService {
 		
 		orderRepository.deleteAll();
 		holdingRepository.deleteAll();
-		accountRepository.deleteAll();
-		accountProfileRepository.deleteAll();
 	}
 	
 	@Override
@@ -614,8 +610,8 @@ public class TradingServiceImpl implements TradingService {
 		List<Order> orders = findOrders(ac.getAccountid(), 0, 10000);
 		orderRepository.delete(orders);
 		holdingRepository.delete(holdings);
-		accountRepository.delete(ac);
-		accountProfileRepository.delete(ap);
+		accountService.deleteAccount(ac);
+		accountProfileService.deletelAccountProfile(ap);
 	}
 
 	public static interface QuotePublisher {
