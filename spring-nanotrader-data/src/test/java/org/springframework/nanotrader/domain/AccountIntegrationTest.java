@@ -1,8 +1,5 @@
 package org.springframework.nanotrader.domain;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
-import org.springframework.nanotrader.data.repository.AccountRepository;
 import org.springframework.nanotrader.data.service.AccountService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Configurable
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -32,9 +31,6 @@ public class AccountIntegrationTest {
 
 	@Autowired
     AccountService accountService;
-
-	@Autowired
-    AccountRepository accountRepository;
 
 	@Test
     public void testCountAllAccounts() {
@@ -83,7 +79,6 @@ public class AccountIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Account' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Account' identifier to be null", obj.getAccountid());
         accountService.saveAccount(obj);
-        accountRepository.flush();
         Assert.assertNotNull("Expected 'Account' identifier to no longer be null", obj.getAccountid());
     }
 
@@ -95,7 +90,6 @@ public class AccountIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Account' failed to provide an identifier", id);
         obj = accountService.findAccount(id);
         accountService.deleteAccount(obj);
-        accountRepository.flush();
         Assert.assertNull("Failed to remove 'Account' with identifier '" + id + "'", accountService.findAccount(id));
     }
 
@@ -108,7 +102,6 @@ public class AccountIntegrationTest {
         obj = accountService.findAccount(id);
         obj.setOpenbalance(new BigDecimal("1.1"));
         accountService.updateAccount(obj);
-        accountRepository.flush();
         Account updated = accountService.findAccount(id);
         Assert.assertEquals("Update failed", new BigDecimal("1.1"), updated.getOpenbalance());
     }

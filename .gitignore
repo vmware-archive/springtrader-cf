@@ -3,6 +3,7 @@ target
 .classpath
 .settings
 .springBeans
+.idea
 build
 .gradle
 bin
@@ -10,3 +11,4 @@ vf.gf.dmn-events.txt
 vf.gf.dmn-license.cfg
 dist
 .DS_Store
+*.iml

@@ -15,18 +15,19 @@
  */
 package org.springframework.nanotrader.data.domain.test;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.AccountProfileService;
+import org.springframework.stereotype.Component;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.nanotrader.data.domain.Accountprofile;
-import org.springframework.nanotrader.data.repository.AccountProfileRepository;
-import org.springframework.stereotype.Component;
 
 
 @Configurable
@@ -38,7 +39,7 @@ public class AccountprofileDataOnDemand {
 	private List<Accountprofile> data;
 	
 	@Autowired
-    AccountProfileRepository accountProfileRepository;
+    AccountProfileService accountProfileService;
 
 	public Accountprofile getNewTransientAccountprofile(int index) {
         Accountprofile obj = new Accountprofile();
@@ -109,14 +110,14 @@ public class AccountprofileDataOnDemand {
         }
         Accountprofile obj = data.get(index);
         Integer id = obj.getProfileid();
-        return accountProfileRepository.findOne(id);
+        return accountProfileService.findAccountProfile(id);
     }
 
 	public Accountprofile getRandomAccountprofile() {
         init();
         Accountprofile obj = data.get(rnd.nextInt(data.size()));
         Integer id = obj.getProfileid();
-        return accountProfileRepository.findOne(id);
+        return accountProfileService.findAccountProfile(id);
     }
 
 	public boolean modifyAccountprofile(Accountprofile obj) {
@@ -126,7 +127,7 @@ public class AccountprofileDataOnDemand {
 	public void init() {
         int from = 0;
         int to = 10;
-        data = accountProfileRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = accountProfileService.findAllAccountProfiles();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Accountprofile' illegally returned null");
         }
@@ -138,7 +139,7 @@ public class AccountprofileDataOnDemand {
         for (int i = 0; i < 10; i++) {
             Accountprofile obj = getNewTransientAccountprofile(i);
             try {
-                accountProfileRepository.save(obj);
+                accountProfileService.saveAccountProfile(obj);
             } catch (ConstraintViolationException e) {
                 StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -147,7 +148,6 @@ public class AccountprofileDataOnDemand {
                 }
                 throw new RuntimeException(msg.toString(), e);
             }
-            accountProfileRepository.flush();
             data.add(obj);
         }
     }
