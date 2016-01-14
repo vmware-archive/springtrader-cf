@@ -22,7 +22,7 @@ import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccountRepository extends JpaSpecificationExecutor<Account>, JpaRepository<Account, Integer> {
+public interface AccountRepository extends JpaSpecificationExecutor<Account>, JpaRepository<Account, Long> {
 	
 	public Account findByProfileProfileid(Accountprofile ap);
 	

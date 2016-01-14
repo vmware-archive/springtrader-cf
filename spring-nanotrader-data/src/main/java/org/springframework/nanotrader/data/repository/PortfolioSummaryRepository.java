@@ -25,6 +25,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PortfolioSummaryRepository {
 
-	abstract PortfolioSummary findPortfolioSummary(Integer accountId);
+	abstract PortfolioSummary findPortfolioSummary(Long accountId);
 
 }

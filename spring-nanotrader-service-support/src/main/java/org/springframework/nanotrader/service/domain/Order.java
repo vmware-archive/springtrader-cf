@@ -25,7 +25,7 @@ public class Order {
 
 	private Integer orderid;
 
-	private Integer accountid;
+	private Long accountid;
 	
 	private Integer holdingid;
 
@@ -54,11 +54,11 @@ public class Order {
 	}
 
 
-	public Integer getAccountid() {
+	public Long getAccountid() {
 		return accountid;
 	}
 
-	public void setAccountid(Integer accountId) {
+	public void setAccountid(Long accountId) {
 		this.accountid = accountId;
 	}
 

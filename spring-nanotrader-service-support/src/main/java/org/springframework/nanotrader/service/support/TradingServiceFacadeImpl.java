@@ -159,7 +159,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         tradingService.logout(authtoken);
     }
     
-    public Accountprofile findAccountProfile(Integer id) {
+    public Accountprofile findAccountProfile(Long id) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findAccountProfile: id=" + id);
         }
@@ -178,7 +178,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         return accountProfileResponse;
     }
 
-    public Integer saveAccountProfile(Accountprofile accountProfileRequest) {
+    public Long saveAccountProfile(Accountprofile accountProfileRequest) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.saveAccountProfile:"
                     + accountProfileRequest.toString());
@@ -202,7 +202,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         tradingService.updateAccountProfile(accountProfile, username);
     }
 
-    public Holding findHolding(Integer id, Integer accountId) {
+    public Holding findHolding(Integer id, Long accountId) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findHolding: id=" + id);
         }
@@ -223,7 +223,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     }
     
     
-    public CollectionResult findHoldingsByAccountId(Integer accountId, Integer page, Integer pageSize) {
+    public CollectionResult findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize) {
         CollectionResult  collectionResults = new CollectionResult();
         
         
@@ -280,13 +280,15 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     public Integer saveOrderDirect(Order orderRequest) {
         org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
         mapper.map(orderRequest, order, ORDER_MAPPING);
-        order.setQuoteid(orderRequest.getQuote().getQuoteid());
+        if(orderRequest != null && orderRequest.getQuote() != null) {
+            order.setQuoteid(orderRequest.getQuote().getQuoteid());
+        }
         tradingService.saveOrder(order);
         return order.getOrderid();
     }
 
    
-    public Order findOrder(Integer orderId, Integer accountId) {
+    public Order findOrder(Integer orderId, Long accountId) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findOrder: orderId=" + orderId + " accountId=" + accountId);
         }
@@ -314,7 +316,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         tradingService.updateOrder(order);
     }
 
-    public CollectionResult findOrders(Integer accountId, String status, Integer page, Integer pageSize) {
+    public CollectionResult findOrders(Long accountId, String status, Integer page, Integer pageSize) {
     	CollectionResult  collectionResults = new CollectionResult();
         if (log.isDebugEnabled()) {
             log.debug("OrderController.findOrders: accountId=" + accountId + " status" + status);
@@ -373,7 +375,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         return collectionResults;
     }
 
-    public Account findAccount(Integer id) {
+    public Account findAccount(Long id) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findAccount: id=" + id);
         }
@@ -422,7 +424,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         return responseQuote;
     }
 
-    public PortfolioSummary findPortfolioSummary(Integer accountId) { 
+    public PortfolioSummary findPortfolioSummary(Long accountId) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findPortfolioSummary: accountId=" + accountId);
         }
@@ -448,7 +450,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         return marketSummaryResponse;
     }
     
-    public HoldingSummary findHoldingSummary(Integer accountId) {
+    public HoldingSummary findHoldingSummary(Long accountId) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findHoldingSummary: Start accountId=" + accountId );
         }

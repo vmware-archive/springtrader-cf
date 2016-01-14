@@ -42,7 +42,7 @@ public interface TradingService {
 	
 	public abstract void logout(String authtoken);
 	
-	public abstract Accountprofile findAccountProfile(Integer id);
+	public abstract Accountprofile findAccountProfile(Long id);
 	
 	public abstract Accountprofile findAccountByUserId(String id);
 
@@ -50,25 +50,25 @@ public interface TradingService {
 
 	public abstract Accountprofile updateAccountProfile(Accountprofile accountProfile, String username);
 
-	public abstract Holding findHolding(Integer id, Integer accountId);
+	public abstract Holding findHolding(Integer id, Long accountId);
 
 	public abstract Holding updateHolding(Holding holding);
 
 	public abstract void saveHolding(Holding holding);
 
-	public abstract Order findOrder(Integer id, Integer accountId);
+	public abstract Order findOrder(Integer id, Long accountId);
 
 	public abstract Order saveOrder(Order order);
 
 	public abstract Order updateOrder(Order order);
 	
-	public abstract Long findCountOfOrders(Integer accountId, String status);
+	public abstract Long findCountOfOrders(Long accountId, String status);
 
-	public abstract List<Order> findOrdersByStatus(Integer accountId, String status, Integer page, Integer pageSize);
+	public abstract List<Order> findOrdersByStatus(Long accountId, String status, Integer page, Integer pageSize);
 
-	public abstract List<Order> findOrders(Integer accountId, Integer page, Integer pageSize);
+	public abstract List<Order> findOrders(Long accountId, Integer page, Integer pageSize);
 
-	public abstract List<Holding> findHoldingsByAccountId(Integer accountId, Integer page, Integer pageSize);
+	public abstract List<Holding> findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize);
 	
 	public abstract List<Quote> findRandomQuotes(Integer count);
 
@@ -78,19 +78,19 @@ public interface TradingService {
 
 	public abstract List<Quote> findQuotesBySymbols(Set<String> symbols);
 
-	public abstract Account findAccount(Integer accountId);
+	public abstract Account findAccount(Long accountId);
 	
 	public abstract Account findAccountByProfile(Accountprofile accountProfile);
 
-	public abstract PortfolioSummary findPortfolioSummary(Integer accountId);
+	public abstract PortfolioSummary findPortfolioSummary(Long accountId);
 	
 	public abstract MarketSummary findMarketSummary();
 
 	public abstract Accountprofile findByAuthtoken(String token);
 	
-	public abstract HoldingSummary findHoldingSummary(Integer accountId);
+	public abstract HoldingSummary findHoldingSummary(Long accountId);
 
-	public Long findCountOfHoldingsByAccountId(Integer accountId);
+	public Long findCountOfHoldingsByAccountId(Long accountId);
 	
 	public abstract void deleteAll();
 	

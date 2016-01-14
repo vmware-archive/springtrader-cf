@@ -62,7 +62,7 @@ public class TradingServiceAsynchTests {
 
 	@Test
 	public void testService() {
-		Integer accountId = accountDataOnDemand.getRandomAccount().getAccountid();
+		Long accountId = accountDataOnDemand.getRandomAccount().getAccountid();
 		org.springframework.nanotrader.data.domain.Quote dquote = quoteService.findBySymbol("GOOG");
 		Quote quote = new Quote();
 		mapper.map(dquote, quote);

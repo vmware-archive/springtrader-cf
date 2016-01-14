@@ -25,22 +25,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class SecurityUtil {
 
-	public Integer getAccountFromPrincipal() {
+	public Long getAccountFromPrincipal() {
 		return getPrincipal().getAccountId();
 	}
 	
-	public Integer getAccountProfileIdFromPrincipal() {
+	public Long getAccountProfileIdFromPrincipal() {
 		return getPrincipal().getAccountProfileId();
 	}
 
-	public void checkAccountProfile(Integer accountProfileId) {
+	public void checkAccountProfile(Long accountProfileId) {
 		if (accountProfileId == null
 				|| accountProfileId.compareTo(getAccountProfileIdFromPrincipal()) != 0) {
 			throw new AccessDeniedException(null);
 		}
 	}
 
-	public void checkAccount(Integer accountId) {
+	public void checkAccount(Long accountId) {
 		if (accountId == null
 				|| accountId.compareTo(getAccountFromPrincipal()) != 0) {
 			throw new AccessDeniedException(null);

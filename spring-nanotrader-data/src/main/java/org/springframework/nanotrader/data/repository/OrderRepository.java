@@ -37,21 +37,21 @@ public interface OrderRepository extends JpaRepository<Order, Integer>, JpaSpeci
 	@Modifying 
 	@Transactional
 	@Query(value="UPDATE Order o SET o.orderstatus = 'completed' WHERE o.accountAccountid.accountid = ?1 AND o.orderstatus = 'closed'")
-	public int updateClosedOrders(Integer accountId);
+	public int updateClosedOrders(Long accountId);
 	
 	@Query("SELECT o FROM Order o WHERE o.orderstatus = ?2 AND o.accountAccountid.accountid  = ?1 order by orderid DESC")
-	public List<Order> findOrdersByStatus(Integer accountId, String status, Pageable pageable);
+	public List<Order> findOrdersByStatus(Long accountId, String status, Pageable pageable);
 
 	@Query("SELECT o FROM Order o WHERE o.accountAccountid.accountid  = ?1 order by orderid DESC")
-	public List<Order> findOrdersByAccountAccountid_Accountid(Integer accountId, Pageable pageable);
+	public List<Order> findOrdersByAccountAccountid_Accountid(Long accountId, Pageable pageable);
 
 	@Query("SELECT o FROM Order o WHERE o.orderid = ?1 AND o.accountAccountid.accountid  = ?2")
-	public Order findByOrderidAndAccountAccountid(Integer orderId, Integer accountId);
+	public Order findByOrderidAndAccountAccountid(Integer orderId, Long accountId);
 
 	@Query("SELECT count(o) FROM Order o WHERE o.accountAccountid.accountid  = ?1")
-	public Long findCountOfOrders(Integer accountId);
+	public Long findCountOfOrders(Long accountId);
 	
 	@Query("SELECT count(o) FROM Order o WHERE o.accountAccountid.accountid  = ?1 and o.orderstatus = ?2")
-	public Long findCountOfOrders(Integer accountId, String status);
+	public Long findCountOfOrders(Long accountId, String status);
 	
 }

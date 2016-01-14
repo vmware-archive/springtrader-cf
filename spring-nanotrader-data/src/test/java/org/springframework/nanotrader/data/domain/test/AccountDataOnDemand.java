@@ -103,14 +103,14 @@ public class AccountDataOnDemand {
             index = data.size() - 1;
         }
         Account obj = data.get(index);
-        Integer id = obj.getAccountid();
+        Long id = obj.getAccountid();
         return accountService.findAccount(id);
     }
 
 	public Account getRandomAccount() {
         init();
         Account obj = data.get(rnd.nextInt(data.size()));
-        Integer id = obj.getAccountid();
+        Long id = obj.getAccountid();
         return accountService.findAccount(id);
     }
 

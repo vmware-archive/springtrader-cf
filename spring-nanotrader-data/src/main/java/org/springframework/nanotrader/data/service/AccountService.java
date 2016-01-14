@@ -26,7 +26,7 @@ public interface AccountService {
 
 	public abstract void deleteAccount(Account account);
 
-	public abstract Account findAccount(Integer id);
+	public abstract Account findAccount(Long id);
 
 	public abstract List<Account> findAllAccounts();
 

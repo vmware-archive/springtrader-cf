@@ -174,7 +174,7 @@ public class TradingServiceTests {
 		tradingService.saveHolding(holding);
 		entityManager.flush();
 		entityManager.clear(); // force reload
-		PortfolioSummary portfolioSummary = tradingService.findPortfolioSummary(100);
+		PortfolioSummary portfolioSummary = tradingService.findPortfolioSummary(100L);
 		Assert.assertTrue("Expected 'PortfolioSummary' holding count to be equal to 1", portfolioSummary.getNumberOfHoldings() == 1);
 	}
 
@@ -186,7 +186,7 @@ public class TradingServiceTests {
 		tradingService.saveHolding(holding);
 		entityManager.flush();
 		entityManager.clear(); // force reload
-		HoldingSummary holdingSummary = tradingService.findHoldingSummary(new Integer(102));
+		HoldingSummary holdingSummary = tradingService.findHoldingSummary(new Long(102));
 		Assert.assertNotNull(holdingSummary);
 		Assert.assertTrue(holdingSummary.getHoldingsTotalGains().floatValue() != 0.0f);
 	}

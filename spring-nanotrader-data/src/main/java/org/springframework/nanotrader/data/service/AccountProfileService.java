@@ -25,7 +25,7 @@ public interface AccountProfileService {
 
 	void deletelAccountProfile(Accountprofile accountProfile);
 
-	Accountprofile findAccountProfile(Integer id);
+	Accountprofile findAccountProfile(Long id);
 
 	List<Accountprofile> findAllAccountProfiles();
 

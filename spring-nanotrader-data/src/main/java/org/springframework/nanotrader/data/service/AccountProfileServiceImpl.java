@@ -41,7 +41,7 @@ public class AccountProfileServiceImpl implements AccountProfileService {
 	}
 
 	@Override
-	public Accountprofile findAccountProfile(Integer id) {
+	public Accountprofile findAccountProfile(Long id) {
 		return accountProfileRepository.findOne(id);
 	}
 

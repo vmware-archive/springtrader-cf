@@ -39,7 +39,7 @@ public class OrderController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/orders", method = RequestMethod.GET)
 	public ResponseEntity<CollectionResult> findOrders(
-			@PathVariable("accountId") final Integer accountId,
+			@PathVariable("accountId") final Long accountId,
 			@RequestParam(value = "status", required = false) final String status,
 			@RequestParam(value = "page", required = false) Integer page,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
@@ -54,7 +54,7 @@ public class OrderController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/order/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Order> findOrder(
-			@PathVariable("accountId") final Integer accountId,
+			@PathVariable("accountId") final Long accountId,
 			@PathVariable("id") final Integer orderId) {
 		this.getSecurityUtil().checkAccount(accountId);
 		Order responseOrder = getTradingServiceFacade().findOrder(orderId,
@@ -67,7 +67,7 @@ public class OrderController extends BaseController {
 	@RequestMapping(value = "/account/{accountId}/order", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<String> save(@RequestBody Order orderRequest,
-			@PathVariable("accountId") final Integer accountId,
+			@PathVariable("accountId") final Long accountId,
 			UriComponentsBuilder builder) {
 		this.getSecurityUtil().checkAccount(accountId);
 		orderRequest.setAccountid(accountId);
@@ -83,7 +83,7 @@ public class OrderController extends BaseController {
 	@RequestMapping(value = "/account/{accountId}/order/asynch", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void saveAsynch(@RequestBody Order orderRequest,
-			@PathVariable("accountId") final Integer accountId) {
+			@PathVariable("accountId") final Long accountId) {
 		orderRequest.setAccountid(accountId);
 		getTradingServiceFacade().saveOrder(orderRequest, false);
 	}

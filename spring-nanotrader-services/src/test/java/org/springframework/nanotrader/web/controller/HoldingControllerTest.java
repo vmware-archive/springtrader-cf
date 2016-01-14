@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
@@ -28,8 +29,8 @@ import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration
 
 /**
  *  HoldingControllerTest tests the Holding's  REST api
- *  
- *  @author Brian Dussault 
+ *
+ *  @author Brian Dussault
  *  @author
  */
 
@@ -43,7 +44,11 @@ public class HoldingControllerTest extends AbstractSecureControllerTest {
 		mockMvc.perform(get("/account/" + ServiceTestConfiguration.ACCOUNT_ID + "/holding/100").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.holdingid").value(ServiceTestConfiguration.HOLDING_ID))
-				.andExpect(jsonPath("$.accountAccountid").value(ServiceTestConfiguration.ACCOUNT_ID))
+
+				.andExpect(jsonPath("$.accountAccountid").value(Matchers.anyOf(
+						Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID),
+						Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID.intValue()))))
+
 				.andExpect(jsonPath("$.purchasedate").value(ServiceTestConfiguration.DATE))
 				.andExpect(jsonPath("$.quote.symbol").value(ServiceTestConfiguration.SYMBOL))
 				.andExpect(jsonPath("$.purchaseprice").value(PURCHASE_PRICE))
@@ -68,7 +73,11 @@ public class HoldingControllerTest extends AbstractSecureControllerTest {
 		mockMvc.perform(get("/account/" + ServiceTestConfiguration.ACCOUNT_ID + "/holdings").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.results.[0].holdingid").value(ServiceTestConfiguration.HOLDING_ID))
-				.andExpect(jsonPath("$.results.[0].accountAccountid").value(ServiceTestConfiguration.ACCOUNT_ID))
+
+				.andExpect(jsonPath("$.results.[0].accountAccountid").value(Matchers.anyOf(
+						Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID),
+						Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID.intValue()))))
+
 				.andExpect(jsonPath("$.results.[0].purchasedate").value(ServiceTestConfiguration.DATE))
 				.andExpect(jsonPath("$.results.[0].quote.symbol").value(ServiceTestConfiguration.SYMBOL))
 				.andExpect(jsonPath("$.results.[0].purchaseprice").value(PURCHASE_PRICE))

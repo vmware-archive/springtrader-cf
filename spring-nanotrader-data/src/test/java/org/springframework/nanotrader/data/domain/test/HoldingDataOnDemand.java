@@ -57,7 +57,7 @@ public class HoldingDataOnDemand {
     }
 
 	public void setAccountAccountid(Holding obj, int index) {
-        Integer accountAccountid = new Integer(index);
+        Long accountAccountid = new Long(index);
         obj.setAccountAccountid(accountAccountid);
     }
 

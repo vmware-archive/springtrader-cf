@@ -66,19 +66,19 @@ import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl;
 public class ServiceTestConfiguration  {
 	//Holding constants
 	public static Integer HOLDING_ID = 100;
-	public static Integer ACCOUNT_ID = 500;
+	public static Long ACCOUNT_ID = 500L;
 	public static BigDecimal PURCHASE_PRICE =  BigDecimal.valueOf(50000);
 	public static String SYMBOL = "VMW";
 	public static BigDecimal QUANTITY =  BigDecimal.valueOf(200);
 	
 	//Account profile constants
-	public static Integer PROFILE_ID 	=  400;
+	public static Long PROFILE_ID 	=  400L;
 	public static String USER_ID 		= "johndoe";
 	public static String EMAIL 		= "anon@springsource.com";
 	public static String FULL_NAME 	= "John Doe";
 	public static String CC_NUMBER 	= "999999999";
 	public static String ADDRESS 		= "45 Test Dr.";
-	public static Integer NOT_A_VALID_PROFILE = 900;
+	public static Long NOT_A_VALID_PROFILE = 900L;
 	public static String PASSWORD = "password";
 	public static String BAD_USER_ID  = "NA";
 	public static String BAD_PASSWORD  = "NA";
@@ -137,7 +137,7 @@ public class ServiceTestConfiguration  {
 		when(tradingService.findCountOfHoldingsByAccountId(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
 		when(tradingService.findCountOfOrders(eq(ACCOUNT_ID) , any(String.class))).thenReturn(RESULT_COUNT);
 		when(tradingService.updateHolding(any(Holding.class))).thenReturn(holding());
-		when(tradingService.findAccountProfile(400)).thenReturn(accountProfile());
+		when(tradingService.findAccountProfile(400L)).thenReturn(accountProfile());
 		when(tradingService.findAccountProfile(NOT_A_VALID_PROFILE)).thenReturn(null);
 		when(tradingService.updateAccountProfile(any(Accountprofile.class), any(String.class))).thenReturn(accountProfile());
 		when(tradingService.findOrder(eq(999), eq(ACCOUNT_ID))).thenReturn(order());

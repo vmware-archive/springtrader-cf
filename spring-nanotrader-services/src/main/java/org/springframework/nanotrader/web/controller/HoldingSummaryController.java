@@ -29,7 +29,7 @@ public class HoldingSummaryController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/holdingSummary", method = RequestMethod.GET)
 	public ResponseEntity<HoldingSummary> find(
-			@PathVariable("accountId") final Integer accountId) {
+			@PathVariable("accountId") final Long accountId) {
 		this.getSecurityUtil().checkAccount(accountId);
 		HoldingSummary holdingSummary = getTradingServiceFacade()
 				.findHoldingSummary(accountId);

@@ -32,13 +32,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HoldingRepository extends JpaSpecificationExecutor<Holding>, JpaRepository<Holding, Integer> {
 	
-	public List<Holding> findByAccountAccountid(Integer accountId, Pageable pageable);
+	public List<Holding> findByAccountAccountid(Long accountId, Pageable pageable);
 	
-	public List<Holding> findByAccountAccountid(Integer accountId);
+	public List<Holding> findByAccountAccountid(Long accountId);
 	
-	public Holding findByHoldingidAndAccountAccountid(Integer holdingId, Integer accountId);
+	public Holding findByHoldingidAndAccountAccountid(Integer holdingId, Long accountId);
 
 	@Query("SELECT count(h) FROM Holding h WHERE h.accountAccountid = ?1")
-	public Long findCountOfHoldings(Integer accountId);
+	public Long findCountOfHoldings(Long accountId);
 	
 }

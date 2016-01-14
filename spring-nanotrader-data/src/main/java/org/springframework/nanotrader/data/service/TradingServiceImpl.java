@@ -120,7 +120,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Accountprofile findAccountProfile(Integer id) {
+	public Accountprofile findAccountProfile(Long id) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findAccountProfile: accountProfileId=" + id);
 		}
@@ -170,7 +170,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Long findCountOfHoldingsByAccountId(Integer accountId) {
+	public Long findCountOfHoldingsByAccountId(Long accountId) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findHoldingsByAccountId: accountId=" + accountId);
 		}
@@ -182,7 +182,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public List<Holding> findHoldingsByAccountId(Integer accountId, Integer page, Integer pageSize) {
+	public List<Holding> findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findHoldingsByAccountId: accountId=" + accountId);
 		}
@@ -194,7 +194,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Holding findHolding(Integer id, Integer accountId) {
+	public Holding findHolding(Integer id, Long accountId) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findHolding: holdingId=" + id + " accountid=" + accountId);
 		}
@@ -230,7 +230,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Order findOrder(Integer id, Integer accountId) {
+	public Order findOrder(Integer id, Long accountId) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findOrder: orderId=" + id);
 		}
@@ -461,7 +461,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Long findCountOfOrders(Integer accountId, String status) {
+	public Long findCountOfOrders(Long accountId, String status) {
 		Long countOfOrders = null;
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findCountOfHoldings: accountId=" + accountId + " status=" + status);
@@ -480,7 +480,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public List<Order> findOrdersByStatus(Integer accountId, String status, Integer page, Integer pageSize) {
+	public List<Order> findOrdersByStatus(Long accountId, String status, Integer page, Integer pageSize) {
 		List<Order> orders = null;
 
 		if (log.isDebugEnabled()) {
@@ -498,7 +498,7 @@ public class TradingServiceImpl implements TradingService {
 
 	@Override
 	@Transactional
-	public List<Order> findOrders(Integer accountId, Integer page, Integer pageSize) {
+	public List<Order> findOrders(Long accountId, Integer page, Integer pageSize) {
 		List<Order> orders = null;
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findOrders: accountId=" + accountId);
@@ -513,7 +513,7 @@ public class TradingServiceImpl implements TradingService {
 		return orders;
 	}
 
-	private List<Order> processOrderResults(List<Order> orders, Integer accountId) { 
+	private List<Order> processOrderResults(List<Order> orders, Long accountId) {
 		if (orders != null && orders.size() > 0) {
 			orderRepository.updateClosedOrders(accountId);
 		}
@@ -541,7 +541,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Account findAccount(Integer accountId) {
+	public Account findAccount(Long accountId) {
 		return accountService.findAccount(accountId);
 	}
 
@@ -551,7 +551,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public PortfolioSummary findPortfolioSummary(Integer accountId) {
+	public PortfolioSummary findPortfolioSummary(Long accountId) {
 		PortfolioSummary portfolioSummary = portfolioSummaryRepository.findPortfolioSummary(accountId);
 		return portfolioSummary;
 	}
@@ -561,7 +561,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public HoldingSummary findHoldingSummary(Integer accountId) {
+	public HoldingSummary findHoldingSummary(Long accountId) {
 		HoldingSummary summary = holdingAggregateRepository.findHoldingAggregated(accountId);
 		return summary;
 	}

@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
@@ -39,7 +40,11 @@ public class AccountControllerTest extends AbstractSecureControllerTest {
 		mockMvc.perform(get("/account/" + ServiceTestConfiguration.ACCOUNT_ID).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.accountid").value(ServiceTestConfiguration.ACCOUNT_ID))
+
+				.andExpect(jsonPath("$.accountid").value(Matchers.anyOf(
+								Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID),
+								Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID.intValue()))))
+
 				.andExpect(jsonPath("$.creationdate").value(ServiceTestConfiguration.DATE))
 				.andExpect(jsonPath("$.openbalance").value(ServiceTestConfiguration.ACCOUNT_OPEN_BALANCE.doubleValue()))
 				.andExpect(jsonPath("$.logoutcount").value(ServiceTestConfiguration.LOGOUT_COUNT.intValue()))

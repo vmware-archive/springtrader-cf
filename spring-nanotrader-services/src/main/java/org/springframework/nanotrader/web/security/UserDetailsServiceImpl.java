@@ -64,9 +64,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		
 		@SuppressWarnings("rawtypes")
 		List<Map> accounts = accountProfile.getAccounts();
-		Integer accountId = null;
+		Long accountId = null;
 		for(Map<?, ?> account: accounts ) { 
-			accountId = (Integer)account.get("accountid");
+			accountId = (Long)account.get("accountid");
 		}
 		
 		

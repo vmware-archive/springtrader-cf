@@ -34,13 +34,13 @@ public class Accountprofile implements Serializable {
 	@Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "profileid")
-    private Integer profileid;
+    private Long profileid;
 
-	public Integer getProfileid() {
+	public Long getProfileid() {
         return this.profileid;
     }
 
-	public void setProfileid(Integer id) {
+	public void setProfileid(Long id) {
         this.profileid = id;
     }
 

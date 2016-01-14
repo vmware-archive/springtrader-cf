@@ -66,7 +66,7 @@ public class Holding implements Serializable {
     private Date purchasedate;
 
 	@Column(name = "account_accountid")
-    private Integer accountAccountid;
+    private Long accountAccountid;
 
 	@Column(name = "quote_symbol", length = 250)
     private String quoteSymbol;
@@ -103,11 +103,11 @@ public class Holding implements Serializable {
         this.purchasedate = purchasedate;
     }
 
-	public Integer getAccountAccountid() {
+	public Long getAccountAccountid() {
         return accountAccountid;
     }
 
-	public void setAccountAccountid(Integer accountAccountid) {
+	public void setAccountAccountid(Long accountAccountid) {
         this.accountAccountid = accountAccountid;
     }
 

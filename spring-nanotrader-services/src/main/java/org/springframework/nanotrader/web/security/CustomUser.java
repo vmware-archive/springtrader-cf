@@ -31,20 +31,20 @@ import org.springframework.security.core.userdetails.User;
 public class CustomUser extends User {
 	
 
-	private Integer accountId;
-	private Integer accountProfileId;
+	private Long accountId;
+	private Long accountProfileId;
 	private String authToken;
 	
-	public Integer getAccountProfileId() {
+	public Long getAccountProfileId() {
 		return accountProfileId;
 	}
 
-	public void setAccountId(Integer accountId) {
+	public void setAccountId(Long accountId) {
 		this.accountId = accountId;
 	}
 
 	public CustomUser(String username, String password,
-			Collection<? extends GrantedAuthority> authorities, Integer accountId, Integer accountProfileId, String token) {
+			Collection<? extends GrantedAuthority> authorities, Long accountId, Long accountProfileId, String token) {
 		super(username, password, authorities);
 		this.accountId = accountId;
 		this.accountProfileId = accountProfileId;
@@ -56,7 +56,7 @@ public class CustomUser extends User {
 		return authToken;
 	}
 
-	public Integer getAccountId() {
+	public Long getAccountId() {
 		return accountId;
 	}
 

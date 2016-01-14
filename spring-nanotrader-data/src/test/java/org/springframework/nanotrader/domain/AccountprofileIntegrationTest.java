@@ -48,7 +48,7 @@ public class AccountprofileIntegrationTest {
     public void testFind() {
         Accountprofile obj = dod.getRandomAccountprofile();
         Assert.assertNotNull("Data on demand for 'Accountprofile' failed to initialize correctly", obj);
-        Integer id = obj.getProfileid();
+        Long id = obj.getProfileid();
         Assert.assertNotNull("Data on demand for 'Accountprofile' failed to provide an identifier", id);
         obj = accountProfileService.findAccountProfile(id);
         Assert.assertNotNull("Find method for 'Accountprofile' illegally returned null for id '" + id + "'", obj);
@@ -83,7 +83,7 @@ public class AccountprofileIntegrationTest {
         entityManager.clear();
 
         Assert.assertNotNull("Data on demand for 'Accountprofile' failed to initialize correctly", obj);
-        Integer id = obj.getProfileid();
+        Long id = obj.getProfileid();
         Assert.assertNotNull("Data on demand for 'Accountprofile' failed to provide an identifier", id);
         obj = accountProfileService.findAccountProfile(id);
         accountProfileService.deletelAccountProfile(obj);

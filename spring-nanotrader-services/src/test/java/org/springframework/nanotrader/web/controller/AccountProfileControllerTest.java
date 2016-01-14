@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -44,7 +45,11 @@ public class AccountProfileControllerTest extends AbstractSecureControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.userid").value(ServiceTestConfiguration.USER_ID))
-				.andExpect(jsonPath("$.profileid").value(ServiceTestConfiguration.PROFILE_ID))
+
+				.andExpect(jsonPath("$.profileid").value(Matchers.anyOf(
+						Matchers.equalTo((Number) ServiceTestConfiguration.PROFILE_ID),
+						Matchers.equalTo((Number) ServiceTestConfiguration.PROFILE_ID.intValue()))))
+
 				.andExpect(jsonPath("$.email").value(ServiceTestConfiguration.EMAIL))
 				.andExpect(jsonPath("$.address").value(ServiceTestConfiguration.ADDRESS))
 				.andExpect(jsonPath("$.fullname").value(ServiceTestConfiguration.FULL_NAME))

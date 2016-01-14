@@ -149,13 +149,13 @@ public class Account implements Serializable {
 	// , generator="ACCOUNT_SEQ")
 	// @SequenceGenerator(name="ACCOUNT_SEQ", sequenceName="ACCOUNT_SEQUENCE")
 	@Column(name = "accountid")
-	private Integer accountid;
+	private Long accountid;
 
-	public Integer getAccountid() {
+	public Long getAccountid() {
 		return this.accountid;
 	}
 
-	public void setAccountid(Integer id) {
+	public void setAccountid(Long id) {
 		this.accountid = id;
 	}
 

@@ -37,7 +37,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class AccountProfileController extends BaseController {
 
 	@RequestMapping(value = "/accountProfile/{id}", method = RequestMethod.GET)
-	public  ResponseEntity<Accountprofile> find(@PathVariable("id") final Integer id) {
+	public  ResponseEntity<Accountprofile> find(@PathVariable("id") final Long id) {
 		this.getSecurityUtil().checkAccountProfile(id);
 		Accountprofile accountProfile = getTradingServiceFacade().findAccountProfile(id);
 		return new ResponseEntity<Accountprofile>(accountProfile, getNoCacheHeaders(),
@@ -47,7 +47,7 @@ public class AccountProfileController extends BaseController {
 	
 	@RequestMapping(value = "/accountProfile", method = RequestMethod.POST)
 	public ResponseEntity<String> save(@RequestBody Accountprofile accountProfileRequest,  UriComponentsBuilder builder) {
-		Integer accountProfileId = getTradingServiceFacade().saveAccountProfile(accountProfileRequest);
+		Long accountProfileId = getTradingServiceFacade().saveAccountProfile(accountProfileRequest);
 		HttpHeaders responseHeaders = new HttpHeaders();   
 		responseHeaders.setLocation(builder.path("/accountProfile/{id}").buildAndExpand(accountProfileId).toUri());
 		return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
@@ -55,7 +55,7 @@ public class AccountProfileController extends BaseController {
 	
 	@RequestMapping(value = "/accountProfile/{id}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@PathVariable("id") final Integer id, @RequestBody Accountprofile accountProfileRequest) {
+	public void update(@PathVariable("id") final Long id, @RequestBody Accountprofile accountProfileRequest) {
 		this.getSecurityUtil().checkAccountProfile(id);
 		accountProfileRequest.setProfileid(id);
 		getTradingServiceFacade().updateAccountProfile(accountProfileRequest, this.getSecurityUtil().getUsernameFromPrincipal());

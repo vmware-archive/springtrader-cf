@@ -109,14 +109,14 @@ public class AccountprofileDataOnDemand {
             index = data.size() - 1;
         }
         Accountprofile obj = data.get(index);
-        Integer id = obj.getProfileid();
+        Long id = obj.getProfileid();
         return accountProfileService.findAccountProfile(id);
     }
 
 	public Accountprofile getRandomAccountprofile() {
         init();
         Accountprofile obj = data.get(rnd.nextInt(data.size()));
-        Integer id = obj.getProfileid();
+        Long id = obj.getProfileid();
         return accountProfileService.findAccountProfile(id);
     }
 

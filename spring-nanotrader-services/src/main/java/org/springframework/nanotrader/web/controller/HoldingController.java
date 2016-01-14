@@ -37,7 +37,7 @@ public class HoldingController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/holding/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Holding> find(@PathVariable("id") final Integer id,
-			@PathVariable("accountId") final Integer accountId) {
+			@PathVariable("accountId") final Long accountId) {
 		Holding holdingResponse = new Holding();
 		this.getSecurityUtil().checkAccount(accountId);
 		holdingResponse = getTradingServiceFacade().findHolding(id,
@@ -48,7 +48,7 @@ public class HoldingController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/holdings", method = RequestMethod.GET)
 	public ResponseEntity<CollectionResult> findByAccountId(
-			@PathVariable("accountId") final Integer accountId,
+			@PathVariable("accountId") final Long accountId,
 			@RequestParam(value = "page", required = false) Integer page,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		this.getSecurityUtil().checkAccount(accountId);

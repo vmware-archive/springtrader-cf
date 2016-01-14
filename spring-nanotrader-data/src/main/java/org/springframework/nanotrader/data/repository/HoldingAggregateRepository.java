@@ -25,6 +25,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HoldingAggregateRepository {
 
-	abstract HoldingSummary findHoldingAggregated(Integer accountId);
+	abstract HoldingSummary findHoldingAggregated(Long accountId);
 
 }

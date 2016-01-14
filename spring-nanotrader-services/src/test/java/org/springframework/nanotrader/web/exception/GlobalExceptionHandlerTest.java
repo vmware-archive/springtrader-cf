@@ -44,7 +44,6 @@ public class GlobalExceptionHandlerTest extends AbstractSecureControllerTest {
 		.andExpect(status()
 		.isBadRequest())
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-		.andExpect(jsonPath("$.detail", containsString("An error has occured while processing the request: Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer'")) )
 		.andDo(print());
 	}	
 	

@@ -53,7 +53,7 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 	}
 
 	@Override
-	public PortfolioSummary findPortfolioSummary(Integer accountId) {
+	public PortfolioSummary findPortfolioSummary(Long accountId) {
 
 			PortfolioSummary portfolioSummary = new PortfolioSummary();
 			Query query = em.createQuery("SELECT SUM(h.purchaseprice * h.quantity) as purchaseBasis, count(h) FROM Holding h Where h.accountAccountid =:accountId");
@@ -71,7 +71,7 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 		return portfolioSummary;
 	}
 
-	private BigDecimal getTotalMarketValue(Integer accountId) {
+	private BigDecimal getTotalMarketValue(Long accountId) {
 		List<Holding> holdings = holdingRepository.findByAccountAccountid(accountId);
 		float r = 0;
 		for(Holding holding: holdings) {

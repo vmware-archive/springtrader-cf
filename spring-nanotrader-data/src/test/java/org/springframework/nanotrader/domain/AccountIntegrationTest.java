@@ -43,7 +43,7 @@ public class AccountIntegrationTest {
     public void testFindAccount() {
         Account obj = dod.getRandomAccount();
         Assert.assertNotNull("Data on demand for 'Account' failed to initialize correctly", obj);
-        Integer id = obj.getAccountid();
+        Long id = obj.getAccountid();
         Assert.assertNotNull("Data on demand for 'Account' failed to provide an identifier", id);
         obj = accountService.findAccount(id);
         Assert.assertNotNull("Find method for 'Account' illegally returned null for id '" + id + "'", obj);
@@ -86,7 +86,7 @@ public class AccountIntegrationTest {
     public void testDeleteAccount() {
         Account obj = dod.getRandomAccount();
         Assert.assertNotNull("Data on demand for 'Account' failed to initialize correctly", obj);
-        Integer id = obj.getAccountid();
+        Long id = obj.getAccountid();
         Assert.assertNotNull("Data on demand for 'Account' failed to provide an identifier", id);
         obj = accountService.findAccount(id);
         accountService.deleteAccount(obj);
@@ -97,7 +97,7 @@ public class AccountIntegrationTest {
     public void testUpdateAccount() {
         Account obj = dod.getRandomAccount();
         Assert.assertNotNull("Data on demand for 'Account' failed to initialize correctly", obj);
-        Integer id = obj.getAccountid();
+        Long id = obj.getAccountid();
         Assert.assertNotNull("Data on demand for 'Account' failed to provide an identifier", id);
         obj = accountService.findAccount(id);
         obj.setOpenbalance(new BigDecimal("1.1"));

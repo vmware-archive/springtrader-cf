@@ -39,11 +39,11 @@ public interface TradingServiceFacade {
 
 	void logout(String authtoken);
 
-	Accountprofile findAccountProfile(Integer id);
+	Accountprofile findAccountProfile(Long id);
 	
 	Accountprofile findAccountprofileByUserId(String username);
 
-	Integer saveAccountProfile(Accountprofile accountProfileRequest);
+	Long saveAccountProfile(Accountprofile accountProfileRequest);
 
 	void updateAccountProfile(Accountprofile accountProfileRequest, String username);
 	
@@ -51,30 +51,30 @@ public interface TradingServiceFacade {
 
 	Integer saveOrderDirect(Order order);
 	
-	Holding findHolding(Integer id, Integer accountId);
+	Holding findHolding(Integer id, Long accountId);
 
-	CollectionResult findHoldingsByAccountId(Integer accountId, Integer page, Integer pageSize);
+	CollectionResult findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize);
 
-	Order findOrder(Integer orderId, Integer accountId);
+	Order findOrder(Integer orderId, Long accountId);
 
 	void updateOrder(Order orderRequest);
 
-	CollectionResult findOrders(Integer accountId, String status, Integer page, Integer pageSize);
+	CollectionResult findOrders(Long accountId, String status, Integer page, Integer pageSize);
 
 	Quote findQuoteBySymbol(String symbol);
 
 	CollectionResult findQuotes();
 
-	Account findAccount(Integer id);
+	Account findAccount(Long id);
 
-	PortfolioSummary findPortfolioSummary(Integer accountId);
+	PortfolioSummary findPortfolioSummary(Long accountId);
 
 	MarketSummary findMarketSummary();
 	
 
 	Accountprofile findAccountprofileByAuthtoken(String token);
 	
-	HoldingSummary findHoldingSummary(Integer accountId);
+	HoldingSummary findHoldingSummary(Long accountId);
 	
 	void setTradingService(TradingService tradingService);
 }

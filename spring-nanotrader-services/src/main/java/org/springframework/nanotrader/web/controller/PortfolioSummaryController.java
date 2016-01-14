@@ -34,7 +34,7 @@ public class PortfolioSummaryController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/portfolioSummary", method = RequestMethod.GET)
 	@ResponseBody
-	public PortfolioSummary find(@PathVariable( "accountId" ) final Integer accountId ) {
+	public PortfolioSummary find(@PathVariable( "accountId" ) final Long accountId ) {
 		this.getSecurityUtil().checkAccount(accountId);
 		return getTradingServiceFacade().findPortfolioSummary(accountId);
 	

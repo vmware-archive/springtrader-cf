@@ -54,7 +54,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 	}
 
 	@Override
-	public HoldingSummary findHoldingAggregated(Integer accountId) {
+	public HoldingSummary findHoldingAggregated(Long accountId) {
 	
 		HoldingSummary holdingSummary = new HoldingSummary();
 		List<HoldingAggregate> holdingRollups = new ArrayList<HoldingAggregate>();

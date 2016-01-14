@@ -21,7 +21,7 @@ import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccountProfileRepository extends JpaSpecificationExecutor<Accountprofile>, JpaRepository<Accountprofile, Integer> {
+public interface AccountProfileRepository extends JpaSpecificationExecutor<Accountprofile>, JpaRepository<Accountprofile, Long> {
 	
 	public Accountprofile findByUseridAndPasswd(String userId, String passwd);
 	

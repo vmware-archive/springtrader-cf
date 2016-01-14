@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AccountController extends BaseController {
 	
 	@RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Account> find(@PathVariable( "id" ) final Integer id) {
+	public ResponseEntity<Account> find(@PathVariable( "id" ) final Long id) {
 		this.getSecurityUtil().checkAccount(id);
 		Account accountResponse = this.getTradingServiceFacade().findAccount(id);
 		return new ResponseEntity<Account>(accountResponse, getNoCacheHeaders(),

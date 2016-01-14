@@ -29,7 +29,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class Accountprofile implements Serializable{
 
-	private Integer profileid;
+	private Long profileid;
 
     private String address;
 
@@ -104,11 +104,11 @@ public class Accountprofile implements Serializable{
         this.fullname = fullname;
     }
 	
-	public Integer getProfileid() {
+	public Long getProfileid() {
         return this.profileid;
     }
 
-	public void setProfileid(Integer id) {
+	public void setProfileid(Long id) {
         this.profileid = id;
     }
 	

@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.delete(account);
     }
 
-	public Account findAccount(Integer id) {
+	public Account findAccount(Long id) {
         return accountRepository.findOne(id);
     }
 
