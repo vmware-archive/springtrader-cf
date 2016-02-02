@@ -16,20 +16,16 @@
 package org.springframework.nanotrader.service;
 
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.*;
-import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
-import org.springframework.nanotrader.data.domain.test.AccountprofileDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.HoldingDataOnDemand;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.repository.HoldingRepository;
-import org.springframework.nanotrader.data.service.AccountService;
-import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.data.service.TradingService;
+import org.springframework.nanotrader.data.service.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,197 +41,159 @@ import static org.junit.Assert.*;
 
 /**
  * @author Gary Russell
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
 @Transactional
 public class TradingServiceTests {
-	
-	@Autowired
-	private AccountDataOnDemand accountDataOnDemand;
 
-	@Autowired
-	private AccountprofileDataOnDemand accountprofileDataOnDemand;
+    @Autowired
+    private HoldingDataOnDemand holdingDataOnDemand;
 
-	@Autowired
-	private HoldingDataOnDemand holdingDataOnDemand;
+    @Autowired
+    private OrderDataOnDemand orderDataOnDemand;
 
-	@Autowired
-	private OrderDataOnDemand orderDataOnDemand;
+    @Autowired
+    private TradingService tradingService;
 
-	@Autowired
-	private TradingService tradingService;
-	
-	@Autowired
-	private AccountService accountService;
+    @Autowired
+    private AccountService accountService;
 
-	@Autowired
-	HoldingRepository holdingRepository;
-	
-	@Autowired
-	@Qualifier( "rtQuoteService")
+    @Autowired
+    private AccountProfileService accountProfileService;
+
+    @Autowired
+    HoldingRepository holdingRepository;
+
+    @Autowired
+    @Qualifier("rtQuoteService")
     QuoteService quoteService;
 
-	@PersistenceContext
-	EntityManager entityManager;
+    @PersistenceContext
+    EntityManager entityManager;
 
-	@Test
-	@Ignore
-	public void testfindAccountProfile() {
-		Account account = accountDataOnDemand.getRandomAccount();
-		entityManager.clear(); // force reload
-//
-//		account = accountService.findAccount(account.getAccountid());
-		assertNotNull(account);
-		assertNotNull(account.getProfileProfileid());
-		assertNotNull(account.getProfileProfileid().getProfileid());
-		Accountprofile profile = tradingService.findAccountProfile(account.getProfileProfileid().getProfileid());
-		assertEquals(account.getProfileProfileid().toString(), profile.toString());
-		assertTrue(profile.getAccounts().contains(account));
-	}
+    Accountprofile profile;
 
-	@Test
-	public void testsaveNewAccountProfile() {
-		Accountprofile profile = accountprofileDataOnDemand.getNewTransientAccountprofile(100);
-		Account account = accountDataOnDemand.getNewTransientAccount(100);
-		profile.setAccounts(Collections.singleton(account));
-		tradingService.saveAccountProfile(profile);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+    @Before
+    public void setUp() {
+        Accountprofile ap = FallBackAccountProfileService.fakeAccountProfile(true);
+        profile = accountProfileService.saveAccountProfile(ap);
+    }
 
-		Accountprofile newProfile = tradingService.findAccountProfile(profile.getProfileid());
-		account = newProfile.getAccounts().iterator().next();
-		assertEquals(account.getProfileProfileid().toString(), newProfile.toString());
-	}
+    @Test
+    public void testFindHoldingsByAccount() {
+        Integer page = 0;
+        Integer pageSize = 10;
+        Holding holding100 = holdingDataOnDemand.getNewTransientHolding(100);
+        Holding holding101 = holdingDataOnDemand.getNewTransientHolding(101);
+        holding101.setAccountAccountid(holding100.getAccountAccountid());
+        holdingRepository.save(holding100);
+        holdingRepository.save(holding101);
+        entityManager.flush();
+        entityManager.clear(); // force reload
 
-	@Test
-	public void testUpdateAccountProfile() {
-		Account account = accountDataOnDemand.getRandomAccount();
-		Accountprofile profile = account.getProfileProfileid();
-		profile.setAddress("changed");
-		tradingService.updateAccountProfile(profile, profile.getUserid() );
-		entityManager.flush();
-		entityManager.clear(); // force reload
+        List<Holding> holdings = tradingService.findHoldingsByAccountId(holding100.getAccountAccountid(), page, pageSize);
+        assertEquals(2, holdings.size());
+        Map<Integer, Holding> map = new HashMap<Integer, Holding>();
+        map.put(holdings.get(0).getHoldingid(), holdings.get(0));
+        map.put(holdings.get(1).getHoldingid(), holdings.get(1));
+        assertNotNull(map.remove(holding100.getHoldingid()));
+        assertNotNull(map.remove(holding101.getHoldingid()));
+    }
 
-		Accountprofile newProfile = tradingService.findAccountProfile(profile.getProfileid());
-		assertEquals(profile.toString(), newProfile.toString());
-	}
-	
-	@Test
-	public void testFindHoldingsByAccount() {
-		Integer page = 0;
-		Integer pageSize = 10;
-		Holding holding100 = holdingDataOnDemand.getNewTransientHolding(100); 
-		Holding holding101 = holdingDataOnDemand.getNewTransientHolding(101);
-		holding101.setAccountAccountid(holding100.getAccountAccountid());
-		holdingRepository.save(holding100);
-		holdingRepository.save(holding101);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+    @Test
+    public void testSaveAndFindAndUpdateHolding() {
+        Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
+        holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
+        tradingService.saveHolding(holding);
+        entityManager.flush();
+        entityManager.clear(); // force reload
 
-		List<Holding> holdings = tradingService.findHoldingsByAccountId(holding100.getAccountAccountid(), page, pageSize);
-		assertEquals(2, holdings.size());
-		Map<Integer, Holding> map = new HashMap<Integer, Holding>();
-		map.put(holdings.get(0).getHoldingid(), holdings.get(0));
-		map.put(holdings.get(1).getHoldingid(), holdings.get(1));
-		assertNotNull(map.remove(holding100.getHoldingid()));
-		assertNotNull(map.remove(holding101.getHoldingid()));
-	}
+        Holding newHolding = tradingService.findHolding(holding.getHoldingid(), holding.getAccountAccountid());
+        assertEquals(holding.toString(), newHolding.toString());
 
-	@Test
-	public void testSaveAndFindAndUpdateHolding() {
-		Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
-		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
-		tradingService.saveHolding(holding);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+        newHolding.setPurchaseprice(BigDecimal.valueOf(1234.56));
+        tradingService.updateHolding(newHolding);
+        entityManager.flush();
+        entityManager.clear(); // force reload
 
-		Holding newHolding = tradingService.findHolding(holding.getHoldingid(), holding.getAccountAccountid());
-		assertEquals(holding.toString(), newHolding.toString());
+        Holding updatedHolding = tradingService.findHolding(holding.getHoldingid(), holding.getAccountAccountid());
 
-		newHolding.setPurchaseprice(BigDecimal.valueOf(1234.56));
-		tradingService.updateHolding(newHolding);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+        assertEquals(newHolding.toString(), updatedHolding.toString());
 
-		Holding updatedHolding = tradingService.findHolding(holding.getHoldingid(), holding.getAccountAccountid());
-		
-		assertEquals(newHolding.toString(), updatedHolding.toString());
-		
-	}
+    }
 
-	@Test
-	public void testFindAccountSummary() {
-		Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
-		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
-		holding.setQuoteSymbol("GOOG");
-		tradingService.saveHolding(holding);
-		entityManager.flush();
-		entityManager.clear(); // force reload
-		PortfolioSummary portfolioSummary = tradingService.findPortfolioSummary(100L);
-		Assert.assertTrue("Expected 'PortfolioSummary' holding count to be equal to 1", portfolioSummary.getNumberOfHoldings() == 1);
-	}
+    @Test
+    public void testFindAccountSummary() {
+        Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
+        holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
+        holding.setQuoteSymbol("GOOG");
+        tradingService.saveHolding(holding);
+        entityManager.flush();
+        entityManager.clear(); // force reload
+        PortfolioSummary portfolioSummary = tradingService.findPortfolioSummary(100L);
+        Assert.assertTrue("Expected 'PortfolioSummary' holding count to be equal to 1", portfolioSummary.getNumberOfHoldings() == 1);
+    }
 
-	@Test
-	public void testHoldingAggregateSummary() {
-		Holding holding = holdingDataOnDemand.getNewTransientHolding(102);
-		holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
-		holding.setQuoteSymbol("GOOG");
-		tradingService.saveHolding(holding);
-		entityManager.flush();
-		entityManager.clear(); // force reload
-		HoldingSummary holdingSummary = tradingService.findHoldingSummary(new Long(102));
-		Assert.assertNotNull(holdingSummary);
-		Assert.assertTrue(holdingSummary.getHoldingsTotalGains().floatValue() != 0.0f);
-	}
-	
-	
-	@Test
-	public void testSaveAndFindOrder() {
-		Order order = orderDataOnDemand.getNewTransientOrder(100);
-		order.setOrdertype(TradingService.ORDER_TYPE_BUY);
-		order.setOpendate(new java.sql.Date(System.currentTimeMillis()));
-		order.setCompletiondate(new java.sql.Date(System.currentTimeMillis()));
-		tradingService.saveOrder(order);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+    @Test
+    public void testHoldingAggregateSummary() {
+        Holding holding = holdingDataOnDemand.getNewTransientHolding(102);
+        holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
+        holding.setQuoteSymbol("GOOG");
+        tradingService.saveHolding(holding);
+        entityManager.flush();
+        entityManager.clear(); // force reload
+        HoldingSummary holdingSummary = tradingService.findHoldingSummary(new Long(102));
+        Assert.assertNotNull(holdingSummary);
+        Assert.assertTrue(holdingSummary.getHoldingsTotalGains().floatValue() != 0.0f);
+    }
 
-		Order foundOrder = tradingService.findOrder(order.getOrderid(), order.getAccountAccountid().getAccountid());
-		assertNotNull(foundOrder);
-		
-		BigDecimal oldPrice = foundOrder.getPrice();
-		foundOrder.setPrice(BigDecimal.valueOf(123.45));
-		tradingService.updateOrder(foundOrder);
-		entityManager.flush();
-		entityManager.clear(); // force reload
 
-		Order updatedOrder = tradingService.findOrder(order.getOrderid(), order.getAccountAccountid().getAccountid());
-		assertTrue(!order.toString().equals(updatedOrder.toString()));
-		
-		order.setPrice(oldPrice);
-		tradingService.updateOrder(foundOrder);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+    @Test
+    public void testSaveAndFindOrder() {
+        Order order = orderDataOnDemand.getNewTransientOrder(100);
+        order.setOrdertype(TradingService.ORDER_TYPE_BUY);
+        order.setOpendate(new java.sql.Date(System.currentTimeMillis()));
+        order.setCompletiondate(new java.sql.Date(System.currentTimeMillis()));
+        tradingService.saveOrder(order);
+        entityManager.flush();
+        entityManager.clear(); // force reload
 
-		updatedOrder = tradingService.findOrder(order.getOrderid(), order.getAccountAccountid().getAccountid());
-		assertEquals(foundOrder.toString(), updatedOrder.toString());
-	}
-	
-	@Test
+        Order foundOrder = tradingService.findOrder(order.getOrderid(), order.getAccountid());
+        assertNotNull(foundOrder);
 
-	public void testFindMarketSummary() {
-		
+        BigDecimal oldPrice = foundOrder.getPrice();
+        foundOrder.setPrice(BigDecimal.valueOf(123.45));
+        tradingService.updateOrder(foundOrder);
+        entityManager.flush();
+        entityManager.clear(); // force reload
+
+        Order updatedOrder = tradingService.findOrder(order.getOrderid(), order.getAccountid());
+        assertTrue(!order.toString().equals(updatedOrder.toString()));
+
+        order.setPrice(oldPrice);
+        tradingService.updateOrder(foundOrder);
+        entityManager.flush();
+        entityManager.clear(); // force reload
+
+        updatedOrder = tradingService.findOrder(order.getOrderid(), order.getAccountid());
+        assertEquals(foundOrder.toString(), updatedOrder.toString());
+    }
+
+    @Test
+
+    public void testFindMarketSummary() {
+
         Quote quote = new Quote();
         quote.setSymbol("symbol1");
-        quote.setPrice(BigDecimal.valueOf(50.01) );
-        quote.setChange1( BigDecimal.valueOf(5.00));
-        quote.setVolume( BigDecimal.valueOf(50000));
-        quote.setChange1( BigDecimal.valueOf(4.00));
-        quote.setOpen1( BigDecimal.valueOf(49.00));
+        quote.setPrice(BigDecimal.valueOf(50.01));
+        quote.setChange1(BigDecimal.valueOf(5.00));
+        quote.setVolume(BigDecimal.valueOf(50000));
+        quote.setChange1(BigDecimal.valueOf(4.00));
+        quote.setOpen1(BigDecimal.valueOf(49.00));
         quoteService.saveQuote(quote);
-		entityManager.flush();
-		entityManager.clear(); // force reload
+        entityManager.flush();
+        entityManager.clear(); // force reload
         Quote quote2 = new Quote();
         quote2.setSymbol("symbol2");
         quote2.setPrice(BigDecimal.valueOf(150.00));
@@ -246,14 +203,13 @@ public class TradingServiceTests {
         quote2.setOpen1(BigDecimal.valueOf(120.00));
         quoteService.saveQuote(quote2);
         entityManager.flush();
-		entityManager.clear(); // force reload
-		MarketSummary marketSummary = tradingService.findMarketSummary();
-		// need to harden this test!!
-		Assert.assertNotNull("Expected 'MarketSummary' Market Volume should not be null", marketSummary.getTradeStockIndexVolume());
+        entityManager.clear(); // force reload
+        MarketSummary marketSummary = tradingService.findMarketSummary();
+        // need to harden this test!!
+        Assert.assertNotNull("Expected 'MarketSummary' Market Volume should not be null", marketSummary.getTradeStockIndexVolume());
 
 
-	}
-	
-	
-	
+    }
+
+
 }

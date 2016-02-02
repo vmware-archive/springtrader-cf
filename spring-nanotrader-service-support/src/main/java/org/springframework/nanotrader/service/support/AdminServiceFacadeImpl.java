@@ -16,10 +16,7 @@
 package org.springframework.nanotrader.service.support;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -29,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.AccountProfileService;
+import org.springframework.nanotrader.data.service.AccountService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.cache.DataCreationProgressCache;
@@ -51,6 +50,12 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 	@Resource
 	@Qualifier( "rtQuoteService")
 	private QuoteService quoteService;
+
+	@Resource
+	private AccountProfileService accountProfileService;
+
+	@Resource
+	private AccountService accountService;
 
 	@Resource
 	private TradingService tradingService;
@@ -100,12 +105,12 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 			ap.setEmail(userid + "@nanotrader.com");
 			ap.setFullname("first_" + userid + " " + "last " + userid);
 			ap.setCreditcard("1111222233334444");
-			Set<Account> accounts = new HashSet<Account>();
+			List<Account> accounts = new ArrayList<Account>();
 			accounts.add(ac);
 			ap.setAccounts(accounts);
-			tradingService.saveAccountProfile(ap);
+			accountProfileService.saveAccountProfile(ap);
 			Order o = new Order();
-			o.setAccountid((tradingService.findAccountByProfile(ap)).getAccountid());
+			o.setAccountid((accountService.findByProfile(ap)).getAccountid());
 			o.setCompletiondate(creationdate);
 			o.setQuantity(new BigDecimal(1000));
 			o.setOrdertype("buy");

@@ -15,156 +15,125 @@
  */
 package org.springframework.nanotrader.data.domain;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "ACCOUNT")
-@org.hibernate.annotations.Entity(dynamicUpdate=true)
 public class Account implements Serializable {
 
-	@OneToMany(mappedBy = "accountAccountid")
-	private Set<Order> orders;
+    private static final long serialVersionUID = 1L;
 
-	@ManyToOne
-	@JoinColumn(name = "profile_profileid", referencedColumnName = "profileid")
-	private Accountprofile profileProfileid;
+    @NotNull
+    private Accountprofile accountprofile;
 
-	@Column(name = "creationdate")
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(style = "M-")
-	private Date creationdate;
+    private Date creationdate;
 
-	@Column(name = "openbalance", precision = 14, scale = 2)
-	private BigDecimal openbalance;
+    private BigDecimal openbalance;
 
-	@Column(name = "logoutcount")
-	@NotNull
-	private Integer logoutcount;
+    @NotNull
+    private Integer logoutcount = 0;
 
-	@Column(name = "balance", precision = 14, scale = 2)
-	private BigDecimal balance;
+    private BigDecimal balance;
 
-	@Column(name = "lastlogin")
-	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(style = "M-")
-	private Date lastlogin;
+    private Date lastlogin;
 
-	@Column(name = "logincount")
-	@NotNull
-	private Integer logincount;
+    @NotNull
+    private Integer logincount = 0;
 
-	@Version
-    @Column(name = "version")
     private int version = 0;
-	public int getVersion() {
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public int getVersion() {
         return version;
     }
-	
-	public Set<Order> getOrders() {
-		return orders;
-	}
 
-	public void setOrders(Set<Order> orders) {
-		this.orders = orders;
-	}
+    public Accountprofile getAccountprofile() {
+        return accountprofile;
+    }
 
-	public Accountprofile getProfileProfileid() {
-		return profileProfileid;
-	}
+    public void setAccountprofile(Accountprofile a) {
+        this.accountprofile = a;
+    }
 
-	public void setProfileProfileid(Accountprofile profileProfileid) {
-		this.profileProfileid = profileProfileid;
-	}
+    public Date getCreationdate() {
+        return creationdate;
+    }
 
-	public Date getCreationdate() {
-		return creationdate;
-	}
+    public void setCreationdate(Date creationdate) {
+        this.creationdate = creationdate;
+    }
 
-	public void setCreationdate(Date creationdate) {
-		this.creationdate = creationdate;
-	}
+    public BigDecimal getOpenbalance() {
+        return openbalance;
+    }
 
-	public BigDecimal getOpenbalance() {
-		return openbalance;
-	}
+    public void setOpenbalance(BigDecimal openbalance) {
+        this.openbalance = openbalance;
+    }
 
-	public void setOpenbalance(BigDecimal openbalance) {
-		this.openbalance = openbalance;
-	}
+    public Integer getLogoutcount() {
+        return logoutcount;
+    }
 
-	public Integer getLogoutcount() {
-		return logoutcount;
-	}
+    public void setLogoutcount(Integer logoutcount) {
+        this.logoutcount = logoutcount;
+    }
 
-	public void setLogoutcount(Integer logoutcount) {
-		this.logoutcount = logoutcount;
-	}
+    public BigDecimal getBalance() {
+        return balance;
+    }
 
-	public BigDecimal getBalance() {
-		return balance;
-	}
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
 
-	public void setBalance(BigDecimal balance) {
-		this.balance = balance;
-	}
+    public Date getLastlogin() {
+        return lastlogin;
+    }
 
-	public Date getLastlogin() {
-		return lastlogin;
-	}
+    public void setLastlogin(Date lastlogin) {
+        this.lastlogin = lastlogin;
+    }
 
-	public void setLastlogin(Date lastlogin) {
-		this.lastlogin = lastlogin;
-	}
+    public Integer getLogincount() {
+        return logincount;
+    }
 
-	public Integer getLogincount() {
-		return logincount;
-	}
+    public void setLogincount(Integer logincount) {
+        this.logincount = logincount;
+    }
 
-	public void setLogincount(Integer logincount) {
-		this.logincount = logincount;
-	}
+    private Long accountid;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
-	// , generator="ACCOUNT_SEQ")
-	// @SequenceGenerator(name="ACCOUNT_SEQ", sequenceName="ACCOUNT_SEQUENCE")
-	@Column(name = "accountid")
-	private Long accountid;
+    public Long getAccountid() {
+        return this.accountid;
+    }
 
-	public Long getAccountid() {
-		return this.accountid;
-	}
+    public void setAccountid(Long id) {
+        this.accountid = id;
+    }
 
-	public void setAccountid(Long id) {
-		this.accountid = id;
-	}
+    public int hashCode() {
+        if (getAccountid() == null) {
+            return -1;
+        }
+        return getAccountid().intValue();
+    }
 
-	@Override
-	public String toString() {
-		return "Account [creationdate=" + creationdate + ", openbalance="
-				+ openbalance + ", logoutcount=" + logoutcount + ", balance="
-				+ balance + ", lastlogin=" + lastlogin + ", logincount="
-				+ logincount + ", accountid=" + accountid + "]";
-	}
+    public boolean equals(Object o) {
+        return o != null && o instanceof Account && o.hashCode() == this.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Account [creationdate=" + creationdate + ", openbalance="
+                + openbalance + ", logoutcount=" + logoutcount + ", balance="
+                + balance + ", lastlogin=" + lastlogin + ", logincount="
+                + logincount + ", accountid=" + accountid + "]";
+    }
 
 }

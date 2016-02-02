@@ -50,10 +50,7 @@ public class AccountProfileControllerTest extends AbstractSecureControllerTest {
 						Matchers.equalTo((Number) ServiceTestConfiguration.PROFILE_ID),
 						Matchers.equalTo((Number) ServiceTestConfiguration.PROFILE_ID.intValue()))))
 
-				.andExpect(jsonPath("$.email").value(ServiceTestConfiguration.EMAIL))
-				.andExpect(jsonPath("$.address").value(ServiceTestConfiguration.ADDRESS))
 				.andExpect(jsonPath("$.fullname").value(ServiceTestConfiguration.FULL_NAME))
-				.andExpect(jsonPath("$.creditcard").value(ServiceTestConfiguration.CC_NUMBER))
 				.andDo(print());
 	}
 	

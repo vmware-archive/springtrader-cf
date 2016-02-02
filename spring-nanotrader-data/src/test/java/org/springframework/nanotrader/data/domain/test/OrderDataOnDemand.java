@@ -15,30 +15,25 @@
  */
 package org.springframework.nanotrader.data.domain.test;
 
-import java.math.BigDecimal;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.nanotrader.data.domain.Account;
+import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.repository.OrderRepository;
+import org.springframework.nanotrader.data.service.AccountProfileService;
+import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.OrderService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Component;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.util.*;
 
 
 @Component
@@ -50,9 +45,6 @@ public class OrderDataOnDemand {
 	private List<Order> data;
 
 	@Autowired
-    private AccountDataOnDemand accountDataOnDemand;
-
-	@Autowired
     private HoldingDataOnDemand holdingDataOnDemand;
 
 	@Autowired
@@ -61,6 +53,9 @@ public class OrderDataOnDemand {
 
 	@Autowired
     OrderService orderService;
+
+    @Autowired
+    AccountProfileService accountProfileService;
 
 	@Autowired
     OrderRepository orderRepository;
@@ -81,8 +76,9 @@ public class OrderDataOnDemand {
     }
 
 	public void setAccountAccountid(Order obj, int index) {
-        Account accountAccountid = accountDataOnDemand.getRandomAccount();
-        obj.setAccountAccountid(accountAccountid);
+        Accountprofile ap = FallBackAccountProfileService.fakeAccountProfile(true);
+        ap = accountProfileService.saveAccountProfile(ap);
+        obj.setAccountid(ap.getAccounts().get(0).getAccountid());
     }
 
 	public void setCompletiondate(Order obj, int index) {
@@ -160,9 +156,7 @@ public class OrderDataOnDemand {
         Order obj = data.get(rnd.nextInt(data.size()));
         Integer id = obj.getOrderid();
         Order ret = orderService.findOrder(id);
-        if(ret.getAccountAccountid().getBalance() == null) {
-            ret.getAccountAccountid().setBalance(new BigDecimal(12345));
-        }
+        ret.setAccountid(1L);
         ret.setQuoteid("GOOG");
 
         return ret;

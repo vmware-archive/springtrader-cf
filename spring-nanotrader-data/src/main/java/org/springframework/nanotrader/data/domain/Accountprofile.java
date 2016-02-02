@@ -15,128 +15,128 @@
  */
 package org.springframework.nanotrader.data.domain;
 
-import java.io.Serializable;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "ACCOUNTPROFILE")
 public class Accountprofile implements Serializable {
-	@Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "profileid")
+    private static final long serialVersionUID = 1L;
+
     private Long profileid;
 
-	public Long getProfileid() {
+    public Long getProfileid() {
         return this.profileid;
     }
 
-	public void setProfileid(Long id) {
+    public void setProfileid(Long id) {
         this.profileid = id;
     }
 
-	@OneToMany(mappedBy = "profileProfileid")
-    private Set<Account> accounts;
+    private List<Account> accounts;
 
-	@Column(name = "address", length = 250)
     private String address;
 
-	@Column(name = "passwd", length = 250)
     private String passwd;
 
-	@Column(name = "userid", length = 250, unique = true)
     @NotNull
     private String userid;
 
-	@Column(name = "email", length = 250)
     private String email;
 
-	@Column(name = "creditcard", length = 250)
     private String creditcard;
 
-	@Column(name = "fullname", length = 250)
     private String fullname;
-	
-	
-	@Column(name = "authtoken", length = 100)
+
+
     private String authtoken;
 
-	public String getAuthtoken() {
-		return authtoken;
-	}
+    public String getAuthtoken() {
+        return authtoken;
+    }
 
-	public void setAuthtoken(String authtoken) {
-		this.authtoken = authtoken;
-	}
+    public void setAuthtoken(String authtoken) {
+        this.authtoken = authtoken;
+    }
 
-	public Set<Account> getAccounts() {
+    public List<Account> getAccounts() {
         return accounts;
     }
 
-	public void setAccounts(Set<Account> accounts) {
+    public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
 
-	public String getAddress() {
+    public String getAddress() {
         return address;
     }
 
-	public void setAddress(String address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
-	public String getPasswd() {
+    public String getPasswd() {
         return passwd;
     }
 
-	public void setPasswd(String passwd) {
+    public void setPasswd(String passwd) {
         this.passwd = passwd;
     }
 
-	public String getUserid() {
+    public String getUserid() {
         return userid;
     }
 
-	public void setUserid(String userid) {
+    public void setUserid(String userid) {
         this.userid = userid;
     }
 
-	public String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-	public void setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-	public String getCreditcard() {
+    public String getCreditcard() {
         return creditcard;
     }
 
-	public void setCreditcard(String creditcard) {
+    public void setCreditcard(String creditcard) {
         this.creditcard = creditcard;
     }
 
-	public String getFullname() {
+    public String getFullname() {
         return fullname;
     }
 
-	public void setFullname(String fullname) {
+    public void setFullname(String fullname) {
         this.fullname = fullname;
     }
-	
-	@Override
-	public String toString() {
-		return "Accountprofile [profileid=" + profileid + ", address=" + address + ", passwd=" + passwd + ", userid="
-				+ userid + ", email=" + email + ", creditcard=" + creditcard + ", fullname=" + fullname + "]";
-	}
+
+    public void addAccount(Account account) {
+        if (getAccounts() == null || getAccounts().size() < 1) {
+            setAccounts(new ArrayList<Account>());
+        }
+        account.setAccountprofile(this);
+        getAccounts().add(account);
+    }
+
+    public int hashCode() {
+        if (getProfileid() == null) {
+            return -1;
+        }
+        return getProfileid().intValue();
+    }
+
+    public boolean equals(Object o) {
+        return o != null && o instanceof Accountprofile && o.hashCode() == this.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Accountprofile [profileid=" + profileid + ", address=" + address + ", passwd=" + passwd + ", userid="
+                + userid + ", email=" + email + ", creditcard=" + creditcard + ", fullname=" + fullname + "]";
+    }
 }

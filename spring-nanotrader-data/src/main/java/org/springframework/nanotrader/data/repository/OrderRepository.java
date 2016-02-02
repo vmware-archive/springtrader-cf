@@ -15,8 +15,6 @@
  */
 package org.springframework.nanotrader.data.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -26,6 +24,8 @@ import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Gary Russell
  * @author Brian Dussault
@@ -33,25 +33,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer>, JpaSpecificationExecutor<Order> {
-		
-	@Modifying 
-	@Transactional
-	@Query(value="UPDATE Order o SET o.orderstatus = 'completed' WHERE o.accountAccountid.accountid = ?1 AND o.orderstatus = 'closed'")
-	public int updateClosedOrders(Long accountId);
-	
-	@Query("SELECT o FROM Order o WHERE o.orderstatus = ?2 AND o.accountAccountid.accountid  = ?1 order by orderid DESC")
-	public List<Order> findOrdersByStatus(Long accountId, String status, Pageable pageable);
 
-	@Query("SELECT o FROM Order o WHERE o.accountAccountid.accountid  = ?1 order by orderid DESC")
-	public List<Order> findOrdersByAccountAccountid_Accountid(Long accountId, Pageable pageable);
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE Order o SET o.orderstatus = 'completed' WHERE o.accountid = ?1 AND o.orderstatus = 'closed'")
+    int updateClosedOrders(Long accountId);
 
-	@Query("SELECT o FROM Order o WHERE o.orderid = ?1 AND o.accountAccountid.accountid  = ?2")
-	public Order findByOrderidAndAccountAccountid(Integer orderId, Long accountId);
+    @Query("SELECT o FROM Order o WHERE o.orderstatus = ?2 AND o.accountid  = ?1 order by orderid DESC")
+    List<Order> findOrdersByStatus(Long accountId, String status, Pageable pageable);
 
-	@Query("SELECT count(o) FROM Order o WHERE o.accountAccountid.accountid  = ?1")
-	public Long findCountOfOrders(Long accountId);
-	
-	@Query("SELECT count(o) FROM Order o WHERE o.accountAccountid.accountid  = ?1 and o.orderstatus = ?2")
-	public Long findCountOfOrders(Long accountId, String status);
-	
+    @Query("SELECT o FROM Order o WHERE o.accountid  = ?1 order by orderid DESC")
+    List<Order> findOrdersByAccountAccountid_Accountid(Long accountId, Pageable pageable);
+
+    @Query("SELECT o FROM Order o WHERE o.orderid = ?1 AND o.accountid  = ?2")
+    Order findByOrderidAndAccountAccountid(Integer orderId, Long accountId);
+
+    @Query("SELECT count(o) FROM Order o WHERE o.accountid  = ?1")
+    Long findCountOfOrders(Long accountId);
+
+    @Query("SELECT count(o) FROM Order o WHERE o.accountid  = ?1 and o.orderstatus = ?2")
+    Long findCountOfOrders(Long accountId, String status);
+
 }

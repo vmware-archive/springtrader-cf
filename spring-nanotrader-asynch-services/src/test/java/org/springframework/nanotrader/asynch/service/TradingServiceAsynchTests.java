@@ -15,15 +15,17 @@
  */
 package org.springframework.nanotrader.asynch.service;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.dozer.Mapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.nanotrader.data.domain.test.AccountDataOnDemand;
+import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
+import org.springframework.nanotrader.data.service.AccountProfileService;
+import org.springframework.nanotrader.data.service.AccountService;
+import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.Quote;
@@ -32,10 +34,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @author Gary Russell
  *
  */
+@Profile("test")
 @ContextConfiguration(locations={
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-jpa.xml",
@@ -48,10 +53,13 @@ public class TradingServiceAsynchTests {
 	private TradingServiceFacade tradingServiceFacade;
 
 	@Autowired
-	OrderDataOnDemand orderDataOnDemand;
+	private AccountProfileService accountProfileService;
 
 	@Autowired
-	AccountDataOnDemand accountDataOnDemand;
+	private AccountService accountService;
+
+	@Autowired
+	OrderDataOnDemand orderDataOnDemand;
 
 	@Autowired
 	@Qualifier( "rtQuoteService")
@@ -62,7 +70,12 @@ public class TradingServiceAsynchTests {
 
 	@Test
 	public void testService() {
-		Long accountId = accountDataOnDemand.getRandomAccount().getAccountid();
+		Accountprofile ap = FallBackAccountProfileService.fakeAccountProfile(true);
+		ap = accountProfileService.saveAccountProfile(ap);
+		assertNotNull(ap);
+		Long accountId = ap.getAccounts().get(0).getAccountid();
+		assertNotNull(accountId);
+
 		org.springframework.nanotrader.data.domain.Quote dquote = quoteService.findBySymbol("GOOG");
 		Quote quote = new Quote();
 		mapper.map(dquote, quote);

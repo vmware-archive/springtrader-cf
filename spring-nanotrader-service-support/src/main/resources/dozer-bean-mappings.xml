@@ -18,14 +18,10 @@
 	<mapping map-id="accountProfile">
 		<class-a>org.springframework.nanotrader.data.domain.Accountprofile
 		</class-a>
-		<class-b map-null="false">org.springframework.nanotrader.service.domain.Accountprofile
+		<class-b>org.springframework.nanotrader.service.domain.Accountprofile
 		</class-b>
-		<field map-id="accountProfile.account">
-			<a>accounts</a>
-			<b>accounts</b>
-		</field>
-
 	</mapping>
+
 	<mapping map-id="accountProfile.account">
 		<class-a map-null="false">org.springframework.nanotrader.data.domain.Account
 		</class-a>
@@ -71,10 +67,6 @@
 	<mapping map-id="order">
 		<class-a>org.springframework.nanotrader.data.domain.Order</class-a>
 		<class-b>org.springframework.nanotrader.service.domain.Order</class-b>
-		<field>
-			<a>accountAccountid.accountid</a>
-			<b>accountid</b>
-		</field>
 		<field>
 			<a>holdingHoldingid.holdingid</a>
 			<b>holdingid</b>

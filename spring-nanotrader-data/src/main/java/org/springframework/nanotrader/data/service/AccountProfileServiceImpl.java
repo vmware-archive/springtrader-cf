@@ -15,70 +15,137 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import java.util.List;
-
+import com.netflix.discovery.DiscoveryClient;
+import feign.Feign;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.cloud.AccountDecoder;
+import org.springframework.nanotrader.data.cloud.AccountEncoder;
+import org.springframework.nanotrader.data.cloud.AccountProfileRepository;
+import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
-import org.springframework.nanotrader.data.repository.AccountProfileRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Service
-@Transactional
+@Profile({"default", "cloud"})
 public class AccountProfileServiceImpl implements AccountProfileService {
-	@Autowired
+
+    private static final Logger LOG = Logger.getLogger(AccountProfileServiceImpl.class);
+
     AccountProfileRepository accountProfileRepository;
 
-	@Override
-	public long countAllAccountProfiles() {
-		return accountProfileRepository.count();
-	}
+    @Autowired
+    DiscoveryClient discoveryClient;
 
-	@Override
-	public void deletelAccountProfile(Accountprofile accountProfile) {
-		accountProfileRepository.delete(accountProfile);
+    @Autowired
+    String accountRepositoryName;
 
-	}
+    @Override
+    public void deletelAccountProfile(Accountprofile accountProfile) {
+        accountProfileRepository().delete(accountProfile);
+    }
 
-	@Override
-	public Accountprofile findAccountProfile(Long id) {
-		return accountProfileRepository.findOne(id);
-	}
+    @Override
+    public Accountprofile findAccountProfile(Long id) {
+        return accountProfileRepository().findOne(id);
+    }
 
-	@Override
-	public List<Accountprofile> findAllAccountProfiles() {
-		return accountProfileRepository.findAll();
-	}
+    @Override
+    public Accountprofile saveAccountProfile(Accountprofile accountProfile) {
+        return accountProfileRepository().save(accountProfile);
 
-	@Override
-	public List<Accountprofile> findAccountProfileEntries(int firstResult, int maxResults) {
-		 return accountProfileRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
-	}
+    }
 
-	@Override
-	public Accountprofile saveAccountProfile(Accountprofile accountProfile) {
-		return accountProfileRepository.save(accountProfile);
+    @Override
+    public Accountprofile findByUseridAndPasswd(String userId, String passwd) {
+        List<Accountprofile> aps = accountProfileRepository()
+                .findByUseridAndPasswd(userId, passwd);
+        if (aps == null || aps.size() < 1) {
+            return null;
+        }
+        return aps.get(0);
+    }
 
-	}
+    @Override
+    public Accountprofile findByUserid(String username) {
+        List<Accountprofile> aps = accountProfileRepository()
+                .findByUserid(username);
+        if (aps == null || aps.size() < 1) {
+            return null;
+        }
+        return aps.get(0);
+    }
 
-	@Override
-	public Accountprofile updateAccountProfile(Accountprofile accountProfile) {
-		return accountProfileRepository.save(accountProfile);
-	}
+    @Override
+    public Accountprofile findByAuthtoken(String authtoken) {
+        List<Accountprofile> aps = accountProfileRepository()
+                .findByAuthtoken(authtoken);
+        if (aps == null || aps.size() < 1) {
+            return null;
+        }
+        return aps.get(0);
+    }
 
-	@Override
-	public Accountprofile findByUseridAndPasswd(String userId, String passwd) {
-		return accountProfileRepository.findByUseridAndPasswd(userId, passwd);
-	}
+    private AccountProfileRepository accountProfileRepository() {
+        if (this.accountProfileRepository == null) {
+            LOG.info("initializing accountProfileRepository named: " + accountRepositoryName);
+            String url = discoveryClient.getNextServerFromEureka(
+                    accountRepositoryName, false).getHomePageUrl();
 
-	@Override
-	public Accountprofile findByUserid(String username) {
-		return accountProfileRepository.findByUserid(username);
-	}
+            LOG.info("accountProfileRepository url is: " + url);
 
-	@Override
-	public Accountprofile findByAuthtoken(String authtoken) {
-		return accountProfileRepository.findByAuthtoken(authtoken);
-	}
+            this.accountProfileRepository = Feign.builder()
+                    .encoder(new AccountEncoder())
+                    .decoder(new AccountDecoder())
+                    .target(AccountProfileRepository.class, url);
 
+            LOG.info("accountRepository initialization complete.");
+        }
+        return this.accountProfileRepository;
+    }
+
+    @Override
+    public Accountprofile login(String username, String password) {
+        Accountprofile accountProfile = findByUseridAndPasswd(username, password);
+        if (accountProfile != null) {
+            accountProfile.setAuthtoken(UUID.randomUUID().toString());
+            List<Account> accounts = accountProfile.getAccounts();
+            for (Account account : accounts) {
+                account.setLogincount(account.getLogincount() + 1);
+                account.setLastlogin(new Date());
+            }
+            return saveAccountProfile(accountProfile); // persist new auth token
+        }
+        return null;
+    }
+
+    @Override
+    public void logout(String authtoken) {
+        Accountprofile accountProfile = findByAuthtoken(authtoken);
+        if (accountProfile != null) {
+            accountProfile.setAuthtoken(null); // remove token
+            List<Account> accounts = accountProfile.getAccounts();
+            for (Account account : accounts) {
+                account.setLogoutcount(account.getLogoutcount() + 1);
+            }
+            saveAccountProfile(accountProfile);
+        }
+    }
+
+    @Override
+    public Accountprofile updateAccountProfile(Accountprofile accountProfile, String username) {
+        Accountprofile accountProfileResponse = null;
+        Accountprofile acctProfile = findByUserid(username);
+        // make sure that the primary key hasn't been altered
+        if (acctProfile != null) {
+            accountProfile.setAuthtoken(acctProfile.getAuthtoken());
+            accountProfileResponse = saveAccountProfile(accountProfile);
+        }
+        return accountProfileResponse;
+    }
 }

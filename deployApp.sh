@@ -16,6 +16,7 @@ cf set-env ${frontName} JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}]'
 cf set-env ${frontName} JBP_CONFIG_TOMCAT '[tomcat: {version: 7.0.+}]'
 cf set-env ${frontName} LIVE_QUOTE_SERVICE_NAME ${liveQuoteServiceEurekaName}
 cf set-env ${frontName} DB_QUOTE_SERVICE_NAME ${dbQuoteServiceEurekaName}
+cf set-env ${frontName} ACCOUNT_SERVICE_NAME ${accountServiceEurekaName}
 cf push -b java_buildpack -p dist/spring-nanotrader-services-${version}.war -m 1G -t 180 -d ${domain} -n ${frontName} ${frontName}
 
 echo Making this app available as a service instance
@@ -34,6 +35,7 @@ cf set-env ${backName} JBP_CONFIG_OPEN_JDK_JRE '[jre: {version: 1.7.0_+}]'
 cf set-env ${backName} JBP_CONFIG_TOMCAT '[tomcat: {version: 7.0.+}]'
 cf set-env ${backName} LIVE_QUOTE_SERVICE_NAME ${liveQuoteServiceEurekaName}
 cf set-env ${backName} DB_QUOTE_SERVICE_NAME ${dbQuoteServiceEurekaName}
+cf set-env ${backName} ACCOUNT_SERVICE_NAME ${accountServiceEurekaName}
 cf bind-service ${backName} ${sqlName}
 cf bind-service ${backName} ${messagingName}
 cf push -b java_buildpack -p dist/spring-nanotrader-asynch-services-${version}.war -m 1G -t 180 -d ${domain} -n ${backName} ${backName}

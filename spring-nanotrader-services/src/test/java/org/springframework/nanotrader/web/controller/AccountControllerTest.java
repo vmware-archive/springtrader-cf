@@ -30,7 +30,6 @@ import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration
  * AccountControllerTest tests the Account REST api 
  * 
  * @author Brian Dussault
- * @author
  */
 
 public class AccountControllerTest extends AbstractSecureControllerTest {
@@ -47,7 +46,7 @@ public class AccountControllerTest extends AbstractSecureControllerTest {
 
 				.andExpect(jsonPath("$.creationdate").value(ServiceTestConfiguration.DATE))
 				.andExpect(jsonPath("$.openbalance").value(ServiceTestConfiguration.ACCOUNT_OPEN_BALANCE.doubleValue()))
-				.andExpect(jsonPath("$.logoutcount").value(ServiceTestConfiguration.LOGOUT_COUNT.intValue()))
+				.andExpect(jsonPath("$.logoutcount").value(ServiceTestConfiguration.LOGOUT_COUNT))
 				.andExpect(jsonPath("$.balance").value(ServiceTestConfiguration.ACCOUNT_BALANCE.doubleValue()))
 				.andExpect(jsonPath("$.lastlogin").value(ServiceTestConfiguration.DATE))
 				.andExpect(jsonPath("$.logincount").value(ServiceTestConfiguration.LOGIN_COUNT))

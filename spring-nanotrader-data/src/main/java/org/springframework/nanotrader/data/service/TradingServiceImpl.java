@@ -15,13 +15,6 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.nanotrader.data.domain.Account;
-import org.springframework.nanotrader.data.domain.Accountprofile;
-import org.springframework.nanotrader.data.domain.Holding;
-import org.springframework.nanotrader.data.domain.HoldingSummary;
-import org.springframework.nanotrader.data.domain.MarketSummary;
-import org.springframework.nanotrader.data.domain.Order;
-import org.springframework.nanotrader.data.domain.PortfolioSummary;
-import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.domain.*;
 import org.springframework.nanotrader.data.repository.HoldingAggregateRepository;
 import org.springframework.nanotrader.data.repository.HoldingRepository;
 import org.springframework.nanotrader.data.repository.OrderRepository;
@@ -44,6 +30,12 @@ import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Brian Dussault
@@ -87,87 +79,6 @@ public class TradingServiceImpl implements TradingService {
 	
 	@Autowired
 	QuotePublisher quotePublisher;
-
-	@Override
-	public Accountprofile login(String username, String password) {
-		Accountprofile accountProfile = accountProfileService.findByUseridAndPasswd(username, password);
-		if (accountProfile != null) {
-			accountProfile.setAuthtoken(UUID.randomUUID().toString());
-			accountProfile = accountProfileService.saveAccountProfile(accountProfile); // persist new auth token
-			Set<Account> accounts = accountProfile.getAccounts();
-			for (Account account : accounts) {
-				account.setLogincount(account.getLogincount() + 1);
-				account.setLastlogin(new Date());
-				accountService.saveAccount(account);
-			}
-			return accountProfile;
-		}
-		return null;
-	}
-
-	@Override
-	public void logout(String authtoken) {
-		Accountprofile accountProfile = accountProfileService.findByAuthtoken(authtoken);
-		if (accountProfile != null) {
-	 		accountProfile.setAuthtoken(null); // remove token
-	 		accountProfileService.saveAccountProfile(accountProfile);
-			Set<Account> accounts = accountProfile.getAccounts();
-			for (Account account : accounts) {
-				account.setLogoutcount(account.getLogoutcount() + 1);
-				accountService.saveAccount(account);
-			}			
-		}
-	}
-
-	@Override
-	public Accountprofile findAccountProfile(Long id) {
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findAccountProfile: accountProfileId=" + id);
-		}
-		Accountprofile accountProfile = accountProfileService.findAccountProfile(id);
-		if (accountProfile != null) {
-			accountProfile.getAccounts().iterator(); // fetch accounts
-
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findAccountProfile: completed successfully.");
-		}
-		return accountProfile;
-	}
-
-	@Override
-	public Accountprofile saveAccountProfile(Accountprofile accountProfile) {
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.saveAccountProfile: accountProfile=" + accountProfile.toString());
-		}
-		Account account = accountProfile.getAccounts().iterator().next();
-		account.setProfileProfileid(accountProfile);
-		account.setLogincount(0);
-		account.setLogoutcount(0);
-		account.setBalance(account.getOpenbalance());
-		account.setCreationdate(new Date());
-		Accountprofile createdAccountProfile = accountProfileService.saveAccountProfile(accountProfile);
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.saveAccountProfile: accountProfile saved.");
-		}
-		accountService.saveAccount(account);
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.saveAccountProfile: completed successfully.");
-		}
-		return createdAccountProfile;
-	}
-
-	@Override
-	public Accountprofile updateAccountProfile(Accountprofile accountProfile, String username) {
-		Accountprofile accountProfileResponse = null;
-		Accountprofile acctProfile = accountProfileService.findByUserid(username);
-		// make sure that the primary key hasn't been altered
-		if (acctProfile != null) {
-			accountProfile.setAuthtoken(acctProfile.getAuthtoken());
-			accountProfileResponse = accountProfileService.saveAccountProfile(accountProfile);
-		}
-		return accountProfileResponse;
-	}
 
 	@Override
 	public Long findCountOfHoldingsByAccountId(Long accountId) {
@@ -267,7 +178,7 @@ public class TradingServiceImpl implements TradingService {
 
 	private Order buy(Order order) {
 		
-		Account account = accountService.findAccount(order.getAccountAccountid().getAccountid());
+		Account account = accountService.findAccount(order.getAccountid());
 		Quote quote = quoteService.findBySymbol(order.getQuoteid());
 		Holding holding = null;
 		// create order and persist
@@ -296,7 +207,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	private Order sell(Order order) {
-		Account account = accountService.findAccount(order.getAccountAccountid().getAccountid());
+		Account account = accountService.findAccount(order.getAccountid());
 		Holding holding = holdingRepository.findByHoldingidAndAccountAccountid(order.getHoldingHoldingid()
 				.getHoldingid(), account.getAccountid());
 		if (holding == null) {
@@ -314,7 +225,7 @@ public class TradingServiceImpl implements TradingService {
 
 	private Order createOrder(Order order, Account account, Holding holding, Quote quote) {
 		Order createdOrder = null;
-		order.setAccountAccountid(account);
+		order.setAccountid(account.getAccountid());
 		order.setQuoteid(quote.getSymbol());
 		if (order.getQuantity() == null) {
 			order.setQuantity(holding.getQuantity());
@@ -333,7 +244,7 @@ public class TradingServiceImpl implements TradingService {
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
-				holding.setAccountAccountid(order.getAccountAccountid().getAccountid());
+				holding.setAccountAccountid(order.getAccountid());
 				holding.setPurchasedate(new Date());
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
@@ -363,7 +274,7 @@ public class TradingServiceImpl implements TradingService {
 	private void updateAccount(Order order) {
 		// update account balance
 		Quote quote = quoteService.findBySymbol(order.getQuoteid());
-		Account account = order.getAccountAccountid();
+		Account account = accountService.findAccount(order.getAccountid());
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
 		BigDecimal balance = account.getBalance();
@@ -437,7 +348,7 @@ public class TradingServiceImpl implements TradingService {
 			
 		}
 		// Ensure that customers can't update another customers order record
-		Order originalOrder = orderRepository.findByOrderidAndAccountAccountid(order.getOrderid(), order.getAccountAccountid().getAccountid());
+		Order originalOrder = orderRepository.findByOrderidAndAccountAccountid(order.getOrderid(), order.getAccountid());
 
 		if (originalOrder!= null && !"completed".equals(originalOrder.getOrderstatus())) {
 			if (originalOrder != null) {
@@ -541,16 +452,6 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Account findAccount(Long accountId) {
-		return accountService.findAccount(accountId);
-	}
-
-	@Override
-	public Account findAccountByProfile(Accountprofile ap) {
-		return accountService.findByProfile(ap);
-	}
-
-	@Override
 	public PortfolioSummary findPortfolioSummary(Long accountId) {
 		PortfolioSummary portfolioSummary = portfolioSummaryRepository.findPortfolioSummary(accountId);
 		return portfolioSummary;
@@ -567,33 +468,6 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Accountprofile findAccountByUserId(String id) {
-		return accountProfileService.findByUserid(id);
-	}
-
-	@Override
-	public Accountprofile findByAuthtoken(String token) {
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findByAuthtoken: token=" + token);
-		}
-
-		Accountprofile accountProfile = accountProfileService.findByAuthtoken(token);
-		if (accountProfile != null) {
-			Set<Account> accounts = accountProfile.getAccounts();
-			accounts.iterator();
-			if (log.isDebugEnabled()) {
-				log.debug("TradingServices.findByAuthtoken: completed");
-			}
-
-			return accountProfile;
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findByAuthtoken: completed - user not found.");
-		}
-		return null;
-	}
-
-	@Override
 	public void deleteAll() {
 		
 		orderRepository.deleteAll();
@@ -603,8 +477,8 @@ public class TradingServiceImpl implements TradingService {
 	@Override
 	@Transactional
 	public void deleteAccountByUserid(String userId) {
-		Accountprofile ap = findAccountByUserId(userId);
-		Account ac = findAccountByProfile(ap);
+		Accountprofile ap = accountProfileService.findByUserid(userId);
+		Account ac = accountService.findByProfile(ap);
 		// Fix maximum number 10000 to page size 
 		List<Holding> holdings = findHoldingsByAccountId(ac.getAccountid(), 0, 10000);
 		List<Order> orders = findOrders(ac.getAccountid(), 0, 10000);

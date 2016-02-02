@@ -53,6 +53,12 @@
 	<bean id="rtQuoteService"
 		class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 
+	<bean id="accountService"
+		  class="org.springframework.nanotrader.data.service.FallBackAccountService" />
+
+	<bean id="accountProfileService"
+		  class="org.springframework.nanotrader.data.service.FallBackAccountProfileService" />
+
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>

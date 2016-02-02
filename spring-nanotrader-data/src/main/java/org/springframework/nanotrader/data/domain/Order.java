@@ -51,9 +51,8 @@ public class Order implements Serializable {
         this.orderid = id;
     }
 
-	@ManyToOne
-    @JoinColumn(name = "account_accountid", referencedColumnName = "accountid")
-    private Account accountAccountid;
+    @Column(name = "accountid", nullable = false)
+    private Long accountid;
 
 	@ManyToOne 
     @JoinColumn(name = "holding_holdingid", referencedColumnName = "holdingid")
@@ -96,12 +95,12 @@ public class Order implements Serializable {
 		this.quoteid = s;
 	}
 
-	public Account getAccountAccountid() {
-        return accountAccountid;
+	public Long getAccountid() {
+        return accountid;
     }
 
-	public void setAccountAccountid(Account accountAccountid) {
-        this.accountAccountid = accountAccountid;
+	public void setAccountid(Long l) {
+        this.accountid = l;
     }
 
 	public Holding getHoldingHoldingid() {

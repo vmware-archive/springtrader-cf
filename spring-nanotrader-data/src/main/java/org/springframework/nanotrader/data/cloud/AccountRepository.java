@@ -13,17 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.nanotrader.data.repository;
+package org.springframework.nanotrader.data.cloud;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import feign.Headers;
+import feign.Param;
+import feign.RequestLine;
 import org.springframework.nanotrader.data.domain.Account;
-import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Repository
-public interface AccountRepository extends JpaSpecificationExecutor<Account>, JpaRepository<Account, Long> {
-	
-	public Account findByProfileProfileid(Accountprofile ap);
-	
+public interface AccountRepository {
+
+    @RequestLine("GET /accounts/{id}")
+    Account findOne(@Param(value = "id") Long id);
+
+    @RequestLine("GET /accounts/profile/{profileId}")
+    Account findByProfileId(@Param(value = "profileId") Long id);
+
+    @RequestLine("DELETE /accounts/")
+    @Headers("Content-Type: application/json")
+    void delete(@RequestBody Account account);
+
+    @RequestLine("POST /accounts/")
+    @Headers("Content-Type: application/json")
+    Account save(@RequestBody Account account);
+
 }

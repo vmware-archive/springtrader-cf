@@ -28,7 +28,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
+import org.springframework.nanotrader.data.service.AccountProfileService;
+import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Order;
@@ -66,11 +69,17 @@ public class TradingServiceFacadeTests {
 	private OrderGateway orderGateway;
 
 	@Autowired
+	private AccountProfileService accountProfileService;
+
+	@Autowired
     private Mapper mapper;
+
+	private Accountprofile profile;
 
 	@Before
 	public void setupMocks() {
 		Mockito.doNothing().when(orderGateway).sendOrder(new Order());
+		profile = accountProfileService.saveAccountProfile(FallBackAccountProfileService.fakeAccountProfile(true));
 	}
 
 	@Test
@@ -79,7 +88,7 @@ public class TradingServiceFacadeTests {
 				orderDataOnDemand.getRandomOrder();
 		assertNotNull(existingOrder.getQuoteid());
 		Order orderRequest = new Order();
-		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
+		orderRequest.setAccountid(profile.getAccounts().get(0).getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
 		mapper.map(quoteService.findBySymbol("GOOG"), quote);
@@ -96,7 +105,7 @@ public class TradingServiceFacadeTests {
 		org.springframework.nanotrader.data.domain.Order existingOrder = 
 				orderDataOnDemand.getRandomOrder();
 		Order orderRequest = new Order();
-		orderRequest.setAccountid(existingOrder.getAccountAccountid().getAccountid());
+		orderRequest.setAccountid(existingOrder.getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
 		Quote quote = new Quote();
 		quote.setSymbol("GOOG");
