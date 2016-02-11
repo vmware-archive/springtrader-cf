@@ -25,7 +25,7 @@ import java.util.Set;
  */
 
 public class Holding {
-    private Integer holdingid;
+    private Long holdingid;
 
     private Set<Order> orders;
 
@@ -85,11 +85,11 @@ public class Holding {
 
 	
 
-	public Integer getHoldingid() {
+	public Long getHoldingid() {
         return this.holdingid;
     }
 
-	public void setHoldingid(Integer id) {
+	public void setHoldingid(Long id) {
         this.holdingid = id;
     }
 

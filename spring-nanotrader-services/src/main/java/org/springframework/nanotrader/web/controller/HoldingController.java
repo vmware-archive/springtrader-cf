@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class HoldingController extends BaseController {
 
 	@RequestMapping(value = "/account/{accountId}/holding/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Holding> find(@PathVariable("id") final Integer id,
+	public ResponseEntity<Holding> find(@PathVariable("id") final Long id,
 			@PathVariable("accountId") final Long accountId) {
 		Holding holdingResponse = new Holding();
 		this.getSecurityUtil().checkAccount(accountId);

@@ -38,15 +38,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "HOLDING")
 public class Holding implements Serializable {
 	@Id
-    @GeneratedValue(strategy = GenerationType.TABLE) 
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "holdingid")
-    private Integer holdingid;
+    private Long holdingid;
 
-	public Integer getHoldingid() {
+	public Long getHoldingid() {
         return this.holdingid;
     }
 
-	public void setHoldingid(Integer id) {
+	public void setHoldingid(Long id) {
         this.holdingid = id;
     }
 

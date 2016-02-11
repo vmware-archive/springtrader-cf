@@ -41,13 +41,13 @@ public class Order implements Serializable {
 	@Id
     @GeneratedValue(strategy = GenerationType.TABLE) 
     @Column(name = "orderid")
-    private Integer orderid;
+    private Long orderid;
 
-	public Integer getOrderid() {
+	public Long getOrderid() {
         return this.orderid;
     }
 
-	public void setOrderid(Integer id) {
+	public void setOrderid(Long id) {
         this.orderid = id;
     }
 

@@ -94,7 +94,7 @@ public class TradingServiceTests {
 
         List<Holding> holdings = tradingService.findHoldingsByAccountId(holding100.getAccountAccountid(), page, pageSize);
         assertEquals(2, holdings.size());
-        Map<Integer, Holding> map = new HashMap<Integer, Holding>();
+        Map<Long, Holding> map = new HashMap<Long, Holding>();
         map.put(holdings.get(0).getHoldingid(), holdings.get(0));
         map.put(holdings.get(1).getHoldingid(), holdings.get(1));
         assertNotNull(map.remove(holding100.getHoldingid()));

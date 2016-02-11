@@ -15,29 +15,29 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import java.util.List;
-
 import org.springframework.nanotrader.data.domain.Order;
+
+import java.util.List;
 
 public interface OrderService {
 
-	public abstract long countAllOrders();
+    long countAllOrders();
 
 
-	public abstract void deleteOrder(Order order);
+    void deleteOrder(Order order);
 
-	public abstract Order findOrder(Integer id);
-
-
-	public abstract List<Order> findAllOrders();
+    Order findOrder(Long id);
 
 
-	public abstract List<Order> findOrderEntries(int firstResult, int maxResults);
+    List<Order> findAllOrders();
 
 
-	public abstract void saveOrder(Order order);
+    List<Order> findOrderEntries(int firstResult, int maxResults);
 
 
-	public abstract Order updateOrder(Order order);
+    void saveOrder(Order order);
+
+
+    Order updateOrder(Order order);
 
 }

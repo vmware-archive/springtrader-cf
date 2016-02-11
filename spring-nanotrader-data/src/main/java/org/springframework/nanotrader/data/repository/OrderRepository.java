@@ -32,7 +32,7 @@ import java.util.List;
  */
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Integer>, JpaSpecificationExecutor<Order> {
+public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
 
     @Modifying
     @Transactional
@@ -46,7 +46,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer>, JpaSpeci
     List<Order> findOrdersByAccountAccountid_Accountid(Long accountId, Pageable pageable);
 
     @Query("SELECT o FROM Order o WHERE o.orderid = ?1 AND o.accountid  = ?2")
-    Order findByOrderidAndAccountAccountid(Integer orderId, Long accountId);
+    Order findByOrderidAndAccountAccountid(Long orderId, Long accountId);
 
     @Query("SELECT count(o) FROM Order o WHERE o.accountid  = ?1")
     Long findCountOfOrders(Long accountId);

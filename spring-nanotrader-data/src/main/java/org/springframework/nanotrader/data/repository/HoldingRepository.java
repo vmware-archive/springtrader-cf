@@ -15,8 +15,6 @@
  */
 package org.springframework.nanotrader.data.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -24,21 +22,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
- *  @author Gary Russell
- * 	@author Brian Dussault
+ * @author Gary Russell
+ * @author Brian Dussault
  */
 
 @Repository
-public interface HoldingRepository extends JpaSpecificationExecutor<Holding>, JpaRepository<Holding, Integer> {
-	
-	public List<Holding> findByAccountAccountid(Long accountId, Pageable pageable);
-	
-	public List<Holding> findByAccountAccountid(Long accountId);
-	
-	public Holding findByHoldingidAndAccountAccountid(Integer holdingId, Long accountId);
+public interface HoldingRepository extends JpaSpecificationExecutor<Holding>, JpaRepository<Holding, Long> {
 
-	@Query("SELECT count(h) FROM Holding h WHERE h.accountAccountid = ?1")
-	public Long findCountOfHoldings(Long accountId);
-	
+    List<Holding> findByAccountAccountid(Long accountId, Pageable pageable);
+
+    List<Holding> findByAccountAccountid(Long accountId);
+
+    Holding findByHoldingidAndAccountAccountid(Long holdingId, Long accountId);
+
+    @Query("SELECT count(h) FROM Holding h WHERE h.accountAccountid = ?1")
+    Long findCountOfHoldings(Long accountId);
+
 }

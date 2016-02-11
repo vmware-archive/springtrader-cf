@@ -147,14 +147,14 @@ public class OrderDataOnDemand {
             index = data.size() - 1;
         }
         Order obj = data.get(index);
-        Integer id = obj.getOrderid();
+        Long id = obj.getOrderid();
         return orderService.findOrder(id);
     }
 
 	public Order getRandomOrder() {
         init();
         Order obj = data.get(rnd.nextInt(data.size()));
-        Integer id = obj.getOrderid();
+        Long id = obj.getOrderid();
         Order ret = orderService.findOrder(id);
         ret.setAccountid(1L);
         ret.setQuoteid("GOOG");

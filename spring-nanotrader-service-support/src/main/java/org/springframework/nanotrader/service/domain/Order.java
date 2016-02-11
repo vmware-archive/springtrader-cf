@@ -23,7 +23,7 @@ import java.util.Date;
  */
 public class Order {
 
-	private Integer orderid;
+	private Long orderid;
 
 	private Long accountid;
 	
@@ -45,11 +45,11 @@ public class Order {
 
 	private Quote quote;
 
-	public Integer getOrderid() {
+	public Long getOrderid() {
 		return this.orderid;
 	}
 
-	public void setOrderid(Integer id) {
+	public void setOrderid(Long id) {
 		this.orderid = id;
 	}
 

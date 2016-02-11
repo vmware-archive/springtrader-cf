@@ -95,7 +95,7 @@ public class TradingServiceFacadeTests {
 		orderRequest.setQuote(quote);
 		assertNotNull(orderRequest.getQuote().getQuoteid());
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
-		Integer id = tradingServiceFacade.saveOrder(orderRequest, true);
+		Long id = tradingServiceFacade.saveOrder(orderRequest, true);
 		assertNotNull(id);
 		assertTrue(id > 0);
 	}
@@ -111,7 +111,7 @@ public class TradingServiceFacadeTests {
 		quote.setSymbol("GOOG");
 		orderRequest.setQuote(quote);
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
-		Integer id = tradingServiceFacade.saveOrder(orderRequest, false);
+		Long id = tradingServiceFacade.saveOrder(orderRequest, false);
 		assertNull(id);
 	}
 

@@ -86,7 +86,7 @@ public class TradingServiceAsynchTests {
 		order.setAccountid(accountId);
 		order.setQuote(quote);
 		assertNotNull(order.getAccountid());
-		Integer i = tradingServiceFacade.saveOrderDirect(order);
+		Long i = tradingServiceFacade.saveOrderDirect(order);
 		assertNotNull(i);
 	}
 }

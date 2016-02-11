@@ -46,16 +46,16 @@ public interface TradingServiceFacade {
 	Long saveAccountProfile(Accountprofile accountProfileRequest);
 
 	void updateAccountProfile(Accountprofile accountProfileRequest, String username);
-	
-	Integer saveOrder(Order order, boolean synch);
 
-	Integer saveOrderDirect(Order order);
+	Long saveOrder(Order order, boolean synch);
+
+	Long saveOrderDirect(Order order);
 	
-	Holding findHolding(Integer id, Long accountId);
+	Holding findHolding(Long id, Long accountId);
 
 	CollectionResult findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize);
 
-	Order findOrder(Integer orderId, Long accountId);
+	Order findOrder(Long orderId, Long accountId);
 
 	void updateOrder(Order orderRequest);
 

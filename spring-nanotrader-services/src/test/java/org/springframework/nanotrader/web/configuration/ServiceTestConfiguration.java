@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 @Profile("test")
 public class ServiceTestConfiguration {
     //Holding constants
-    public static Integer HOLDING_ID = 100;
+    public static Long HOLDING_ID = 100L;
     public static Long ACCOUNT_ID = 500L;
     public static BigDecimal PURCHASE_PRICE = BigDecimal.valueOf(50000);
     public static String SYMBOL = "VMW";
@@ -65,7 +65,7 @@ public class ServiceTestConfiguration {
     public static String PASSWORD = "password";
 
     //Order constants
-    public static Integer ORDER_ID = 555;
+    public static Long ORDER_ID = 555L;
     public static BigDecimal ORDER_PRICE = BigDecimal.valueOf(100);
     public static BigDecimal ORDER_QUANTITY = BigDecimal.valueOf(200);
     public static String ORDER_TYPE_BUY = "buy";
@@ -110,12 +110,12 @@ public class ServiceTestConfiguration {
     @Bean
     public TradingService tradingService() {
         TradingService tradingService = Mockito.mock(TradingService.class);
-        when(tradingService.findHolding(eq(100), eq(ACCOUNT_ID))).thenReturn(holding());
+        when(tradingService.findHolding(eq(100L), eq(ACCOUNT_ID))).thenReturn(holding());
         when(tradingService.findHoldingsByAccountId(eq(ACCOUNT_ID), any(Integer.class), any(Integer.class))).thenReturn(holdings());
         when(tradingService.findCountOfHoldingsByAccountId(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
         when(tradingService.findCountOfOrders(eq(ACCOUNT_ID), any(String.class))).thenReturn(RESULT_COUNT);
         when(tradingService.updateHolding(any(Holding.class))).thenReturn(holding());
-        when(tradingService.findOrder(eq(999), eq(ACCOUNT_ID))).thenReturn(order());
+        when(tradingService.findOrder(eq(999L), eq(ACCOUNT_ID))).thenReturn(order());
         when(tradingService.saveOrder(any(Order.class))).thenReturn(null);
         when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
         when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class), any(Integer.class), any(Integer.class))).thenReturn(orders());

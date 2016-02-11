@@ -31,13 +31,13 @@ public interface TradingService {
 
 	String ORDER_TYPE_SELL = "sell";
 
-	Holding findHolding(Integer id, Long accountId);
+	Holding findHolding(Long id, Long accountId);
 
 	Holding updateHolding(Holding holding);
 
 	void saveHolding(Holding holding);
 
-	Order findOrder(Integer id, Long accountId);
+	Order findOrder(Long id, Long accountId);
 
 	Order saveOrder(Order order);
 

@@ -55,7 +55,7 @@ public class OrderController extends BaseController {
 	@RequestMapping(value = "/account/{accountId}/order/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Order> findOrder(
 			@PathVariable("accountId") final Long accountId,
-			@PathVariable("id") final Integer orderId) {
+			@PathVariable("id") final Long orderId) {
 		this.getSecurityUtil().checkAccount(accountId);
 		Order responseOrder = getTradingServiceFacade().findOrder(orderId,
 				accountId);
@@ -71,7 +71,7 @@ public class OrderController extends BaseController {
 			UriComponentsBuilder builder) {
 		this.getSecurityUtil().checkAccount(accountId);
 		orderRequest.setAccountid(accountId);
-		Integer orderId = getTradingServiceFacade().saveOrder(orderRequest,
+		Long orderId = getTradingServiceFacade().saveOrder(orderRequest,
 				true);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setLocation(builder

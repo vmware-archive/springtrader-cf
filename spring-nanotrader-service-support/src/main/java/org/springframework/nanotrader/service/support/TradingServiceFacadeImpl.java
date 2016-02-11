@@ -210,7 +210,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         accountProfileService.updateAccountProfile(accountProfile, username);
     }
 
-    public Holding findHolding(Integer id, Long accountId) {
+    public Holding findHolding(Long id, Long accountId) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findHolding: id=" + id);
         }
@@ -272,7 +272,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     }
 
 
-    public Integer saveOrder(Order orderRequest, boolean synch) {
+    public Long saveOrder(Order orderRequest, boolean synch) {
         if (synch) {
 
         	return saveOrderDirect(orderRequest);
@@ -285,7 +285,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
     }
 
-    public Integer saveOrderDirect(Order orderRequest) {
+    public Long saveOrderDirect(Order orderRequest) {
         org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
         mapper.map(orderRequest, order, ORDER_MAPPING);
         if(orderRequest != null && orderRequest.getQuote() != null) {
@@ -296,7 +296,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     }
 
 
-    public Order findOrder(Integer orderId, Long accountId) {
+    public Order findOrder(Long orderId, Long accountId) {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findOrder: orderId=" + orderId + " accountId=" + accountId);
         }

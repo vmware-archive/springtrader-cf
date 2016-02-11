@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-	public Order findOrder(Integer id) {
+	public Order findOrder(Long id) {
         return orderRepository.findOne(id);
     }
 

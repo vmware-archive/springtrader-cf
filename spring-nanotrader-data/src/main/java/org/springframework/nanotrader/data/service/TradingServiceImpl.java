@@ -105,7 +105,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Holding findHolding(Integer id, Long accountId) {
+	public Holding findHolding(Long id, Long accountId) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findHolding: holdingId=" + id + " accountid=" + accountId);
 		}
@@ -141,7 +141,7 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Order findOrder(Integer id, Long accountId) {
+	public Order findOrder(Long id, Long accountId) {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findOrder: orderId=" + id);
 		}
@@ -292,7 +292,7 @@ public class TradingServiceImpl implements TradingService {
 				orderToDeleteHolding.setHoldingHoldingid(null);
 			}
 			// remove the holding id from the sell record
-			Integer holdingId = order.getHoldingHoldingid().getHoldingid();
+			Long holdingId = order.getHoldingHoldingid().getHoldingid();
 			order.setHoldingHoldingid(null);
 			holdingRepository.delete(holdingId);
 		}

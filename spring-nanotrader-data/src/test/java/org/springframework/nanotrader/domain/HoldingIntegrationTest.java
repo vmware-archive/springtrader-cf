@@ -41,7 +41,7 @@ public class HoldingIntegrationTest {
     public void testFind() {
         Holding obj = dod.getRandomHolding();
         Assert.assertNotNull("Data on demand for 'Holding' failed to initialize correctly", obj);
-        Integer id = obj.getHoldingid();
+        Long id = obj.getHoldingid();
         Assert.assertNotNull("Data on demand for 'Holding' failed to provide an identifier", id);
         obj = holdingRepository.findOne(id);
         Assert.assertNotNull("Find method for 'Holding' illegally returned null for id '" + id + "'", obj);

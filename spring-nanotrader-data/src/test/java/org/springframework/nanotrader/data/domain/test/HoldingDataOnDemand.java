@@ -97,14 +97,14 @@ public class HoldingDataOnDemand {
             index = data.size() - 1;
         }
         Holding obj = data.get(index);
-        Integer id = obj.getHoldingid();
+        Long id = obj.getHoldingid();
         return holdingRepository.findOne(id);
     }
 
 	public Holding getRandomHolding() {
         init();
         Holding obj = data.get(rnd.nextInt(data.size()));
-        Integer id = obj.getHoldingid();
+        Long id = obj.getHoldingid();
         return holdingRepository.findOne(id);
     }
 

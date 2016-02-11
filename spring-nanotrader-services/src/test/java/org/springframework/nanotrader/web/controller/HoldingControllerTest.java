@@ -43,7 +43,10 @@ public class HoldingControllerTest extends AbstractSecureControllerTest {
 	public void getHoldingByIdJson() throws Exception {
 		mockMvc.perform(get("/account/" + ServiceTestConfiguration.ACCOUNT_ID + "/holding/100").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.holdingid").value(ServiceTestConfiguration.HOLDING_ID))
+
+				.andExpect(jsonPath("$.holdingid").value(Matchers.anyOf(
+						Matchers.equalTo((Number) ServiceTestConfiguration.HOLDING_ID),
+						Matchers.equalTo((Number) ServiceTestConfiguration.HOLDING_ID.intValue()))))
 
 				.andExpect(jsonPath("$.accountAccountid").value(Matchers.anyOf(
 						Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID),
@@ -72,7 +75,10 @@ public class HoldingControllerTest extends AbstractSecureControllerTest {
 	public void getHoldingsByAccountIdJson() throws Exception {
 		mockMvc.perform(get("/account/" + ServiceTestConfiguration.ACCOUNT_ID + "/holdings").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.results.[0].holdingid").value(ServiceTestConfiguration.HOLDING_ID))
+
+				.andExpect(jsonPath("$.results.[0].holdingid").value(Matchers.anyOf(
+						Matchers.equalTo((Number) ServiceTestConfiguration.HOLDING_ID),
+						Matchers.equalTo((Number) ServiceTestConfiguration.HOLDING_ID.intValue()))))
 
 				.andExpect(jsonPath("$.results.[0].accountAccountid").value(Matchers.anyOf(
 						Matchers.equalTo((Number) ServiceTestConfiguration.ACCOUNT_ID),

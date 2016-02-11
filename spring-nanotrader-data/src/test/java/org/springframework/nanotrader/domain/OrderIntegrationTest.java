@@ -45,7 +45,7 @@ public class OrderIntegrationTest {
     public void testFindOrder() {
         Order obj = dod.getRandomOrder();
         Assert.assertNotNull("Data on demand for 'Order' failed to initialize correctly", obj);
-        Integer id = obj.getOrderid();
+        Long id = obj.getOrderid();
         Assert.assertNotNull("Data on demand for 'Order' failed to provide an identifier", id);
         obj = orderService.findOrder(id);
         Assert.assertNotNull("Find method for 'Order' illegally returned null for id '" + id + "'", obj);
@@ -89,7 +89,7 @@ public class OrderIntegrationTest {
     public void testDeleteOrder() {
         Order obj = dod.getRandomOrder();
         Assert.assertNotNull("Data on demand for 'Order' failed to initialize correctly", obj);
-        Integer id = obj.getOrderid();
+        Long id = obj.getOrderid();
         Assert.assertNotNull("Data on demand for 'Order' failed to provide an identifier", id);
         obj = orderService.findOrder(id);
         orderService.deleteOrder(obj);
