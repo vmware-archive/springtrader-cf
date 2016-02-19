@@ -15,20 +15,20 @@
  */
 package org.springframework.nanotrader.data.repository;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.HoldingService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Brian Dussault
@@ -39,10 +39,9 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 
 	@PersistenceContext
 	private EntityManager em;
-	
 
 	@Autowired
-	HoldingRepository holdingRepository;
+	HoldingService holdingService;
 
 	@Autowired
 	@Qualifier( "rtQuoteService")
@@ -72,7 +71,7 @@ public class PortfolioSummaryRepositoryImpl implements PortfolioSummaryRepositor
 	}
 
 	private BigDecimal getTotalMarketValue(Long accountId) {
-		List<Holding> holdings = holdingRepository.findByAccountAccountid(accountId);
+		List<Holding> holdings = holdingService.findByAccountid(accountId);
 		float r = 0;
 		for(Holding holding: holdings) {
 			Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());

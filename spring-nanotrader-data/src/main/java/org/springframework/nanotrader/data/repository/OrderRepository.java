@@ -40,10 +40,10 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     int updateClosedOrders(Long accountId);
 
     @Query("SELECT o FROM Order o WHERE o.orderstatus = ?2 AND o.accountid  = ?1 order by orderid DESC")
-    List<Order> findOrdersByStatus(Long accountId, String status, Pageable pageable);
+    List<Order> findOrdersByStatus(Long accountId, String status);
 
     @Query("SELECT o FROM Order o WHERE o.accountid  = ?1 order by orderid DESC")
-    List<Order> findOrdersByAccountAccountid_Accountid(Long accountId, Pageable pageable);
+    List<Order> findOrdersByAccountid(Long accountId);
 
     @Query("SELECT o FROM Order o WHERE o.orderid = ?1 AND o.accountid  = ?2")
     Order findByOrderidAndAccountAccountid(Long orderId, Long accountId);

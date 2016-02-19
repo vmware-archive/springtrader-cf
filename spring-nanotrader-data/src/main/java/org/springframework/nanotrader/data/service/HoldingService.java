@@ -15,33 +15,29 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import org.springframework.nanotrader.data.domain.Order;
+import org.springframework.nanotrader.data.domain.Holding;
+import org.springframework.nanotrader.data.domain.HoldingSummary;
+import org.springframework.nanotrader.data.domain.PortfolioSummary;
 
 import java.util.List;
 
 public interface HoldingService {
 
-    long countAllOrders();
+    long countByAccountid(Long accountId);
 
-    void deleteOrder(Order order);
+    List<Holding> findByAccountid(Long accountId);
 
-    Order findOrder(Long id);
+    List<Holding> findAll();
 
-    List<Order> findAllOrders();
+    Holding findByHoldingidAndAccountid(Long holdingid, Long accountId);
 
-    List<Order> findOrderEntries(int firstResult, int maxResults);
+    Holding save(Holding holding);
 
-    Order saveOrder(Order order);
+    void delete(Holding holding);
 
-    Order findByOrderIdAndAccountId(Long orderId, Long accountId);
+    Holding find(Long id);
 
-    long countOfOrders(Long accountId, String status);
+    HoldingSummary findHoldingSummary(Long accountId);
 
-    long countOfOrders(Long accountId);
-
-    List<Order> findOrdersByStatus(Long accountId, String status);
-
-    List<Order> findOrdersByAccountid(Long accountId);
-
-    int updateClosedOrders(Long accountId);
+    PortfolioSummary findPortfolioSummary(Long accountId);
 }

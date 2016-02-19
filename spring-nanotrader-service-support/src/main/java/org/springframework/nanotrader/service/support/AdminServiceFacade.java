@@ -16,7 +16,7 @@
 
 
 /**
- * Admin Service responsible for generating user driven data  
+ * Admin Service responsible for generating user driven data
  */
 package org.springframework.nanotrader.service.support;
 
@@ -28,12 +28,7 @@ import org.springframework.nanotrader.service.domain.PerfTestData;
  */
 public interface AdminServiceFacade {
 
-	public abstract void recreateData(int count);
-	
-	public abstract Integer getProgressCount();
-	
-	public abstract void deleteUserAccount(String userid);
-	
-	public abstract void runPerfTest(PerfTestData perfTestData, String serverUrl);
-	
+    Integer getProgressCount();
+
+    void runPerfTest(PerfTestData perfTestData, String serverUrl);
 }

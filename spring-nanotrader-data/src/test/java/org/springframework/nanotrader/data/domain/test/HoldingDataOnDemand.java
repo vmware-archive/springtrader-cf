@@ -15,24 +15,17 @@
  */
 package org.springframework.nanotrader.data.domain.test;
 
-import java.math.BigDecimal;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Holding;
-import org.springframework.nanotrader.data.repository.HoldingRepository;
+import org.springframework.nanotrader.data.service.HoldingService;
 import org.springframework.stereotype.Component;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.util.*;
 
 
 @Component
@@ -44,7 +37,7 @@ public class HoldingDataOnDemand {
 	private List<Holding> data;
 
 	@Autowired
-    HoldingRepository holdingRepository;
+    HoldingService holdingService;
 
 	public Holding getNewTransientHolding(int index) {
         Holding obj = new Holding();
@@ -88,24 +81,11 @@ public class HoldingDataOnDemand {
         obj.setQuoteSymbol(quoteSymbol);
     }
 
-	public Holding getSpecificHolding(int index) {
-        init();
-        if (index < 0) {
-            index = 0;
-        }
-        if (index > (data.size() - 1)) {
-            index = data.size() - 1;
-        }
-        Holding obj = data.get(index);
-        Long id = obj.getHoldingid();
-        return holdingRepository.findOne(id);
-    }
-
 	public Holding getRandomHolding() {
         init();
         Holding obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getHoldingid();
-        return holdingRepository.findOne(id);
+        return holdingService.find(id);
     }
 
 	public boolean modifyHolding(Holding obj) {
@@ -115,19 +95,19 @@ public class HoldingDataOnDemand {
 	public void init() {
         int from = 0;
         int to = 10;
-        data = holdingRepository.findAll(new org.springframework.data.domain.PageRequest(from / to, to)).getContent();
+        data = holdingService.findAll();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Holding' illegally returned null");
         }
         if (!data.isEmpty()) {
             return;
         }
-        
+
         data = new ArrayList<Holding>();
         for (int i = 0; i < 10; i++) {
             Holding obj = getNewTransientHolding(i);
             try {
-                holdingRepository.save(obj);
+                holdingService.save(obj);
             } catch (ConstraintViolationException e) {
                 StringBuilder msg = new StringBuilder();
                 for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
@@ -136,7 +116,6 @@ public class HoldingDataOnDemand {
                 }
                 throw new RuntimeException(msg.toString(), e);
             }
-            holdingRepository.flush();
             data.add(obj);
         }
     }

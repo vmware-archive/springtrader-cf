@@ -15,61 +15,30 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import org.springframework.nanotrader.data.domain.*;
+import org.springframework.nanotrader.data.domain.Order;
+import org.springframework.nanotrader.data.domain.Quote;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Brian Dussault
  * @author Gary Russell
- *
  */
 public interface TradingService {
 
-	String ORDER_TYPE_BUY = "buy";
+    String ORDER_TYPE_BUY = "buy";
 
-	String ORDER_TYPE_SELL = "sell";
+    String ORDER_TYPE_SELL = "sell";
 
-	Holding findHolding(Long id, Long accountId);
+    Order saveOrder(Order order);
 
-	Holding updateHolding(Holding holding);
+    Order updateOrder(Order order);
 
-	void saveHolding(Holding holding);
+    Long findCountOfOrders(Long accountId, String status);
 
-	Order findOrder(Long id, Long accountId);
+    List<Order> findOrdersByStatus(Long accountId, String status);
 
-	Order saveOrder(Order order);
+    List<Order> findOrders(Long accountId);
 
-	Order updateOrder(Order order);
-	
-	Long findCountOfOrders(Long accountId, String status);
-
-	List<Order> findOrdersByStatus(Long accountId, String status, Integer page, Integer pageSize);
-
-	List<Order> findOrders(Long accountId, Integer page, Integer pageSize);
-
-	List<Holding> findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize);
-	
-	List<Quote> findRandomQuotes(Integer count);
-
-	List<Quote> findAllQuotes();
-
-	Quote findQuoteBySymbol(String symbol);
-
-	List<Quote> findQuotesBySymbols(Set<String> symbols);
-
-	PortfolioSummary findPortfolioSummary(Long accountId);
-	
-	MarketSummary findMarketSummary();
-	
-	HoldingSummary findHoldingSummary(Long accountId);
-
-	Long findCountOfHoldingsByAccountId(Long accountId);
-	
-	void deleteAll();
-	
-	void deleteAccountByUserid(String userId);
-	
-	void updateQuote(Quote quote);
+    void updateQuote(Quote quote);
 }

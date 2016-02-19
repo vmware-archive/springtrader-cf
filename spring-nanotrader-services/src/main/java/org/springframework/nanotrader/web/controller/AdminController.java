@@ -44,17 +44,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AdminController extends BaseController {
 
 	/**
-	 * Creates users & buy orders for the (usercount) number of users
-	 * @param recreateDataRequest
-	 */
-	@RequestMapping(value = "/admin/userdata", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.CREATED)
-	public void recreateData(@RequestBody
-	RecreateData recreateDataRequest) {
-		this.getAdminServiceFacade().recreateData(Integer.parseInt(recreateDataRequest.getUsercount()));
-	}
-
-	/**
 	 * Get the number of users created at the time of request
 	 * @return ProgressData
 	 */
@@ -65,16 +54,6 @@ public class AdminController extends BaseController {
 		return new ResponseEntity<ProgressData>(progress, getNoCacheHeaders(),
 				HttpStatus.OK);
 
-	}
-
-	/**
-	 * Delete the account associated by the given userid
-	 */
-	@RequestMapping(value = "/admin/deleteaccount", method = RequestMethod.DELETE)
-	@ResponseStatus(HttpStatus.OK)
-	public void deleteAccount(@RequestBody
-	UserId userNameRequest) {
-		this.getAdminServiceFacade().deleteUserAccount(userNameRequest.getUserid());
 	}
 
 	/**

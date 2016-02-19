@@ -1,6 +1,5 @@
 package org.springframework.nanotrader.domain;
 
-import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
-import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.service.OrderService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
@@ -30,9 +30,6 @@ public class OrderIntegrationTest {
 
 	@Autowired
     OrderService orderService;
-
-	@Autowired
-    OrderRepository orderRepository;
 
 	@Test
     public void testCountAllOrders() {
@@ -81,7 +78,6 @@ public class OrderIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Order' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'Order' identifier to be null", obj.getOrderid());
         orderService.saveOrder(obj);
-        orderRepository.flush();
         Assert.assertNotNull("Expected 'Order' identifier to no longer be null", obj.getOrderid());
     }
 
@@ -93,7 +89,6 @@ public class OrderIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Order' failed to provide an identifier", id);
         obj = orderService.findOrder(id);
         orderService.deleteOrder(obj);
-        orderRepository.flush();
         Assert.assertNull("Failed to remove 'Order' with identifier '" + id + "'", orderService.findOrder(id));
     }
 }

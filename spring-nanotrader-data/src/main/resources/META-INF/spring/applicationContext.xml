@@ -111,6 +111,12 @@
 		<bean id="accountProfileService"
 			  class="org.springframework.nanotrader.data.service.AccountProfileServiceImpl" />
 
+		<bean id="holdingService"
+			  class="org.springframework.nanotrader.data.service.HoldingServiceImpl" />
+
+		<bean id="holdingAggregateRepository"
+			  class="org.springframework.nanotrader.data.repository.HoldingAggregateRepositoryImpl" />
+
 	</beans>
 
 	<beans profile="test">
@@ -129,6 +135,12 @@
 
 		<bean id="accountProfileService"
 			  class="org.springframework.nanotrader.data.service.FallBackAccountProfileService" />
+
+		<bean id="holdingService"
+			  class="org.springframework.nanotrader.data.service.HoldingServiceImpl" />
+
+		<bean id="holdingAggregateRepository"
+			  class="org.springframework.nanotrader.data.repository.HoldingAggregateRepositoryImpl" />
 
 	</beans>
 

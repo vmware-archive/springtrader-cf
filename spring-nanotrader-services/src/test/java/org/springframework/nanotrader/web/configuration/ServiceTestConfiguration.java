@@ -16,6 +16,7 @@
 package org.springframework.nanotrader.web.configuration;
 
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -110,24 +111,33 @@ public class ServiceTestConfiguration {
     @Bean
     public TradingService tradingService() {
         TradingService tradingService = Mockito.mock(TradingService.class);
-        when(tradingService.findHolding(eq(100L), eq(ACCOUNT_ID))).thenReturn(holding());
-        when(tradingService.findHoldingsByAccountId(eq(ACCOUNT_ID), any(Integer.class), any(Integer.class))).thenReturn(holdings());
-        when(tradingService.findCountOfHoldingsByAccountId(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
         when(tradingService.findCountOfOrders(eq(ACCOUNT_ID), any(String.class))).thenReturn(RESULT_COUNT);
-        when(tradingService.updateHolding(any(Holding.class))).thenReturn(holding());
-        when(tradingService.findOrder(eq(999L), eq(ACCOUNT_ID))).thenReturn(order());
         when(tradingService.saveOrder(any(Order.class))).thenReturn(null);
         when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
-        when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class), any(Integer.class), any(Integer.class))).thenReturn(orders());
-        when(tradingService.findOrders(eq(ACCOUNT_ID), any(Integer.class), any(Integer.class))).thenReturn(orders());
-        when(tradingService.findQuoteBySymbol(eq(SYMBOL))).thenReturn(quote());
-        when(tradingService.findRandomQuotes(RANDOM_QUOTES_COUNT)).thenReturn(quotes());
-        when(tradingService.findQuotesBySymbols(anySetOf(String.class))).thenReturn(quotes());
-        when(tradingService.findPortfolioSummary(eq(ACCOUNT_ID))).thenReturn(portfolioSummary());
-        when(tradingService.findMarketSummary()).thenReturn(marketSummary());
-        when(tradingService.findHoldingSummary(eq(ACCOUNT_ID))).thenReturn(holdingSummary());
+        when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class))).thenReturn(orders());
+        when(tradingService.findOrders(eq(ACCOUNT_ID))).thenReturn(orders());
 
         return tradingService;
+    }
+
+    @Bean
+    public HoldingService holdingService() {
+        HoldingService holdingService = Mockito.mock(HoldingService.class);
+        when(holdingService.findByHoldingidAndAccountid(eq(100L), eq(ACCOUNT_ID))).thenReturn(holding());
+        when(holdingService.findByAccountid(eq(ACCOUNT_ID))).thenReturn(holdings());
+        when(holdingService.countByAccountid(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
+        when(holdingService.findHoldingSummary(eq(ACCOUNT_ID))).thenReturn(holdingSummary());
+        when(holdingService.findPortfolioSummary(eq(ACCOUNT_ID))).thenReturn(portfolioSummary());
+
+        return holdingService;
+    }
+
+    @Bean
+    public OrderService orderService() {
+        OrderService orderService = Mockito.mock(OrderService.class);
+        when(orderService.findByOrderIdAndAccountId(eq(999L), eq(ACCOUNT_ID))).thenReturn(order());
+
+        return orderService;
     }
 
     @Bean
@@ -144,7 +154,12 @@ public class ServiceTestConfiguration {
 
     @Bean(name = "rtQuoteService")
     public QuoteService quoteService() {
-        return new FallBackQuoteService();
+        QuoteService quoteService = Mockito.mock(QuoteService.class);
+        when(quoteService.findBySymbol(eq(SYMBOL))).thenReturn(quote());
+        when(quoteService.findBySymbolIn(anySetOf(String.class))).thenReturn(quotes());
+        when(quoteService.marketSummary()).thenReturn(marketSummary());
+
+        return quoteService;
     }
 
     @Bean

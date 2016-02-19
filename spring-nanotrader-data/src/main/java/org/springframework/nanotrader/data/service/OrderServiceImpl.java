@@ -50,11 +50,31 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
     }
 
-	public void saveOrder(Order order) {
-        orderRepository.save(order);
+	public Order saveOrder(Order order) {
+        return orderRepository.save(order);
     }
 
-	public Order updateOrder(Order order) {
-        return orderRepository.save(order);
+    public Order findByOrderIdAndAccountId(Long orderId, Long accountId) {
+        return orderRepository.findByOrderidAndAccountAccountid(orderId, accountId);
+    }
+
+    public long countOfOrders(Long accountId, String status) {
+        return orderRepository.findCountOfOrders(accountId, status);
+    }
+
+    public long countOfOrders(Long accountId) {
+        return orderRepository.findCountOfOrders(accountId);
+    }
+
+    public List<Order> findOrdersByStatus(Long accountId, String status) {
+        return orderRepository.findOrdersByStatus(accountId, status);
+    }
+
+    public List<Order> findOrdersByAccountid(Long accountId) {
+        return orderRepository.findOrdersByAccountid(accountId);
+    }
+
+    public int updateClosedOrders(Long accountId) {
+        return orderRepository.updateClosedOrders(accountId);
     }
 }

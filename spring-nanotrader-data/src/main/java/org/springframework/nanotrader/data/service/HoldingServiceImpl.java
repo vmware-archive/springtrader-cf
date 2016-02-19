@@ -15,66 +15,64 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.nanotrader.data.domain.Order;
-import org.springframework.nanotrader.data.repository.OrderRepository;
+import org.springframework.nanotrader.data.domain.Holding;
+import org.springframework.nanotrader.data.domain.HoldingSummary;
+import org.springframework.nanotrader.data.domain.PortfolioSummary;
+import org.springframework.nanotrader.data.repository.HoldingAggregateRepository;
+import org.springframework.nanotrader.data.repository.HoldingRepository;
+import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 @Service
 @Transactional
-public class HoldingServiceImpl implements OrderService {
+public class HoldingServiceImpl implements HoldingService {
 
-	@Autowired
-    OrderRepository orderRepository;
-	
-	public long countAllOrders() {
-        return orderRepository.count();
+    @Autowired
+    HoldingRepository holdingRepository;
+
+    @Autowired
+    HoldingAggregateRepository holdingAggregateRepository;
+
+    @Autowired
+    PortfolioSummaryRepository portfolioSummaryRepository;
+
+    public long countByAccountid(Long accountId) {
+        return holdingRepository.findCountOfHoldings(accountId);
     }
 
-	public void deleteOrder(Order order) {
-        orderRepository.delete(order);
+    public List<Holding> findByAccountid(Long accountId) {
+        return holdingRepository.findByAccountAccountid(accountId);
     }
 
-	public Order findOrder(Long id) {
-        return orderRepository.findOne(id);
+    public Holding findByHoldingidAndAccountid(Long holdingid, Long accountId) {
+        return holdingRepository.findByHoldingidAndAccountAccountid(holdingid, accountId);
     }
 
-	public List<Order> findAllOrders() {
-        return orderRepository.findAll();
+    public Holding save(Holding holding) {
+        return holdingRepository.save(holding);
     }
 
-	public List<Order> findOrderEntries(int firstResult, int maxResults) {
-        return orderRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
+    public void delete(Holding holding) {
+        holdingRepository.delete(holding);
     }
 
-	public Order saveOrder(Order order) {
-        return orderRepository.save(order);
+    public Holding find(Long id) {
+        return holdingRepository.findOne(id);
     }
 
-    public Order findByOrderIdAndAccountId(Long orderId, Long accountId) {
-        return orderRepository.findByOrderidAndAccountAccountid(orderId, accountId);
+    public HoldingSummary findHoldingSummary(Long accountId) {
+        return holdingAggregateRepository.findHoldingAggregated(accountId);
     }
 
-    public long countOfOrders(Long accountId, String status) {
-        return orderRepository.findCountOfOrders(accountId, status);
+    public PortfolioSummary findPortfolioSummary(Long accountId) {
+        return portfolioSummaryRepository.findPortfolioSummary(accountId);
     }
 
-    public long countOfOrders(Long accountId) {
-        return orderRepository.findCountOfOrders(accountId);
-    }
-
-    public List<Order> findOrdersByStatus(Long accountId, String status) {
-        return orderRepository.findOrdersByStatus(accountId, status);
-    }
-
-    public List<Order> findOrdersByAccountid(Long accountId) {
-        return orderRepository.findOrdersByAccountid(accountId);
-    }
-
-    public int updateClosedOrders(Long accountId) {
-        return orderRepository.updateClosedOrders(accountId);
+    public List<Holding> findAll() {
+        return holdingRepository.findAll();
     }
 }

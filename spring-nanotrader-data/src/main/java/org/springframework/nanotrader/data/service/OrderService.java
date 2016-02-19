@@ -23,21 +23,25 @@ public interface OrderService {
 
     long countAllOrders();
 
-
     void deleteOrder(Order order);
 
     Order findOrder(Long id);
 
-
     List<Order> findAllOrders();
-
 
     List<Order> findOrderEntries(int firstResult, int maxResults);
 
+    Order saveOrder(Order order);
 
-    void saveOrder(Order order);
+    Order findByOrderIdAndAccountId(Long orderId, Long accountId);
 
+    long countOfOrders(Long accountId, String status);
 
-    Order updateOrder(Order order);
+    long countOfOrders(Long accountId);
 
+    List<Order> findOrdersByStatus(Long accountId, String status);
+
+    List<Order> findOrdersByAccountid(Long accountId);
+
+    int updateClosedOrders(Long accountId);
 }

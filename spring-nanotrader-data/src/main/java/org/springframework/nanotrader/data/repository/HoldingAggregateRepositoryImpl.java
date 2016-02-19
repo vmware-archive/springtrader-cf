@@ -15,26 +15,22 @@
  */
 package org.springframework.nanotrader.data.repository;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.HoldingAggregate;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.HoldingService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
 
 @Repository
 public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepository {
@@ -47,7 +43,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 	QuoteService quoteService;
 
 	@Autowired
-	HoldingRepository holdingRepository;
+	HoldingService holdingService;
 
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
@@ -58,7 +54,7 @@ public class HoldingAggregateRepositoryImpl implements HoldingAggregateRepositor
 	
 		HoldingSummary holdingSummary = new HoldingSummary();
 		List<HoldingAggregate> holdingRollups = new ArrayList<HoldingAggregate>();
-		List<Holding> holdings = holdingRepository.findByAccountAccountid(accountId);
+		List<Holding> holdings = holdingService.findByAccountid(accountId);
 
 		BigDecimal totalGains = BigDecimal.ZERO;
 		totalGains = totalGains.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);

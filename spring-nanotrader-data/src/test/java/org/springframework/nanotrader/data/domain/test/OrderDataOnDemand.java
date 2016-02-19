@@ -22,7 +22,6 @@ import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.OrderService;
@@ -56,9 +55,6 @@ public class OrderDataOnDemand {
 
     @Autowired
     AccountProfileService accountProfileService;
-
-	@Autowired
-    OrderRepository orderRepository;
 
 	public Order getNewTransientOrder(int index) {
         Order obj = new Order();
@@ -190,7 +186,6 @@ public class OrderDataOnDemand {
                 }
                 throw new RuntimeException(msg.toString(), e);
             }
-            orderRepository.flush();
             data.add(obj);
         }
     }

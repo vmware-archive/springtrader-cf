@@ -70,73 +70,8 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 	private Mapper mapper;
 
 	@Override
-	public void recreateData(int count) {
-		tradingService.deleteAll();
-		ArrayList<Quote> quotes = new ArrayList<Quote>();
-		for (org.springframework.nanotrader.data.domain.Quote q : quoteService.findAllQuotes()) {
-			Quote quote = new Quote();
-			mapper.map(q, quote);
-			quotes.add(quote);
-		}
-		log.debug("Creating " + count + " users");
-		for (int i = 0; i <= count; i++) {
-			String userid;
-			if (i == 0) {
-				log.debug("Creating admin user");
-				userid = "admin";
-			}
-			else {
-				userid = "user" + i;
-			}
-			BigDecimal balance = BigDecimal.valueOf(1000000.00);
-			Account ac = new Account();
-			ac.setBalance(balance);
-			Date creationdate = new Date();
-			ac.setCreationdate(creationdate);
-			ac.setLastlogin(creationdate);
-			ac.setLogincount(0);
-			ac.setLogoutcount(0);
-			ac.setOpenbalance(balance);
-			Accountprofile ap = new Accountprofile();
-			ap.setUserid(userid);
-			// Password is same as that of the userid
-			ap.setPasswd(userid);
-			ap.setAddress(userid + " address");
-			ap.setEmail(userid + "@nanotrader.com");
-			ap.setFullname("first_" + userid + " " + "last " + userid);
-			ap.setCreditcard("1111222233334444");
-			List<Account> accounts = new ArrayList<Account>();
-			accounts.add(ac);
-			ap.setAccounts(accounts);
-			accountProfileService.saveAccountProfile(ap);
-			Order o = new Order();
-			o.setAccountid((accountService.findByProfile(ap)).getAccountid());
-			o.setCompletiondate(creationdate);
-			o.setQuantity(new BigDecimal(1000));
-			o.setOrdertype("buy");
-			o.setQuote(quotes.get(0));
-			tradingServiceFacade.saveOrder(o, false);
-			o.setQuote(quotes.get(1));
-			tradingServiceFacade.saveOrder(o, false);
-			o.setQuote(quotes.get(2));
-			tradingServiceFacade.saveOrder(o, false);
-			o.setQuote(quotes.get(3));
-			tradingServiceFacade.saveOrder(o, false);
-			o.setQuote(quotes.get(4));
-			tradingServiceFacade.saveOrder(o, false);
-			progressCache.setProgresscount(i);
-		}
-		log.debug("User data creation completed");
-	}
-
-	@Override
 	public Integer getProgressCount() {
 		return progressCache.getProgresscount();
-	}
-
-	@Override
-	public void deleteUserAccount(String userId) {
-		tradingService.deleteAccountByUserid(userId);
 	}
 
 	@Override

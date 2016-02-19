@@ -15,18 +15,9 @@
  */
 package org.springframework.nanotrader.service.support;
 
-import java.util.Map;
+import org.springframework.nanotrader.service.domain.*;
 
-import org.springframework.nanotrader.data.service.TradingService;
-import org.springframework.nanotrader.service.domain.Account;
-import org.springframework.nanotrader.service.domain.Accountprofile;
-import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.service.domain.Holding;
-import org.springframework.nanotrader.service.domain.HoldingSummary;
-import org.springframework.nanotrader.service.domain.MarketSummary;
-import org.springframework.nanotrader.service.domain.Order;
-import org.springframework.nanotrader.service.domain.PortfolioSummary;
-import org.springframework.nanotrader.service.domain.Quote;
+import java.util.Map;
 
 /**
  * @author Gary Russell
@@ -36,12 +27,9 @@ public interface TradingServiceFacade {
 	
 	Map<String, Object> login(String username, String password);
 
-
 	void logout(String authtoken);
 
 	Accountprofile findAccountProfile(Long id);
-	
-	Accountprofile findAccountprofileByUserId(String username);
 
 	Long saveAccountProfile(Accountprofile accountProfileRequest);
 
@@ -53,11 +41,9 @@ public interface TradingServiceFacade {
 	
 	Holding findHolding(Long id, Long accountId);
 
-	CollectionResult findHoldingsByAccountId(Long accountId, Integer page, Integer pageSize);
+	CollectionResult findHoldingsByAccountId(Long accountId);
 
 	Order findOrder(Long orderId, Long accountId);
-
-	void updateOrder(Order orderRequest);
 
 	CollectionResult findOrders(Long accountId, String status, Integer page, Integer pageSize);
 
@@ -70,11 +56,8 @@ public interface TradingServiceFacade {
 	PortfolioSummary findPortfolioSummary(Long accountId);
 
 	MarketSummary findMarketSummary();
-	
 
 	Accountprofile findAccountprofileByAuthtoken(String token);
 	
 	HoldingSummary findHoldingSummary(Long accountId);
-	
-	void setTradingService(TradingService tradingService);
 }
