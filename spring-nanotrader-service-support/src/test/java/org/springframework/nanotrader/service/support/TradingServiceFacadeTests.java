@@ -97,7 +97,6 @@ public class TradingServiceFacadeTests {
 		orderRequest.setQuantity(BigDecimal.valueOf(100));
 		Long id = tradingServiceFacade.saveOrder(orderRequest, true);
 		assertNotNull(id);
-		assertTrue(id > 0);
 	}
 
 	@Test

@@ -144,14 +144,14 @@ public class OrderDataOnDemand {
         }
         Order obj = data.get(index);
         Long id = obj.getOrderid();
-        return orderService.findOrder(id);
+        return orderService.find(id);
     }
 
 	public Order getRandomOrder() {
         init();
         Order obj = data.get(rnd.nextInt(data.size()));
         Long id = obj.getOrderid();
-        Order ret = orderService.findOrder(id);
+        Order ret = orderService.find(id);
         ret.setAccountid(1L);
         ret.setQuoteid("GOOG");
 
@@ -163,9 +163,7 @@ public class OrderDataOnDemand {
     }
 
 	public void init() {
-        int from = 0;
-        int to = 10;
-        data = orderService.findOrderEntries(from, to);
+        data = orderService.findAllOrders();
         if (data == null) {
             throw new IllegalStateException("Find entries implementation for 'Order' illegally returned null");
         }

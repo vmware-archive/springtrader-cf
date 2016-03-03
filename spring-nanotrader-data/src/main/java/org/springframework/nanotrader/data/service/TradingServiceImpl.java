@@ -20,8 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
-import org.springframework.nanotrader.data.domain.*;
+import org.springframework.nanotrader.data.domain.Account;
+import org.springframework.nanotrader.data.domain.Holding;
+import org.springframework.nanotrader.data.domain.Order;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.repository.HoldingAggregateRepository;
 import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
 import org.springframework.nanotrader.data.util.FinancialUtils;
@@ -29,10 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Brian Dussault
@@ -105,7 +106,6 @@ public class TradingServiceImpl implements TradingService {
 		
 		Account account = accountService.findAccount(order.getAccountid());
 		Quote quote = quoteService.findBySymbol(order.getQuoteid());
-		Holding holding = null;
 		// create order and persist
 		Order createdOrder = null;
 
@@ -116,25 +116,24 @@ public class TradingServiceImpl implements TradingService {
 		if ((order.getQuantity() != null && order.getQuantity().intValue() > 0)
 				&& (account.getBalance().subtract(order.getQuantity().multiply(quote.getPrice())).doubleValue() >= 0)) { // cannot
 																															// buy
-			createdOrder = createOrder(order, account, holding, quote);
+			createdOrder = createOrder(order, account, null, quote);
 			// Update account balance and create holding
-			completeOrder(createdOrder);
+			completeOrder(createdOrder, quote, account);
 		}
 		else {
 			order.setQuantity(new BigDecimal(0));
-			createdOrder = createOrder(order, account, holding, quote);
+			createdOrder = createOrder(order, account, null, quote);
 			// cancel order
 			createdOrder.setCompletiondate(new Date());
 			createdOrder.setOrderstatus(CANCELLED_STATUS);
 		}
 
-		return createdOrder;
+		return orderService.saveOrder(createdOrder);
 	}
 
 	private Order sell(Order order) {
 		Account account = accountService.findAccount(order.getAccountid());
-		Holding holding = holdingService.findByHoldingidAndAccountid(order.getHoldingHoldingid()
-				.getHoldingid(), account.getAccountid());
+		Holding holding = holdingService.find(order.getHoldingHoldingid().getHoldingid());
 		if (holding == null) {
 			throw new DataRetrievalFailureException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
@@ -144,12 +143,11 @@ public class TradingServiceImpl implements TradingService {
 		
 		Order createdOrder = createOrder(order, account, holding, quote);
 		// Update account balance and create holding
-		completeOrder(createdOrder);
-		return createdOrder;
+		completeOrder(createdOrder, quote, account);
+		return orderService.saveOrder(createdOrder);
 	}
 
 	private Order createOrder(Order order, Account account, Holding holding, Quote quote) {
-		Order createdOrder = null;
 		order.setAccountid(account.getAccountid());
 		order.setQuoteid(quote.getSymbol());
 		if (order.getQuantity() == null) {
@@ -160,12 +158,11 @@ public class TradingServiceImpl implements TradingService {
 		order.setOpendate(new Date());
 		order.setPrice(quote.getPrice().setScale(FinancialUtils.SCALE, FinancialUtils.ROUND));
 		order.setHoldingHoldingid(holding);
-		createdOrder = orderService.saveOrder(order);
-		return createdOrder;
+		return order;
 	}
 
 	// TO DO: refactor this
-	public Order completeOrder(Order order) {
+	private Order completeOrder(Order order, Quote quote, Account account) {
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			if (order.getHoldingHoldingid() == null) {
 				Holding holding = new Holding();
@@ -174,18 +171,17 @@ public class TradingServiceImpl implements TradingService {
 				holding.setQuantity(order.getQuantity());
 				holding.setPurchaseprice(order.getPrice());
 				holding.setQuoteSymbol(order.getQuoteid());
-				Set<Order> orders = new HashSet<Order>();
+				List<Order> orders = new ArrayList<Order>();
 				orders.add(order);
 				holding.setOrders(orders);
 				order.setHoldingHoldingid(holding);
-				holdingService.save(holding);
-				updateAccount(order);
+				updateAccount(order, quote, account);
 			}
 		}
 		else {
-			updateAccount(order);
+			updateAccount(order, quote, account);
 		}
-		order.setOrderstatus("closed");
+		order.setOrderstatus("completed");
 		order.setCompletiondate(new Date());
 
 			
@@ -196,10 +192,8 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	// TODO: Need to clean this up
-	private void updateAccount(Order order) {
+	private void updateAccount(Order order, Quote quote, Account account) {
 		// update account balance
-		Quote quote = quoteService.findBySymbol(order.getQuoteid());
-		Account account = accountService.findAccount(order.getAccountid());
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
 		BigDecimal balance = account.getBalance();
@@ -211,7 +205,7 @@ public class TradingServiceImpl implements TradingService {
 		else {
 			total = (order.getQuantity().multiply(price)).subtract(orderFee);
 			account.setBalance(balance.add(total));
-			Set<Order> orders = order.getHoldingHoldingid().getOrders();
+			List<Order> orders = order.getHoldingHoldingid().getOrders();
 			// Remove the holding id from the buy record
 			for (Order orderToDeleteHolding : orders) {
 				orderToDeleteHolding.setHoldingHoldingid(null);
@@ -219,7 +213,7 @@ public class TradingServiceImpl implements TradingService {
 			// remove the holding id from the sell record
 			Holding holding = order.getHoldingHoldingid();
 			order.setHoldingHoldingid(null);
-			holdingService.delete(holding);
+			holdingService.delete(holding.getHoldingid());
 		}
 		accountService.saveAccount(account);
 	}
@@ -259,42 +253,6 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	public Order updateOrder(Order order) {
-
-		Order o = null;
-		if (log.isDebugEnabled()) {
-			if (order != null ) { 
-				log.debug("TradingServices.updateOrder: order=" + order.toString());
-			} else { 
-				log.debug("TradingServices.updateOrder: order= null" );
-			}
-			
-		}
-		// Ensure that customers can't update another customers order record
-		Order originalOrder = orderService.findByOrderIdAndAccountId(order.getOrderid(), order.getAccountid());
-
-		if (originalOrder!= null && !"completed".equals(originalOrder.getOrderstatus())) {
-			if (originalOrder != null) {
-				if (log.isDebugEnabled()) {
-					log.debug("TradingServices.updateOrder: An order in the respository matched the requested order id and account ");
-				}
-				originalOrder.setQuantity(order.getQuantity());
-				originalOrder.setOrdertype(order.getOrdertype());
-				o = orderService.saveOrder(originalOrder);
-
-			}
-		}
-		else {
-			throw new IncorrectUpdateSemanticsDataAccessException("Attempted to update a completed order");
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.updateOrder: completed successfully.");
-		}
-		return o;
-	}
-
-	@Override
 	public Long findCountOfOrders(Long accountId, String status) {
 		Long countOfOrders = null;
 		if (log.isDebugEnabled()) {
@@ -322,7 +280,6 @@ public class TradingServiceImpl implements TradingService {
 		}
 		
 		orders = orderService.findOrdersByStatus(accountId, status);
-		orders = processOrderResults(orders, accountId);
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findOrdersByStatus: completed successfully.");
 		}
@@ -337,20 +294,12 @@ public class TradingServiceImpl implements TradingService {
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findOrders: accountId=" + accountId);
 		}
-		orders = orderService.findOrdersByAccountid(accountId);
-		orders = processOrderResults(orders, accountId);
+		orders = orderService.findByAccountId(accountId);
 
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.findOrders: completed successfully.");
 		}
 
-		return orders;
-	}
-
-	private List<Order> processOrderResults(List<Order> orders, Long accountId) {
-		if (orders != null && orders.size() > 0) {
-			orderService.updateClosedOrders(accountId);
-		}
 		return orders;
 	}
 

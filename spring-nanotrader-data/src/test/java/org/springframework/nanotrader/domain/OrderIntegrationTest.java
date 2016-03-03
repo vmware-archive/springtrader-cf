@@ -44,7 +44,7 @@ public class OrderIntegrationTest {
         Assert.assertNotNull("Data on demand for 'Order' failed to initialize correctly", obj);
         Long id = obj.getOrderid();
         Assert.assertNotNull("Data on demand for 'Order' failed to provide an identifier", id);
-        obj = orderService.findOrder(id);
+        obj = orderService.find(id);
         Assert.assertNotNull("Find method for 'Order' illegally returned null for id '" + id + "'", obj);
         Assert.assertEquals("Find method for 'Order' returned the incorrect identifier", id, obj.getOrderid());
     }
@@ -60,18 +60,6 @@ public class OrderIntegrationTest {
     }
 
 	@Test
-    public void testFindOrderEntries() {
-        Assert.assertNotNull("Data on demand for 'Order' failed to initialize correctly", dod.getRandomOrder());
-        long count = orderService.countAllOrders();
-        if (count > 20) count = 20;
-        int firstResult = 0;
-        int maxResults = (int) count;
-        List<Order> result = orderService.findOrderEntries(firstResult, maxResults);
-        Assert.assertNotNull("Find entries method for 'Order' illegally returned null", result);
-        Assert.assertEquals("Find entries method for 'Order' returned an incorrect number of entries", count, result.size());
-    }
-
-	@Test
     public void testSaveOrder() {
         Assert.assertNotNull("Data on demand for 'Order' failed to initialize correctly", dod.getRandomOrder());
         Order obj = dod.getNewTransientOrder(Integer.MAX_VALUE);
@@ -79,16 +67,5 @@ public class OrderIntegrationTest {
         Assert.assertNull("Expected 'Order' identifier to be null", obj.getOrderid());
         orderService.saveOrder(obj);
         Assert.assertNotNull("Expected 'Order' identifier to no longer be null", obj.getOrderid());
-    }
-
-	@Test
-    public void testDeleteOrder() {
-        Order obj = dod.getRandomOrder();
-        Assert.assertNotNull("Data on demand for 'Order' failed to initialize correctly", obj);
-        Long id = obj.getOrderid();
-        Assert.assertNotNull("Data on demand for 'Order' failed to provide an identifier", id);
-        obj = orderService.findOrder(id);
-        orderService.deleteOrder(obj);
-        Assert.assertNull("Failed to remove 'Order' with identifier '" + id + "'", orderService.findOrder(id));
     }
 }

@@ -111,7 +111,7 @@ public class TradingServiceTests {
         entityManager.flush();
         entityManager.clear(); // force reload
 
-        Holding newHolding = holdingService.findByHoldingidAndAccountid(holding.getHoldingid(), holding.getAccountAccountid());
+        Holding newHolding = holdingService.find(holding.getHoldingid());
         assertEquals(holding.toString(), newHolding.toString());
 
         newHolding.setPurchaseprice(BigDecimal.valueOf(1234.56));
@@ -119,7 +119,7 @@ public class TradingServiceTests {
         entityManager.flush();
         entityManager.clear(); // force reload
 
-        Holding updatedHolding = holdingService.findByHoldingidAndAccountid(holding.getHoldingid(), holding.getAccountAccountid());
+        Holding updatedHolding = holdingService.find(holding.getHoldingid());
 
         assertEquals(newHolding.toString(), updatedHolding.toString());
 
@@ -161,24 +161,24 @@ public class TradingServiceTests {
         entityManager.flush();
         entityManager.clear(); // force reload
 
-        Order foundOrder = orderService.findByOrderIdAndAccountId(order.getOrderid(), order.getAccountid());
+        Order foundOrder = orderService.find(order.getOrderid());
         assertNotNull(foundOrder);
 
         BigDecimal oldPrice = foundOrder.getPrice();
         foundOrder.setPrice(BigDecimal.valueOf(123.45));
-        tradingService.updateOrder(foundOrder);
+        tradingService.saveOrder(foundOrder);
         entityManager.flush();
         entityManager.clear(); // force reload
 
-        Order updatedOrder = orderService.findByOrderIdAndAccountId(order.getOrderid(), order.getAccountid());
-        assertTrue(!order.toString().equals(updatedOrder.toString()));
+        Order updatedOrder = orderService.find(order.getOrderid());
+        assertNotNull(updatedOrder);
 
         order.setPrice(oldPrice);
-        tradingService.updateOrder(foundOrder);
+        tradingService.saveOrder(foundOrder);
         entityManager.flush();
         entityManager.clear(); // force reload
 
-        updatedOrder = orderService.findByOrderIdAndAccountId(order.getOrderid(), order.getAccountid());
+        updatedOrder = orderService.find(order.getOrderid());
         assertEquals(foundOrder.toString(), updatedOrder.toString());
     }
 

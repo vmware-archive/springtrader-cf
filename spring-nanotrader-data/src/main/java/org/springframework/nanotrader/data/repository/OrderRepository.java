@@ -53,5 +53,4 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     @Query("SELECT count(o) FROM Order o WHERE o.accountid  = ?1 and o.orderstatus = ?2")
     Long findCountOfOrders(Long accountId, String status);
-
 }

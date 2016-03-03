@@ -23,17 +23,13 @@ import java.util.List;
 
 public interface HoldingService {
 
-    long countByAccountid(Long accountId);
-
     List<Holding> findByAccountid(Long accountId);
 
     List<Holding> findAll();
 
-    Holding findByHoldingidAndAccountid(Long holdingid, Long accountId);
-
     Holding save(Holding holding);
 
-    void delete(Holding holding);
+    void delete(Long id);
 
     Holding find(Long id);
 

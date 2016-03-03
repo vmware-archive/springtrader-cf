@@ -113,7 +113,7 @@ public class ServiceTestConfiguration {
         TradingService tradingService = Mockito.mock(TradingService.class);
         when(tradingService.findCountOfOrders(eq(ACCOUNT_ID), any(String.class))).thenReturn(RESULT_COUNT);
         when(tradingService.saveOrder(any(Order.class))).thenReturn(null);
-        when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
+//        when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
         when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class))).thenReturn(orders());
         when(tradingService.findOrders(eq(ACCOUNT_ID))).thenReturn(orders());
 
@@ -123,9 +123,9 @@ public class ServiceTestConfiguration {
     @Bean
     public HoldingService holdingService() {
         HoldingService holdingService = Mockito.mock(HoldingService.class);
-        when(holdingService.findByHoldingidAndAccountid(eq(100L), eq(ACCOUNT_ID))).thenReturn(holding());
+        when(holdingService.find(eq(100L))).thenReturn(holding());
         when(holdingService.findByAccountid(eq(ACCOUNT_ID))).thenReturn(holdings());
-        when(holdingService.countByAccountid(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
+//        when(holdingService.countByAccountid(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
         when(holdingService.findHoldingSummary(eq(ACCOUNT_ID))).thenReturn(holdingSummary());
         when(holdingService.findPortfolioSummary(eq(ACCOUNT_ID))).thenReturn(portfolioSummary());
 
@@ -135,7 +135,7 @@ public class ServiceTestConfiguration {
     @Bean
     public OrderService orderService() {
         OrderService orderService = Mockito.mock(OrderService.class);
-        when(orderService.findByOrderIdAndAccountId(eq(999L), eq(ACCOUNT_ID))).thenReturn(order());
+        when(orderService.find(eq(999L))).thenReturn(order());
 
         return orderService;
     }

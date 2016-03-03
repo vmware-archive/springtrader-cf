@@ -142,11 +142,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
     }
 
-
-    public void setTradingService(TradingService tradingService) {
-        this.tradingService = tradingService;
-    }
-
     @CacheEvict(value="authorizationCache")
     public void logout(String authtoken) {
 
@@ -213,7 +208,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
             log.debug("TradingServiceFacade.findHolding: id=" + id);
         }
         Holding holdingResponse = new Holding();
-        org.springframework.nanotrader.data.domain.Holding holding = holdingService.findByHoldingidAndAccountid(id, accountId);
+        org.springframework.nanotrader.data.domain.Holding holding = holdingService.find(id);
         if (holding == null) {
             throw new NoRecordsFoundException();
         }
@@ -239,7 +234,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
 
         List<Holding> holdingResponse = new ArrayList<Holding>();
-        collectionResults.setTotalRecords(holdingService.countByAccountid(accountId));
         List<org.springframework.nanotrader.data.domain.Holding> holdings = holdingService.findByAccountid(accountId);
 
         if (holdings != null  &&  holdings.size() > 0) {
@@ -293,7 +287,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findOrder: orderId=" + orderId + " accountId=" + accountId);
         }
-        org.springframework.nanotrader.data.domain.Order order =  orderService.findByOrderIdAndAccountId(orderId, accountId);
+        org.springframework.nanotrader.data.domain.Order order =  orderService.find(orderId);
         if (order == null) {
             throw new NoRecordsFoundException();
         }
@@ -305,16 +299,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
         responseOrder.setQuote(q);
         return responseOrder;
-    }
-
-    public void updateOrder(Order orderRequest) {
-        if (log.isDebugEnabled()) {
-            log.debug("OrderController.update:" + orderRequest.toString());
-        }
-        org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
-        mapper.map(orderRequest, order, ORDER_MAPPING);
-        order.setQuoteid(orderRequest.getQuote().getQuoteid());
-        tradingService.updateOrder(order);
     }
 
     public CollectionResult findOrders(Long accountId, String status, Integer page, Integer pageSize) {

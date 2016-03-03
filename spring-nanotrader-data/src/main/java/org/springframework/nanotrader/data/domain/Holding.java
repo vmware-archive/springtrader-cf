@@ -18,112 +18,85 @@ package org.springframework.nanotrader.data.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "HOLDING")
 public class Holding implements Serializable {
-	@Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    @Column(name = "holdingid")
+
     private Long holdingid;
 
-	public Long getHoldingid() {
+    public Long getHoldingid() {
         return this.holdingid;
     }
 
-	public void setHoldingid(Long id) {
+    public void setHoldingid(Long id) {
         this.holdingid = id;
     }
 
-	@OneToMany(mappedBy = "holdingHoldingid")
-    private Set<Order> orders;
+    private List<Order> orders;
 
-	@Column(name = "purchaseprice", precision = 14, scale = 2)
     private BigDecimal purchaseprice;
 
-	@Column(name = "quantity", precision = 14, scale = 0)
-    @NotNull
     private BigDecimal quantity;
 
-	@Column(name = "purchasedate")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(style = "M-")
     private Date purchasedate;
 
-	@Column(name = "account_accountid")
     private Long accountAccountid;
 
-	@Column(name = "quote_symbol", length = 250)
     private String quoteSymbol;
 
-	public Set<Order> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 
-	public void setOrders(Set<Order> orders) {
+    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 
-	public BigDecimal getPurchaseprice() {
+    public BigDecimal getPurchaseprice() {
         return purchaseprice;
     }
 
-	public void setPurchaseprice(BigDecimal purchaseprice) {
+    public void setPurchaseprice(BigDecimal purchaseprice) {
         this.purchaseprice = purchaseprice;
     }
 
-	public BigDecimal getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-	public void setQuantity(BigDecimal quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
-	public Date getPurchasedate() {
+    public Date getPurchasedate() {
         return purchasedate;
     }
 
-	public void setPurchasedate(Date purchasedate) {
+    public void setPurchasedate(Date purchasedate) {
         this.purchasedate = purchasedate;
     }
 
-	public Long getAccountAccountid() {
+    public Long getAccountAccountid() {
         return accountAccountid;
     }
 
-	public void setAccountAccountid(Long accountAccountid) {
+    public void setAccountAccountid(Long accountAccountid) {
         this.accountAccountid = accountAccountid;
     }
 
-	public String getQuoteSymbol() {
+    public String getQuoteSymbol() {
         return quoteSymbol;
     }
 
-	public void setQuoteSymbol(String quoteSymbol) {
+    public void setQuoteSymbol(String quoteSymbol) {
         this.quoteSymbol = quoteSymbol;
     }
 
-	@Override
-	public String toString() {
-		return "Holding [holdingid=" + holdingid + ", purchaseprice=" + purchaseprice + ", quantity=" + quantity
-				+ ", purchasedate=" + purchasedate + ", quoteSymbol=" + quoteSymbol + "]";
-	}
+    @Override
+    public String toString() {
+        return "Holding [holdingid=" + holdingid + ", purchaseprice=" + purchaseprice + ", quantity=" + quantity
+                + ", purchasedate=" + purchasedate + ", quoteSymbol=" + quoteSymbol + "]";
+    }
 
-	
+
 }

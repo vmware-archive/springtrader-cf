@@ -21,27 +21,19 @@ import java.util.List;
 
 public interface OrderService {
 
-    long countAllOrders();
+    Long countAllOrders();
 
-    void deleteOrder(Order order);
-
-    Order findOrder(Long id);
+    Order find(Long id);
 
     List<Order> findAllOrders();
 
-    List<Order> findOrderEntries(int firstResult, int maxResults);
-
     Order saveOrder(Order order);
 
-    Order findByOrderIdAndAccountId(Long orderId, Long accountId);
+    Long countOfOrders(Long accountId, String status);
 
-    long countOfOrders(Long accountId, String status);
-
-    long countOfOrders(Long accountId);
+    Long countOfOrders(Long accountId);
 
     List<Order> findOrdersByStatus(Long accountId, String status);
 
-    List<Order> findOrdersByAccountid(Long accountId);
-
-    int updateClosedOrders(Long accountId);
+    List<Order> findByAccountId(Long accountId);
 }

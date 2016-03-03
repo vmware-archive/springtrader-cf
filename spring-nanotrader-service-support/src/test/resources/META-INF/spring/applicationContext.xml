@@ -62,6 +62,9 @@
 	<bean id="accountProfileService"
 		  class="org.springframework.nanotrader.data.service.FallBackAccountProfileService" />
 
+	<bean id="orderService"
+		  class="org.springframework.nanotrader.service.FallBackOrderService" />
+
 	<beans profile="test">
 		<util:properties id="dbPropertiesBean">
 			<prop key="use_scrollable_resultset">false</prop>

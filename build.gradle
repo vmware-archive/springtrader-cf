@@ -193,6 +193,7 @@ project('spring-nanotrader-data') {
 		compile "com.netflix.feign:feign-gson:8.5.0"
 		compile "com.google.code.gson:gson:2.3.1"
 		compile "com.jayway.jsonpath:json-path:0.9.1"
+		compile "joda-time:joda-time:2.5"
 	}
 }
 

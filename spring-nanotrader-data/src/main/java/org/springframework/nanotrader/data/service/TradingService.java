@@ -32,7 +32,7 @@ public interface TradingService {
 
     Order saveOrder(Order order);
 
-    Order updateOrder(Order order);
+//    Order updateOrder(Order order);
 
     Long findCountOfOrders(Long accountId, String status);
 

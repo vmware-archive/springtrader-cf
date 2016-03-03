@@ -7,18 +7,12 @@ import feign.FeignException;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import net.minidev.json.JSONArray;
-import org.apache.log4j.Logger;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class AccountDecoder extends GsonDecoder {
@@ -29,10 +23,7 @@ public class AccountDecoder extends GsonDecoder {
     private static final Type LIST_OF_ACCOUNTPROFILE = new TypeToken<List<Accountprofile>>() {
     }.getType();
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
-    private static final Logger LOG = Logger.getLogger(AccountDecoder.class);
+    private final JsonUtils jsonUtils = new JsonUtils();
 
     @Override
     public Object decode(Response response, Type type) throws IOException, FeignException {
@@ -69,14 +60,14 @@ public class AccountDecoder extends GsonDecoder {
         }
 
         Accountprofile ap = new Accountprofile();
-        ap.setAddress(getStringValue(ctx, "$.address"));
-        ap.setAuthtoken(getStringValue(ctx, "$.authToken"));
-        ap.setCreditcard(getStringValue(ctx, "$.creditCard"));
-        ap.setEmail(getStringValue(ctx, "$.email"));
-        ap.setFullname(getStringValue(ctx, "$.fullName"));
-        ap.setPasswd(getStringValue(ctx, "$.passwd"));
-        ap.setProfileid(getLongValue(ctx, "$.accountProfileId"));
-        ap.setUserid(getStringValue(ctx, "$.userId"));
+        ap.setAddress(jsonUtils.getStringValue(ctx, "$.address"));
+        ap.setAuthtoken(jsonUtils.getStringValue(ctx, "$.authToken"));
+        ap.setCreditcard(jsonUtils.getStringValue(ctx, "$.creditCard"));
+        ap.setEmail(jsonUtils.getStringValue(ctx, "$.email"));
+        ap.setFullname(jsonUtils.getStringValue(ctx, "$.fullName"));
+        ap.setPasswd(jsonUtils.getStringValue(ctx, "$.passwd"));
+        ap.setProfileid(jsonUtils.getLongValue(ctx, "$.accountProfileId"));
+        ap.setUserid(jsonUtils.getStringValue(ctx, "$.userId"));
 
         JSONArray accounts = ctx.read("$.accounts");
         if (accounts != null && processAccounts) {
@@ -95,14 +86,14 @@ public class AccountDecoder extends GsonDecoder {
         JSONArray as = ctx.read("$");
         for (int i = 0; i < as.size(); i++) {
             Accountprofile ap = new Accountprofile();
-            ap.setAddress(getStringValue(ctx, "$.[" + i + "].address"));
-            ap.setAuthtoken(getStringValue(ctx, "$.[" + i + "].authToken"));
-            ap.setCreditcard(getStringValue(ctx, "$.[" + i + "].creditCard"));
-            ap.setEmail(getStringValue(ctx, "$.[" + i + "].email"));
-            ap.setFullname(getStringValue(ctx, "$.[" + i + "].fullName"));
-            ap.setPasswd(getStringValue(ctx, "$.[" + i + "].passwd"));
-            ap.setProfileid(getLongValue(ctx, "$.[" + i + "].accountProfileId"));
-            ap.setUserid(getStringValue(ctx, "$.[" + i + "].userId"));
+            ap.setAddress(jsonUtils.getStringValue(ctx, "$.[" + i + "].address"));
+            ap.setAuthtoken(jsonUtils.getStringValue(ctx, "$.[" + i + "].authToken"));
+            ap.setCreditcard(jsonUtils.getStringValue(ctx, "$.[" + i + "].creditCard"));
+            ap.setEmail(jsonUtils.getStringValue(ctx, "$.[" + i + "].email"));
+            ap.setFullname(jsonUtils.getStringValue(ctx, "$.[" + i + "].fullName"));
+            ap.setPasswd(jsonUtils.getStringValue(ctx, "$.[" + i + "].passwd"));
+            ap.setProfileid(jsonUtils.getLongValue(ctx, "$.[" + i + "].accountProfileId"));
+            ap.setUserid(jsonUtils.getStringValue(ctx, "$.[" + i + "].userId"));
 
             accountprofiles.add(ap);
 
@@ -115,56 +106,15 @@ public class AccountDecoder extends GsonDecoder {
         return accountprofiles;
     }
 
-    private String getStringValue(ReadContext ctx, String path) {
-        return ctx.read(path);
-    }
-
-    private Long getLongValue(ReadContext ctx, String path) {
-        Object o = ctx.read(path);
-        if (o == null) {
-            return 0L;
-        }
-        return Long.decode(o.toString());
-    }
-
-    private Integer getIntegerValue(ReadContext ctx, String path) {
-        Object o = ctx.read(path);
-        if (o == null) {
-            return 0;
-        }
-        return Integer.decode(o.toString());
-    }
-
-    private BigDecimal getBigDecimalValue(ReadContext ctx, String path) {
-        Object o = ctx.read(path);
-        if (o == null) {
-            return new BigDecimal(0);
-        }
-        return new BigDecimal(o.toString());
-    }
-
-    private Date getDateValue(ReadContext ctx, String path) {
-        Object o = ctx.read(path);
-        if (o == null) {
-            return null;
-        }
-        try {
-            return DATE_FORMAT.parse(o.toString());
-        } catch (ParseException e) {
-            LOG.error("unable to parse date string: " + o.toString(), e);
-            return null;
-        }
-    }
-
     private Account accountFromJson(ReadContext ctx) {
         Account a = new Account();
-        a.setAccountid(getLongValue(ctx, "$.accountId"));
-        a.setBalance(getBigDecimalValue(ctx, "$.balance"));
-        a.setCreationdate(getDateValue(ctx, "$.creationDate"));
-        a.setLastlogin(getDateValue(ctx, "$.lastLogin"));
-        a.setLogincount(getIntegerValue(ctx, "$.loginCount"));
-        a.setLogoutcount(getIntegerValue(ctx, "$.logoutCount"));
-        a.setOpenbalance(getBigDecimalValue(ctx, "$.openBalance"));
+        a.setAccountid(jsonUtils.getLongValue(ctx, "$.accountId"));
+        a.setBalance(jsonUtils.getBigDecimalValue(ctx, "$.balance"));
+        a.setCreationdate(jsonUtils.getDateValue(ctx, "$.creationDate"));
+        a.setLastlogin(jsonUtils.getDateValue(ctx, "$.lastLogin"));
+        a.setLogincount(jsonUtils.getIntegerValue(ctx, "$.loginCount"));
+        a.setLogoutcount(jsonUtils.getIntegerValue(ctx, "$.logoutCount"));
+        a.setOpenbalance(jsonUtils.getBigDecimalValue(ctx, "$.openBalance"));
 
         Object ap = ctx.read("$.accountProfile");
         if (ap != null) {
@@ -180,13 +130,13 @@ public class AccountDecoder extends GsonDecoder {
         JSONArray as = ctx.read("$");
         for (int i = 0; i < as.size(); i++) {
             Account a = new Account();
-            a.setAccountid(getLongValue(ctx, "$.[" + i + "].accountId"));
-            a.setBalance(getBigDecimalValue(ctx, "$.[" + i + "].balance"));
-            a.setCreationdate(getDateValue(ctx, "$.[" + i + "].creationDate"));
-            a.setLastlogin(getDateValue(ctx, "$.[" + i + "].lastLogin"));
-            a.setLogincount(getIntegerValue(ctx, "$.[" + i + "].loginCount"));
-            a.setLogoutcount(getIntegerValue(ctx, "$.[" + i + "].logoutCount"));
-            a.setOpenbalance(getBigDecimalValue(ctx, "$.[" + i
+            a.setAccountid(jsonUtils.getLongValue(ctx, "$.[" + i + "].accountId"));
+            a.setBalance(jsonUtils.getBigDecimalValue(ctx, "$.[" + i + "].balance"));
+            a.setCreationdate(jsonUtils.getDateValue(ctx, "$.[" + i + "].creationDate"));
+            a.setLastlogin(jsonUtils.getDateValue(ctx, "$.[" + i + "].lastLogin"));
+            a.setLogincount(jsonUtils.getIntegerValue(ctx, "$.[" + i + "].loginCount"));
+            a.setLogoutcount(jsonUtils.getIntegerValue(ctx, "$.[" + i + "].logoutCount"));
+            a.setOpenbalance(jsonUtils.getBigDecimalValue(ctx, "$.[" + i
                     + "].openBalance"));
 
             accounts.add(a);

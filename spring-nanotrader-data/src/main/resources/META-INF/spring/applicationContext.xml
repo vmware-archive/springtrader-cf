@@ -114,6 +114,9 @@
 		<bean id="holdingService"
 			  class="org.springframework.nanotrader.data.service.HoldingServiceImpl" />
 
+		<bean id="orderService"
+			  class="org.springframework.nanotrader.data.service.OrderServiceImpl" />
+
 		<bean id="holdingAggregateRepository"
 			  class="org.springframework.nanotrader.data.repository.HoldingAggregateRepositoryImpl" />
 
@@ -137,7 +140,10 @@
 			  class="org.springframework.nanotrader.data.service.FallBackAccountProfileService" />
 
 		<bean id="holdingService"
-			  class="org.springframework.nanotrader.data.service.HoldingServiceImpl" />
+			  class="org.springframework.nanotrader.service.FallBackHoldingService" />
+
+		<bean id="orderService"
+			  class="org.springframework.nanotrader.service.FallBackOrderService" />
 
 		<bean id="holdingAggregateRepository"
 			  class="org.springframework.nanotrader.data.repository.HoldingAggregateRepositoryImpl" />

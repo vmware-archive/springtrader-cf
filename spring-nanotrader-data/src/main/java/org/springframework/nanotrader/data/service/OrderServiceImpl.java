@@ -15,66 +15,79 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import java.util.List;
+import com.netflix.discovery.DiscoveryClient;
+import feign.Feign;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.cloud.*;
 import org.springframework.nanotrader.data.domain.Order;
-import org.springframework.nanotrader.data.repository.OrderRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
-@Transactional
+@Profile({"default", "cloud"})
 public class OrderServiceImpl implements OrderService {
 
-	@Autowired
+    private static final Logger LOG = Logger.getLogger(OrderServiceImpl.class);
+
+    @Autowired
+    DiscoveryClient discoveryClient;
+
     OrderRepository orderRepository;
-	
-	public long countAllOrders() {
-        return orderRepository.count();
+
+    @Autowired
+    String orderRepositoryName;
+
+	public Long countAllOrders() {
+        return orderRepository().count();
     }
 
-	public void deleteOrder(Order order) {
-        orderRepository.delete(order);
-    }
-
-	public Order findOrder(Long id) {
-        return orderRepository.findOne(id);
+    public Order find(Long id) {
+        return orderRepository().find(id);
     }
 
 	public List<Order> findAllOrders() {
-        return orderRepository.findAll();
+        return orderRepository().findAll();
     }
 
-	public List<Order> findOrderEntries(int firstResult, int maxResults) {
-        return orderRepository.findAll(new org.springframework.data.domain.PageRequest(firstResult / maxResults, maxResults)).getContent();
+    public Order saveOrder(Order order) {
+        return orderRepository().save(order);
     }
 
-	public Order saveOrder(Order order) {
-        return orderRepository.save(order);
+    public List<Order> findByAccountId(Long accountId) {
+        return orderRepository().findOrdersByAccountid(accountId);
     }
 
-    public Order findByOrderIdAndAccountId(Long orderId, Long accountId) {
-        return orderRepository.findByOrderidAndAccountAccountid(orderId, accountId);
+    public Long countOfOrders(Long accountId, String status) {
+        return orderRepository().findCountByAccountidAndStatus(accountId, status);
     }
 
-    public long countOfOrders(Long accountId, String status) {
-        return orderRepository.findCountOfOrders(accountId, status);
-    }
-
-    public long countOfOrders(Long accountId) {
-        return orderRepository.findCountOfOrders(accountId);
+    public Long countOfOrders(Long accountId) {
+        return orderRepository().findCountByAccountid(accountId);
     }
 
     public List<Order> findOrdersByStatus(Long accountId, String status) {
-        return orderRepository.findOrdersByStatus(accountId, status);
+        return orderRepository().findOrdersByAccountidAndStatus(accountId, status);
     }
 
-    public List<Order> findOrdersByAccountid(Long accountId) {
-        return orderRepository.findOrdersByAccountid(accountId);
-    }
+    private OrderRepository orderRepository() {
+        if (this.orderRepository == null) {
+            LOG.info("initializing orderRepository named: " + orderRepositoryName);
+            String url = discoveryClient.getNextServerFromEureka(
+                    orderRepositoryName, false).getHomePageUrl();
 
-    public int updateClosedOrders(Long accountId) {
-        return orderRepository.updateClosedOrders(accountId);
+            LOG.info("orderRepository url is: " + url);
+
+            this.orderRepository = Feign.builder()
+                    .encoder(new OrderEncoder())
+                    .decoder(new OrderDecoder())
+                    .target(OrderRepository.class, url);
+
+            LOG.info("orderRepository initialization complete.");
+        }
+        return this.orderRepository;
     }
 }

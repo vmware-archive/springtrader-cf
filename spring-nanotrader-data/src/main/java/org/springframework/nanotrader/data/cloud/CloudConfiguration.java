@@ -51,4 +51,9 @@ public class CloudConfiguration {
     public String accountRepositoryName() {
         return env.getProperty("ACCOUNT_SERVICE_NAME");
     }
+
+    @Bean
+    public String orderRepositoryName() {
+        return env.getProperty("ORDER_SERVICE_NAME");
+    }
 }

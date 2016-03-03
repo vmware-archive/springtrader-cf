@@ -41,6 +41,7 @@ public class HoldingDataOnDemand {
 
 	public Holding getNewTransientHolding(int index) {
         Holding obj = new Holding();
+        obj.setHoldingid(new Long(index));
         setAccountAccountid(obj, index);
         setPurchasedate(obj, index);
         setPurchaseprice(obj, index);
