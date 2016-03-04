@@ -24,8 +24,6 @@ import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.repository.HoldingAggregateRepository;
-import org.springframework.nanotrader.data.repository.PortfolioSummaryRepository;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,12 +67,6 @@ public class TradingServiceImpl implements TradingService {
 	@Qualifier( "rtQuoteService")
 	private QuoteService quoteService;
 
-	@Autowired
-	private PortfolioSummaryRepository portfolioSummaryRepository;
-
-	@Autowired
-	private HoldingAggregateRepository holdingAggregateRepository;
-	
 	@Autowired
 	QuotePublisher quotePublisher;
 

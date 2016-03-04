@@ -15,12 +15,6 @@
  */
 package org.springframework.nanotrader.service.support;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-
 import org.dozer.Mapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +36,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Gary Russell
@@ -51,8 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 @ContextConfiguration(classes = { IntegrationTestConfig.class }, loader = AnnotationConfigContextLoader.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
-//@TransactionConfiguration(defaultRollback=false)
 public class TradingServiceFacadeTests {
 
 	@Autowired

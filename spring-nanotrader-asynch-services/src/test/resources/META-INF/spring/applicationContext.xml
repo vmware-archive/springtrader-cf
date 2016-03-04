@@ -13,41 +13,10 @@
 	<context:component-scan
 		base-package="org.springframework.nanotrader.data, org.springframework.nanotrader.service" />
 
-	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
-		id="transactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
-	</bean>
-
-	<tx:annotation-driven transaction-manager="transactionManager" />
-
 	<bean id="quotePublisher" class="org.mockito.Mockito"
 		factory-method="mock">
 		<constructor-arg
 			value="org.springframework.nanotrader.data.service.TradingServiceImpl$QuotePublisher" />
-	</bean>
-
-	<bean
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-		id="entityManagerFactory">
-		<property name="dataSource" ref="dataSource" />
-		<property name="persistenceUnitPostProcessors">
-			<array>
-				<bean class="org.springframework.nanotrader.data.util.PUPostProcessor" />
-			</array>
-		</property>
-
-		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-				<property name="databasePlatform" value="#{dbPropertiesBean['dialect']}" />
-			</bean>
-		</property>
-		<property name="jpaPropertyMap">
-			<map>
-				<entry key="hibernate.jdbc.use_scrollable_resultset" value="#{dbPropertiesBean['use_scrollable_resultset']}" />
-				<entry key="hibernate.hbm2ddl.auto" value="#{dbPropertiesBean['hb2ddl_auto']}" />
-				<entry key="hibernate.show_sql" value="true" />
-			</map>
-		</property>
 	</bean>
 
 	<bean id="rtQuoteService"
@@ -64,15 +33,5 @@
 
 	<bean id="holdingService"
 		  class="org.springframework.nanotrader.service.FallBackHoldingService" />
-
-	<beans profile="test">
-		<util:properties id="dbPropertiesBean">
-			<prop key="use_scrollable_resultset">false</prop>
-			<prop key="dialect">org.hibernate.dialect.H2Dialect</prop>
-			<prop key="hb2ddl_auto">create</prop>
-			<prop key="import_files"></prop>
-		</util:properties>
-		<jdbc:embedded-database id="dataSource" type="H2" />
-	</beans>
 
 </beans>

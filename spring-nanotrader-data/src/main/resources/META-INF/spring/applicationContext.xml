@@ -56,48 +56,10 @@
 			type="annotation" />
 	</context:component-scan>
 
-	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
-		id="transactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
-	</bean>
-	<tx:annotation-driven transaction-manager="transactionManager" />
-
 	<import
 		resource="classpath:/META-INF/spring/integration/amqp-data-outbound-context.xml" />
-	<bean
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-		id="entityManagerFactory">
-		<property name="dataSource" ref="dataSource" />
-		<property name="persistenceUnitPostProcessors">
-			<array>
-				<bean class="org.springframework.nanotrader.data.util.PUPostProcessor" />
-			</array>
-		</property>
-
-		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-				<property name="databasePlatform" value="#{dbPropertiesBean['dialect']}" />
-			</bean>
-		</property>
-		<property name="jpaPropertyMap">
-			<map>
-				<entry key="hibernate.jdbc.use_scrollable_resultset" value="#{dbPropertiesBean['use_scrollable_resultset']}" />
-				<entry key="hibernate.hbm2ddl.auto" value="#{dbPropertiesBean['hb2ddl_auto']}"/>
-				<entry key="hibernate.show_sql" value="true" />
-			</map>
-		</property>
-	</bean>
 
  	<beans profile="cloud">
-		<util:properties id="dbPropertiesBean">
-			<prop key="use_scrollable_resultset">false</prop>
-			<prop key="dialect">org.hibernate.dialect.MySQLDialect</prop>
-			<prop key="hb2ddl_auto">create-drop</prop>
-		</util:properties>
-		<cloud:data-source id="dataSource">
-			<cloud:connection properties="sessionVariables=sql_mode='ANSI';characterEncoding=UTF-8;defaultTransactionIsolation=2" />
-			<cloud:pool pool-size="2" max-wait-time="200" />
-		</cloud:data-source>
 
 		<bean id="dbQuoteService"
 			class="org.springframework.nanotrader.data.service.DBQuoteService" />
@@ -117,18 +79,9 @@
 		<bean id="orderService"
 			  class="org.springframework.nanotrader.data.service.OrderServiceImpl" />
 
-		<bean id="holdingAggregateRepository"
-			  class="org.springframework.nanotrader.data.repository.HoldingAggregateRepositoryImpl" />
-
 	</beans>
 
 	<beans profile="test">
-		<util:properties id="dbPropertiesBean">
-			<prop key="use_scrollable_resultset">false</prop>
-			<prop key="dialect">org.hibernate.dialect.H2Dialect</prop>
-			<prop key="hb2ddl_auto">create</prop>
-		</util:properties>
-		<jdbc:embedded-database id="dataSource" type="H2" />
 
 		<bean id="rtQuoteService"
 			class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
@@ -144,9 +97,6 @@
 
 		<bean id="orderService"
 			  class="org.springframework.nanotrader.service.FallBackOrderService" />
-
-		<bean id="holdingAggregateRepository"
-			  class="org.springframework.nanotrader.data.repository.HoldingAggregateRepositoryImpl" />
 
 	</beans>
 

@@ -32,7 +32,6 @@ import org.springframework.nanotrader.service.domain.Quote;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -43,10 +42,8 @@ import static org.junit.Assert.assertNotNull;
 @Profile("test")
 @ContextConfiguration(locations={
 		"classpath:/META-INF/spring/applicationContext.xml",
-		"classpath:/META-INF/spring/applicationContext-jpa.xml",
 		"classpath:/META-INF/spring/spring-nanotrader-service-support.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
 public class TradingServiceAsynchTests {
 
 	@Autowired

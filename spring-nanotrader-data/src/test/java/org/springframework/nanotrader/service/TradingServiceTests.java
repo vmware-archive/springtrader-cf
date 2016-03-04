@@ -27,23 +27,20 @@ import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Gary Russell
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
-@Transactional
 public class TradingServiceTests {
 
     @Autowired
@@ -71,9 +68,6 @@ public class TradingServiceTests {
     @Qualifier("rtQuoteService")
     QuoteService quoteService;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     Accountprofile profile;
 
     @Before
@@ -91,8 +85,6 @@ public class TradingServiceTests {
         holding101.setAccountAccountid(holding100.getAccountAccountid());
         holdingService.save(holding100);
         holdingService.save(holding101);
-        entityManager.flush();
-        entityManager.clear(); // force reload
 
         List<Holding> holdings = holdingService.findByAccountid(holding100.getAccountAccountid());
         assertEquals(2, holdings.size());
@@ -108,16 +100,12 @@ public class TradingServiceTests {
         Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
         holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
         holdingService.save(holding);
-        entityManager.flush();
-        entityManager.clear(); // force reload
 
         Holding newHolding = holdingService.find(holding.getHoldingid());
         assertEquals(holding.toString(), newHolding.toString());
 
         newHolding.setPurchaseprice(BigDecimal.valueOf(1234.56));
         holdingService.save(newHolding);
-        entityManager.flush();
-        entityManager.clear(); // force reload
 
         Holding updatedHolding = holdingService.find(holding.getHoldingid());
 
@@ -131,8 +119,6 @@ public class TradingServiceTests {
         holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
         holding.setQuoteSymbol("GOOG");
         holdingService.save(holding);
-        entityManager.flush();
-        entityManager.clear(); // force reload
         PortfolioSummary portfolioSummary = holdingService.findPortfolioSummary(100L);
         Assert.assertTrue("Expected 'PortfolioSummary' holding count to be equal to 1", portfolioSummary.getNumberOfHoldings() == 1);
     }
@@ -143,8 +129,6 @@ public class TradingServiceTests {
         holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
         holding.setQuoteSymbol("GOOG");
         holdingService.save(holding);
-        entityManager.flush();
-        entityManager.clear(); // force reload
         HoldingSummary holdingSummary = holdingService.findHoldingSummary(new Long(102));
         Assert.assertNotNull(holdingSummary);
         Assert.assertTrue(holdingSummary.getHoldingsTotalGains().floatValue() != 0.0f);
@@ -158,8 +142,6 @@ public class TradingServiceTests {
         order.setOpendate(new java.sql.Date(System.currentTimeMillis()));
         order.setCompletiondate(new java.sql.Date(System.currentTimeMillis()));
         tradingService.saveOrder(order);
-        entityManager.flush();
-        entityManager.clear(); // force reload
 
         Order foundOrder = orderService.find(order.getOrderid());
         assertNotNull(foundOrder);
@@ -167,16 +149,12 @@ public class TradingServiceTests {
         BigDecimal oldPrice = foundOrder.getPrice();
         foundOrder.setPrice(BigDecimal.valueOf(123.45));
         tradingService.saveOrder(foundOrder);
-        entityManager.flush();
-        entityManager.clear(); // force reload
 
         Order updatedOrder = orderService.find(order.getOrderid());
         assertNotNull(updatedOrder);
 
         order.setPrice(oldPrice);
         tradingService.saveOrder(foundOrder);
-        entityManager.flush();
-        entityManager.clear(); // force reload
 
         updatedOrder = orderService.find(order.getOrderid());
         assertEquals(foundOrder.toString(), updatedOrder.toString());
@@ -194,8 +172,6 @@ public class TradingServiceTests {
         quote.setChange1(BigDecimal.valueOf(4.00));
         quote.setOpen1(BigDecimal.valueOf(49.00));
         quoteService.saveQuote(quote);
-        entityManager.flush();
-        entityManager.clear(); // force reload
         Quote quote2 = new Quote();
         quote2.setSymbol("symbol2");
         quote2.setPrice(BigDecimal.valueOf(150.00));
@@ -204,8 +180,6 @@ public class TradingServiceTests {
         quote2.setChange1(BigDecimal.valueOf(4.00));
         quote2.setOpen1(BigDecimal.valueOf(120.00));
         quoteService.saveQuote(quote2);
-        entityManager.flush();
-        entityManager.clear(); // force reload
         MarketSummary marketSummary = quoteService.marketSummary();
         // need to harden this test!!
         Assert.assertNotNull("Expected 'MarketSummary' Market Volume should not be null", marketSummary.getTradeStockIndexVolume());

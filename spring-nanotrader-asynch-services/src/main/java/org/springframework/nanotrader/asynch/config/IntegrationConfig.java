@@ -40,7 +40,6 @@ import org.springframework.nanotrader.service.configuration.ServiceConfig;
 @Configuration
 @ComponentScan(basePackages="org.springframework.nanotrader.service", excludeFilters={@Filter(type=FilterType.ASSIGNABLE_TYPE, value=ServiceConfig.class)} )
 @ImportResource({ "classpath:/META-INF/spring/applicationContext.xml",
-		"classpath:/META-INF/spring/applicationContext-jpa.xml",
 		"classpath:/META-INF/spring/integration/amqp-inbound-context.xml" })
 public class IntegrationConfig   {
 
