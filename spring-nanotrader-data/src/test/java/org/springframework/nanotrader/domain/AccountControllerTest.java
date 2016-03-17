@@ -9,7 +9,7 @@ import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.data.service.AccountService;
-import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
+import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

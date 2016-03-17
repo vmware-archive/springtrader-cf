@@ -23,7 +23,7 @@ import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.service.AccountProfileService;
-import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
+import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.OrderService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Component;

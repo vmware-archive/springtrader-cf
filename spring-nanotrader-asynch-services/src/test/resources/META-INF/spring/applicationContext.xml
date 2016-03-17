@@ -23,10 +23,10 @@
 		class="org.springframework.nanotrader.data.service.FallBackQuoteService" />
 
 	<bean id="accountService"
-		  class="org.springframework.nanotrader.data.service.FallBackAccountService" />
+		  class="org.springframework.nanotrader.service.FallBackAccountService" />
 
 	<bean id="accountProfileService"
-		  class="org.springframework.nanotrader.data.service.FallBackAccountProfileService" />
+		  class="org.springframework.nanotrader.service.FallBackAccountProfileService" />
 
 	<bean id="orderService"
 		  class="org.springframework.nanotrader.service.FallBackOrderService" />

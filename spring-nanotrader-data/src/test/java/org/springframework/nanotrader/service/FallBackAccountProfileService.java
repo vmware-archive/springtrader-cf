@@ -1,7 +1,8 @@
-package org.springframework.nanotrader.data.service;
+package org.springframework.nanotrader.service;
 
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

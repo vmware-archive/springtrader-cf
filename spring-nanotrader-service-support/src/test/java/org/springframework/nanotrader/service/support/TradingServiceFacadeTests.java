@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.AccountProfileService;
-import org.springframework.nanotrader.data.service.FallBackAccountProfileService;
+import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.Order;

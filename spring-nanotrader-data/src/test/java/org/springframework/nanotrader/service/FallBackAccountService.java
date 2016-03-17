@@ -1,7 +1,8 @@
-package org.springframework.nanotrader.data.service;
+package org.springframework.nanotrader.service;
 
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.AccountService;
 
 import java.math.BigDecimal;
 import java.util.Date;
