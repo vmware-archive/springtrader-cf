@@ -30,7 +30,7 @@ To see what was done in part 4, consult the diff: [here](https://github.com/cf-p
 
 * **AccountprofileRepository, AccountRepository, HoldingRepository, OrderRepository**: Morph these from JPA repositories to Feign repositories that front calls to the external microservices. Move into the cloud package with the other repos.
 
-* **Accountprofile, Account, Holding, Ordery**: Morph these from JPA entities into simple POJO domain objects.
+* **Accountprofile, Account, Holding, Order**: Morph these from JPA entities into simple POJO domain objects.
 
 * **CloudConfiguration**: support for the new microservices.
 
@@ -63,13 +63,13 @@ There are four microservices and a simplified Eureka server that need to be depl
 
 [standalone eureka service](https://github.com/cf-platform-eng/standalone-eureka)
 
-[real-time quote service](https://github.com/cf-platform-eng/quote-service) : make sure to check out the "part3live" branch!
+[real-time quote service](https://github.com/cf-platform-eng/quote-service/tree/part3live) : make sure to check out the "part3live" branch!
 
-[db quote service](https://github.com/cf-platform-eng/quote-service) : make sure to check out the "part3db" branch!
+[db quote service](https://github.com/cf-platform-eng/quote-service/tree/part3db) : make sure to check out the "part3db" branch!
 
-[account service](https://github.com/cf-platform-eng/account-service) : make sure to check out the "part4" branch!
+[account service](https://github.com/cf-platform-eng/account-service/tree/part4) : make sure to check out the "part4" branch!
 
-[order service](https://github.com/cf-platform-eng/order-service) : make sure to check out the "part4" branch!
+[order service](https://github.com/cf-platform-eng/order-service/tree/part4) : make sure to check out the "part4" branch!
 
 Once you get these configured and deployed, "cf apps" should result in something that looks like the following:
 
