@@ -28,7 +28,7 @@ public class FallBackHoldingService implements HoldingService {
 
         if (includeOrder) {
             List<Order> orders = new ArrayList<Order>();
-            Order o = orderService.fakeOrder(h);
+            Order o = FallBackOrderService.fakeOrder(h);
             orderService.saveOrder(o);
             orders.add(o);
             h.setOrders(orders);

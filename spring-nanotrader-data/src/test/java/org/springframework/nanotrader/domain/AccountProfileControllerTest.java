@@ -4,13 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.nanotrader.Config;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.data.service.AccountService;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,10 +18,8 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-@WebIntegrationTest(value = "server.port=9873")
-@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
+@ContextConfiguration(classes = Config.class)
 public class AccountProfileControllerTest {
 
     @Autowired

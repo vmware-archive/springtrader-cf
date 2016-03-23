@@ -23,19 +23,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Accountprofile;
-import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.AccountProfileService;
-import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
+import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.Quote;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl.OrderGateway;
-import org.springframework.nanotrader.service.support.config.IntegrationTestConfig;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.math.BigDecimal;
 
@@ -46,13 +42,9 @@ import static org.junit.Assert.assertNull;
  * @author Gary Russell
  *
  */
-@ActiveProfiles("test")
-@ContextConfiguration(classes = { IntegrationTestConfig.class }, loader = AnnotationConfigContextLoader.class)
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = Config.class)
 public class TradingServiceFacadeTests {
-
-	@Autowired
-	private OrderDataOnDemand orderDataOnDemand;
 
 	@Autowired
 	private TradingServiceFacade tradingServiceFacade;
@@ -81,7 +73,8 @@ public class TradingServiceFacadeTests {
 	@Test
 	public void testSynch() {
 		org.springframework.nanotrader.data.domain.Order existingOrder = 
-				orderDataOnDemand.getRandomOrder();
+				new org.springframework.nanotrader.data.domain.Order();
+		existingOrder.setQuoteid("GOOG");
 		assertNotNull(existingOrder.getQuoteid());
 		Order orderRequest = new Order();
 		orderRequest.setAccountid(profile.getAccounts().get(0).getAccountid());
@@ -97,8 +90,8 @@ public class TradingServiceFacadeTests {
 
 	@Test
 	public void testASynch() {
-		org.springframework.nanotrader.data.domain.Order existingOrder = 
-				orderDataOnDemand.getRandomOrder();
+		org.springframework.nanotrader.data.domain.Order existingOrder =
+				new org.springframework.nanotrader.data.domain.Order();
 		Order orderRequest = new Order();
 		orderRequest.setAccountid(existingOrder.getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);

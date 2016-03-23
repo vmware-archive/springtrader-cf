@@ -11,7 +11,7 @@ public class FallBackOrderService implements OrderService {
 
     static final Map<Long, Order> orders = new HashMap<Long, Order>();
 
-    public Order fakeOrder(Holding holding) {
+    public static Order fakeOrder(Holding holding) {
         Order o = new Order();
         o.setAccountid(-1L);
         o.setHoldingHoldingid(holding);

@@ -21,14 +21,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.nanotrader.Config;
 import org.springframework.nanotrader.data.domain.*;
-import org.springframework.nanotrader.data.domain.test.HoldingDataOnDemand;
-import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,14 +40,8 @@ import static org.junit.Assert.assertNotNull;
  * @author Gary Russell
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
+@ContextConfiguration(classes = Config.class)
 public class TradingServiceTests {
-
-    @Autowired
-    private HoldingDataOnDemand holdingDataOnDemand;
-
-    @Autowired
-    private OrderDataOnDemand orderDataOnDemand;
 
     @Autowired
     private TradingService tradingService;
@@ -78,10 +72,8 @@ public class TradingServiceTests {
 
     @Test
     public void testFindHoldingsByAccount() {
-        Integer page = 0;
-        Integer pageSize = 10;
-        Holding holding100 = holdingDataOnDemand.getNewTransientHolding(100);
-        Holding holding101 = holdingDataOnDemand.getNewTransientHolding(101);
+        Holding holding100 = getNewTransientHolding(100);
+        Holding holding101 = getNewTransientHolding(101);
         holding101.setAccountAccountid(holding100.getAccountAccountid());
         holdingService.save(holding100);
         holdingService.save(holding101);
@@ -97,7 +89,7 @@ public class TradingServiceTests {
 
     @Test
     public void testSaveAndFindAndUpdateHolding() {
-        Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
+        Holding holding = getNewTransientHolding(100);
         holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
         holdingService.save(holding);
 
@@ -115,7 +107,7 @@ public class TradingServiceTests {
 
     @Test
     public void testFindAccountSummary() {
-        Holding holding = holdingDataOnDemand.getNewTransientHolding(100);
+        Holding holding = getNewTransientHolding(100);
         holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
         holding.setQuoteSymbol("GOOG");
         holdingService.save(holding);
@@ -125,11 +117,11 @@ public class TradingServiceTests {
 
     @Test
     public void testHoldingAggregateSummary() {
-        Holding holding = holdingDataOnDemand.getNewTransientHolding(102);
+        Holding holding = getNewTransientHolding(102);
         holding.setPurchasedate(new java.sql.Date(System.currentTimeMillis()));
         holding.setQuoteSymbol("GOOG");
         holdingService.save(holding);
-        HoldingSummary holdingSummary = holdingService.findHoldingSummary(new Long(102));
+        HoldingSummary holdingSummary = holdingService.findHoldingSummary(102L);
         Assert.assertNotNull(holdingSummary);
         Assert.assertTrue(holdingSummary.getHoldingsTotalGains().floatValue() != 0.0f);
     }
@@ -137,10 +129,12 @@ public class TradingServiceTests {
 
     @Test
     public void testSaveAndFindOrder() {
-        Order order = orderDataOnDemand.getNewTransientOrder(100);
+        Order order = new Order();
         order.setOrdertype(TradingService.ORDER_TYPE_BUY);
         order.setOpendate(new java.sql.Date(System.currentTimeMillis()));
         order.setCompletiondate(new java.sql.Date(System.currentTimeMillis()));
+        order.setQuoteid("GOOG");
+        order.setAccountid(profile.getAccounts().get(0).getAccountid());
         tradingService.saveOrder(order);
 
         Order foundOrder = orderService.find(order.getOrderid());
@@ -185,6 +179,18 @@ public class TradingServiceTests {
         Assert.assertNotNull("Expected 'MarketSummary' Market Volume should not be null", marketSummary.getTradeStockIndexVolume());
 
 
+    }
+
+    public Holding getNewTransientHolding(int index) {
+        Holding obj = new Holding();
+        Long l = new Long(index);
+        obj.setHoldingid(l);
+        obj.setAccountAccountid(l);
+        obj.setPurchasedate(new Date());
+        obj.setPurchaseprice(BigDecimal.valueOf(index, 2));
+        obj.setQuantity(BigDecimal.valueOf(index));
+        obj.setQuoteSymbol("GOOG");
+        return obj;
     }
 
 
