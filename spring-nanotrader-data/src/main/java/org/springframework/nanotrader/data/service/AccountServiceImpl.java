@@ -28,7 +28,7 @@ import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile({"default", "cloud"})
+@Profile("cloud")
 public class AccountServiceImpl implements AccountService {
 
     private static final Logger LOG = Logger.getLogger(AccountServiceImpl.class);

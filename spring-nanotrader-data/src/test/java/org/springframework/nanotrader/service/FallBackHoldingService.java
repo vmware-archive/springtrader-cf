@@ -3,6 +3,7 @@ package org.springframework.nanotrader.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.*;
 import org.springframework.nanotrader.data.service.HoldingService;
+import org.springframework.nanotrader.data.service.OrderService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ import java.util.*;
 public class FallBackHoldingService implements HoldingService {
 
     @Autowired
-    FallBackOrderService orderService;
+    OrderService orderService;
 
     static final Map<Long, Holding> holdings = new HashMap<Long, Holding>();
 

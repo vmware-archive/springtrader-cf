@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Profile({"default", "cloud"})
+@Profile("cloud")
 public class AccountProfileServiceImpl implements AccountProfileService {
 
     private static final Logger LOG = Logger.getLogger(AccountProfileServiceImpl.class);

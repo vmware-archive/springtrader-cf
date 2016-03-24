@@ -173,10 +173,10 @@ public class ServiceTestConfiguration {
         return new AdminServiceFacadeImpl();
     }
 
-    @Bean
-    public DataCreationProgressCache getProgressCache() {
-        return new DataCreationProgressCache();
-    }
+//    @Bean
+//    public DataCreationProgressCache getProgressCache() {
+//        return new DataCreationProgressCache();
+//    }
 
     @Bean
     public Holding holding() {
@@ -312,6 +312,8 @@ public class ServiceTestConfiguration {
         holdingSummary.setHoldingRollups(holdings);
         return holdingSummary;
     }
+
+
 
 
 }

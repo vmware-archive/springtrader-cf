@@ -31,7 +31,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 @Service
-@Profile({"default", "cloud"})
+@Profile("cloud")
 public class HoldingServiceImpl implements HoldingService {
 
     private static final Logger LOG = Logger.getLogger(HoldingServiceImpl.class);

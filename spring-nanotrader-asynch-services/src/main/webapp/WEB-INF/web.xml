@@ -11,7 +11,7 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>org.springframework.nanotrader.asynch.config.IntegrationConfig</param-value>
+        <param-value>org.springframework.nanotrader.asynch.config.Config</param-value>
     </context-param>
     
     <context-param>

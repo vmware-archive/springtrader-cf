@@ -28,7 +28,7 @@ import java.util.List;
 
 
 @Service
-@Profile({"default", "cloud"})
+@Profile("cloud")
 public class OrderServiceImpl implements OrderService {
 
     private static final Logger LOG = Logger.getLogger(OrderServiceImpl.class);

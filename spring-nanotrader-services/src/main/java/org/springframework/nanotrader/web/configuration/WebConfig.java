@@ -15,23 +15,21 @@
  */
 package org.springframework.nanotrader.web.configuration;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-
 import org.codehaus.jackson.map.SerializationConfig.Feature;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.nanotrader.service.configuration.ServiceConfig;
 import org.springframework.nanotrader.web.exception.ExtendedExceptionHandlerExceptionResolver;
 import org.springframework.nanotrader.web.exception.GlobalExceptionHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Java configuration which bootstraps the web application context. Global error
@@ -45,8 +43,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  */
 
 @Configuration
-@ComponentScan(basePackages = { "org.springframework.nanotrader.web" })
-@Import(ServiceConfig.class)
+@ComponentScan(basePackages = { "org.springframework.nanotrader.web, org.springframework.nanotrader.service" })
 public class WebConfig extends WebMvcConfigurationSupport {
 
 	@Override

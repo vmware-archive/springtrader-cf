@@ -17,7 +17,7 @@ import org.springframework.nanotrader.service.FallBackOrderService;
 
 @Configuration
 @Profile("test")
-@ComponentScan(basePackages = "org.springframework.nanotrader.data")
+@ComponentScan(basePackages = "org.springframework.nanotrader.data, ")
 public class Config {
 
     @Bean
