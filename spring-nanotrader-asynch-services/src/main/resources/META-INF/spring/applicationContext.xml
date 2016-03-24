@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cloud="http://www.springframework.org/schema/cloud"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
+		http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp-2.2.xsd
+		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/cloud http://www.springframework.org/schema/cloud/spring-cloud.xsd">
+
+    <context:property-placeholder location="classpath*:META-INF/spring/*.properties"/>
+
+    <context:spring-configured/>
+
+    <context:component-scan base-package="org.springframework.nanotrader.data">
+        <context:exclude-filter expression=".*_Roo_.*"
+                                type="regex"/>
+        <context:exclude-filter expression="org.springframework.stereotype.Controller"
+                                type="annotation"/>
+    </context:component-scan>
+
+
+    <bean id="dbQuoteService"
+          class="org.springframework.nanotrader.data.service.DBQuoteService"/>
+
+    <bean id="rtQuoteService"
+          class="org.springframework.nanotrader.data.service.RealTimeQuoteService"/>
+
+    <bean id="accountService"
+          class="org.springframework.nanotrader.data.service.AccountServiceImpl"/>
+
+    <bean id="accountProfileService"
+          class="org.springframework.nanotrader.data.service.AccountProfileServiceImpl"/>
+
+    <bean id="holdingService"
+          class="org.springframework.nanotrader.data.service.HoldingServiceImpl"/>
+
+    <bean id="orderService"
+          class="org.springframework.nanotrader.data.service.OrderServiceImpl"/>
+
+    <!--####################################################################
+       Get message into Spring Integration via the gateway and send Quote to RabbitMQ.
+       #################################################################### -->
+
+    <int:gateway default-request-channel="quoteToAmqpChannel"
+                 service-interface="org.springframework.nanotrader.data.service.TradingServiceImpl$QuotePublisher"
+                 error-channel="quoteErrors"/>
+
+    <int:channel id="quoteToAmqpChannel"/>
+
+    <int:chain input-channel="quoteToAmqpChannel">
+        <int:header-enricher>
+            <int:header name="uniqueId" expression="T(System).nanoTime()"/>
+        </int:header-enricher>
+        <int-amqp:outbound-channel-adapter
+                mapped-request-headers="uniqueId" amqp-template="amqpTemplate"
+                exchange-name="nanotrader.exchange" routing-key="nanotrader.quote.binding"/>
+
+
+    </int:chain>
+
+
+    <!--####################################################################
+        Error Logging:
+        #################################################################### -->
+
+    <int:channel id="quoteErrors"/>
+
+    <int:logging-channel-adapter
+            logger-name="org.springframework.nanotrader.asynch.quoteErrorLogger"
+            channel="quoteErrors" expression="'Failed to publish quote: ' + payload.failedMessage.payload "
+            level="ERROR"/>
+
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" message-converter="jsonConverter"/>
+
+    <cloud:rabbit-connection-factory id="connectionFactory"/>
+
+    <!--####################################################################
+        Using the rabbit template with json message converter. This simplifies
+        the integration flow as there is no need to configure object-to-json or
+        json-to-object transformers. The outbound adapter will place the
+        "content-type"="application/json" and "__TypeId__"=
+        "org.springframework.nanotrader.service.domain.Orderinto the amqp message"
+        into the message header which will be used by the amqp inbound adapter
+        #################################################################### -->
+
+    <bean id="jsonConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter"/>
+
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory" message-converter="jsonConverter"/>
+
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!--####################################################################
+        Order Queue:
+        The order queue needs to have a higher QoS. Orders will remain in
+        the queue indefinitely.
+        #################################################################### -->
+
+    <rabbit:queue name="nanotrader.order.queue">
+        <rabbit:queue-arguments>
+            <entry key="x-ha-policy" value="all"/>
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <!--####################################################################
+        Quote Queue:
+        Expire quotes that sit longer than 30 seconds, as they are of no value
+        #################################################################### -->
+
+    <rabbit:queue name="nanotrader.quote.queue">
+        <rabbit:queue-arguments>
+            <entry key="x-message-ttl">
+                <value type="java.lang.Long">30000</value>
+            </entry>
+            <entry key="x-ha-policy" value="all"/>
+        </rabbit:queue-arguments>
+
+
+    </rabbit:queue>
+
+    <!--####################################################################
+        Exchange and bindings
+        #################################################################### -->
+
+    <rabbit:direct-exchange name="nanotrader.exchange">
+        <rabbit:bindings>
+            <rabbit:binding queue="nanotrader.order.queue" key="nanotrader.order.binding"/>
+            <rabbit:binding queue="nanotrader.quote.queue" key="nanotrader.quote.binding"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <int:gateway
+            service-interface="org.springframework.nanotrader.service.support.TradingServiceFacadeImpl$OrderGateway"
+            default-request-channel="toAmqpChannel"/>
+
+    <int:channel id="toAmqpChannel"/>
+
+    <int:chain input-channel="toAmqpChannel">
+        <int:header-enricher>
+            <int:header name="uniqueId" expression="T(System).nanoTime()"/>
+        </int:header-enricher>
+        <int-amqp:outbound-channel-adapter
+                mapped-request-headers="uniqueId"
+                amqp-template="amqpTemplate"
+                exchange-name="nanotrader.exchange"
+                routing-key="nanotrader.order.binding"/>
+    </int:chain>
+
+    <!--####################################################################
+	Order Processing:
+	a) Receives the order
+	b) Creates an order record (inside the service activator)
+	c) Creates a holding
+	d) Updates the account balance
+	c) Publishes a quote with an updated price
+	#################################################################### -->
+
+    <int-amqp:inbound-channel-adapter
+            concurrent-consumers="10"
+            mapped-request-headers="uniqueId" channel="toTradingServiceChannel"
+            message-converter="jsonConverter" queue-names="nanotrader.order.queue"
+            connection-factory="connectionFactory"/>
+
+    <int:channel id="toTradingServiceChannel">
+        <int:interceptors>
+            <int:wire-tap channel="toGeneralloggingChannel"/>
+        </int:interceptors>
+    </int:channel>
+
+
+    <int:service-activator input-channel="toTradingServiceChannel"
+                           output-channel="nullChannel" ref="tradingServiceFacadeImpl" method="saveOrderDirect">
+        <int:request-handler-advice-chain>
+            <ref bean="retryAdvice"/>
+        </int:request-handler-advice-chain>
+    </int:service-activator>
+
+    <!--####################################################################
+        Quote Processing: Receive it, Update it and log it to file
+        #################################################################### -->
+
+    <int-amqp:inbound-channel-adapter
+            channel="toTradingServiceQuoteAggregatorChannel" message-converter="jsonConverter"
+            queue-names="nanotrader.quote.queue" connection-factory="connectionFactory"/>
+
+    <int:channel id="toTradingServiceQuoteAggregatorChannel">
+        <int:interceptors>
+            <int:wire-tap channel="toGeneralloggingChannel"/>
+        </int:interceptors>
+    </int:channel>
+
+    <int:aggregator input-channel="toTradingServiceQuoteAggregatorChannel" output-channel="toTradingServiceQuoteChannel"
+                    ref="customAggregator"
+                    release-strategy-expression="size() == 20"
+                    correlation-strategy-expression="payload.symbol"
+                    message-store="messageStore"
+                    send-partial-result-on-expiry="true"
+                    expire-groups-upon-completion="true"/>
+
+    <bean id="customAggregator" class="org.springframework.nanotrader.asynch.aggregator.QuoteAggregator"/>
+
+    <bean id="messageStore" class="org.springframework.integration.store.SimpleMessageStore"/>
+
+    <int:channel id="toTradingServiceQuoteChannel"/>
+
+    <bean id="reaper" class="org.springframework.integration.store.MessageGroupStoreReaper">
+        <property name="messageGroupStore" ref="messageStore"/>
+        <property name="timeout" value="2000"/>
+    </bean>
+
+    <task:scheduled-tasks scheduler="taskScheduler">
+        <task:scheduled ref="reaper" method="run" fixed-rate="1000"/>
+        <task:scheduled ref="realTimeQuoteService" method="updateValues" fixed-delay="60000"/>
+    </task:scheduled-tasks>
+
+    <task:scheduler id="scheduler" pool-size="10"/>
+
+    <int:service-activator input-channel="toTradingServiceQuoteChannel"
+                           output-channel="nullChannel" ref="tradingServiceImpl" method="updateQuote">
+        <int:request-handler-advice-chain>
+            <ref bean="retryAdvice"/>
+        </int:request-handler-advice-chain>
+    </int:service-activator>
+
+
+    <!--####################################################################
+        Retry Handling:
+        #################################################################### -->
+
+    <bean id="retryAdvice" class="org.springframework.integration.handler.advice.RequestHandlerRetryAdvice">
+        <property name="retryStateGenerator">
+            <bean class="org.springframework.integration.handler.advice.SpelExpressionRetryStateGenerator">
+                <constructor-arg value="headers['uniqueId']"/>
+            </bean>
+        </property>
+        <property name="recoveryCallback">
+            <bean class="org.springframework.integration.handler.advice.ErrorMessageSendingRecoverer">
+                <constructor-arg ref="toRecoveryHandlerChannel"/>
+            </bean>
+        </property>
+    </bean>
+
+    <int:channel id="toRecoveryHandlerChannel"/>
+
+    <int:chain input-channel="toRecoveryHandlerChannel">
+        <int:transformer
+                expression="'Retries exceeded: permanently failed:' + payload.failedMessage + ' handled by recovery. Error Message: ' + payload.cause.message"/>
+        <int:logging-channel-adapter
+                logger-name="org.springframework.nanotrader.asynch.generalLogger"
+                level="INFO"/>
+    </int:chain>
+
+    <!--####################################################################
+        General Logging:
+        #################################################################### -->
+    <int:channel id="toGeneralloggingChannel"/>
+
+    <int:logging-channel-adapter
+            logger-name="org.springframework.nanotrader.asynch.generalLogger"
+            channel="toGeneralloggingChannel" log-full-message="true" level="INFO"/>
+
+</beans>
