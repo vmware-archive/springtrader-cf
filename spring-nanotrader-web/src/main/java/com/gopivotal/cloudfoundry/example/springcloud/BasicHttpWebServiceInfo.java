@@ -3,7 +3,6 @@ package com.gopivotal.cloudfoundry.example.springcloud;
 import org.springframework.cloud.CloudException;
 import org.springframework.cloud.service.UriBasedServiceInfo;
 import org.springframework.cloud.util.UriInfo;
-import org.springframework.cloud.service.ServiceInfo.ServiceLabel;
 
 public class BasicHttpWebServiceInfo extends UriBasedServiceInfo {
 

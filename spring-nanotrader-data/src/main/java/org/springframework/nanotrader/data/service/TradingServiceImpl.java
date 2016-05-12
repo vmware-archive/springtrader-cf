@@ -15,8 +15,7 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -43,7 +42,7 @@ import java.util.List;
 @Transactional
 public class TradingServiceImpl implements TradingService {
 
-	private static Logger log = LoggerFactory.getLogger(TradingServiceImpl.class);
+	private static Logger log = Logger.getLogger(TradingServiceImpl.class);
 
 	public static BigDecimal DEFAULT_ORDER_FEE = BigDecimal.valueOf(1050, 2);
 

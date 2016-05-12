@@ -11,14 +11,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SimpleCORSFilter implements Filter {
 	
-	private static Logger log = LoggerFactory.getLogger(SimpleCORSFilter.class);
+	private static Logger log = Logger.getLogger(SimpleCORSFilter.class);
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 

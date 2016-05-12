@@ -15,11 +15,9 @@
  */
 package org.springframework.nanotrader.service.cache;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.gemstone.gemfire.cache.EntryEvent;
 import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
+import org.apache.log4j.Logger;
 
 /**
  * @author Brian Dussault
@@ -28,7 +26,7 @@ import com.gemstone.gemfire.cache.util.CacheListenerAdapter;
 
 public class CacheLogger extends CacheListenerAdapter<Object, Object> {
 
-	private static Logger log = LoggerFactory.getLogger(CacheLogger.class);
+	private static Logger log = Logger.getLogger(CacheLogger.class);
 
 	@Override
 	public void afterCreate(EntryEvent<Object, Object> event) {

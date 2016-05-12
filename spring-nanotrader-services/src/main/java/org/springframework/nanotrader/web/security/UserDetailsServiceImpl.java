@@ -21,8 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.nanotrader.service.domain.Accountprofile;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
@@ -43,7 +42,7 @@ import org.springframework.stereotype.Service;
 @Service 
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private static Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+	private static Logger log = Logger.getLogger(UserDetailsServiceImpl.class);
 	
 	@Resource
 	private TradingServiceFacade tradingServiceFacade;
@@ -56,8 +55,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException("UserDetailsServiceImpl.loadUserByUsername(): User not found with null token");
 		}
 		Accountprofile accountProfile = null;
-		try { 
+		try {
+			log.info("finding account by token: " + token);
 			accountProfile = tradingServiceFacade.findAccountprofileByAuthtoken(token);
+			log.info("retrieved profile: " + accountProfile.getProfileid());
 		} catch (AuthenticationException ae) { 
 			throw new UsernameNotFoundException("UserDetailsServiceImpl.loadUserByUsername(): User not found with token:" + token);
 		}
@@ -68,13 +69,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		for(Map<?, ?> account: accounts ) { 
 			accountId = (Long)account.get("accountid");
 		}
-		
-		
-	
+
+		log.info("retrieved accountId: " + accountId);
+
 		User user = new CustomUser(accountProfile.getUserid(), accountProfile.getPasswd(), getAuthorities(accountProfile.getUserid()), accountId, accountProfile.getProfileid(), token);
-		if (log.isDebugEnabled()) { 
-			log.debug("UserDetailsServiceImpl.loadUserByUsername(): user=" + user  + " username::token" + token);
-		}
+		log.info("UserDetailsServiceImpl.loadUserByUsername(): user=" + user  + " username::token" + token);
 		
 		return user;
 	}

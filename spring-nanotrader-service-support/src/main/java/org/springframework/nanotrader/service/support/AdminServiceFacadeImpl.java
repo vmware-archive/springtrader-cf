@@ -15,26 +15,18 @@
  */
 package org.springframework.nanotrader.service.support;
 
-import java.math.BigDecimal;
-import java.util.*;
-
-import javax.annotation.Resource;
-
+import org.apache.log4j.Logger;
 import org.dozer.Mapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.nanotrader.data.domain.Account;
-import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.data.service.AccountService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.cache.DataCreationProgressCache;
-import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.PerfTestData;
-import org.springframework.nanotrader.service.domain.Quote;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 
 
@@ -45,7 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdminServiceFacadeImpl implements AdminServiceFacade {
 
-	private static Logger log = LoggerFactory.getLogger(AdminServiceFacadeImpl.class);
+	private static Logger log = Logger.getLogger(AdminServiceFacadeImpl.class);
 
 	@Resource
 	@Qualifier( "rtQuoteService")
