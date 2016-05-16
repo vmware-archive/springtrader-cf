@@ -31,6 +31,11 @@ public class Config {
     }
 
     @Bean
+    public QuoteService dbQuoteService() {
+        return new FallBackQuoteService();
+    }
+
+    @Bean
     public AccountService accountService() {
         return new FallBackAccountService();
     }
@@ -63,5 +68,10 @@ public class Config {
     @Bean
     public DiscoveryClient discoveryClient() {
         return Mockito.mock(DiscoveryClient.class);
+    }
+
+    @Bean
+    public String liveQuoteServiceEurekaName() {
+        return "foo";
     }
 }

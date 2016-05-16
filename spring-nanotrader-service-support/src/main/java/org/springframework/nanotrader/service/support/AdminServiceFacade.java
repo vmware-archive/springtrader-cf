@@ -20,15 +20,9 @@
  */
 package org.springframework.nanotrader.service.support;
 
-import org.springframework.nanotrader.service.domain.PerfTestData;
-
 /**
  * @author Ilayaperumal Gopinathan
  *
  */
 public interface AdminServiceFacade {
-
-    Integer getProgressCount();
-
-    void runPerfTest(PerfTestData perfTestData, String serverUrl);
 }

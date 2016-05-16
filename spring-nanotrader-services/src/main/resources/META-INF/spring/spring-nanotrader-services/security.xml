@@ -1,49 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<beans:beans xmlns="http://www.springframework.org/schema/security"
-	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-4.1.xsd">
 
-	<!-- Exclude the login/token service from the list of protected resources -->
-	<http create-session="stateless" pattern="/api/login" security="none" />
+    <!-- Exclude the login/token service from the list of protected resources -->
+    <security:http use-expressions="false" create-session="stateless" pattern="/api/login" security="none"/>
 
-	<!-- Exclude accountProfile create operation from the list of protected resources since this resource is required for 
+    <!-- Exclude accountProfile create operation from the list of protected resources since this resource is required for
 		new user registration -->
-	<http create-session="stateless" pattern="/api/accountProfile" security="none"  />
-	
-	<http create-session="stateless" pattern="/api/marketSummary" security="none" />
-	
-	<!-- Protect all the nanotrader services -->
-	<http create-session="stateless" entry-point-ref="entryPoint">
-		<intercept-url pattern="/**" method="OPTIONS" access="ROLE_ANONYMOUS" /> <!-- Needed for proper functioning of CORS protocol -->
-		<intercept-url pattern="/api/admin/*" access="ROLE_API_ADMIN" />
-		<intercept-url pattern="/api/**" access="ROLE_API_USER,ROLE_API_ADMIN" />
-		<custom-filter ref="restPreauthFilter" position="PRE_AUTH_FILTER" />
-	</http>
-	
+    <security:http use-expressions="false" create-session="stateless" pattern="/api/accountProfile" security="none"/>
 
-	<authentication-manager alias="authenticationManager">
-		<authentication-provider ref="preauthAuthProvider" />
-	</authentication-manager>
+    <security:http use-expressions="false" create-session="stateless" pattern="/api/marketSummary" security="none"/>
 
-	<beans:bean id="restPreauthFilter"
-		class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
-		<beans:property name="principalRequestHeader" value="API_TOKEN" />
-		<beans:property name="authenticationManager" ref="authenticationManager" />
-		<beans:property name="exceptionIfHeaderMissing" value="false" />
-	</beans:bean>
-
-	<beans:bean id="preauthAuthProvider"
-		class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
-		<beans:property name="preAuthenticatedUserDetailsService">
-			<beans:bean id="userDetailsServiceWrapper"
-				class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
-				<beans:property name="userDetailsService" ref="userDetailsService" />
-			</beans:bean>
-		</beans:property>
-	</beans:bean>
-
-	<beans:bean id="userDetailsService" class="org.springframework.nanotrader.web.security.UserDetailsServiceImpl" />
+    <!-- Protect all the nanotrader services -->
+    <security:http use-expressions="false" create-session="stateless" entry-point-ref="entryPoint">
+        <security:intercept-url pattern="/**" method="OPTIONS"
+                                access="ROLE_ANONYMOUS"/> <!-- Needed for proper functioning of CORS protocol -->
+        <security:intercept-url pattern="/api/admin/*" access="ROLE_API_ADMIN"/>
+        <security:intercept-url pattern="/api/**" access="ROLE_API_USER,ROLE_API_ADMIN"/>
+        <security:custom-filter ref="restPreauthFilter" position="PRE_AUTH_FILTER"/>
+    </security:http>
 
 
-</beans:beans>
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="preauthAuthProvider"/>
+    </security:authentication-manager>
+
+    <bean id="restPreauthFilter"
+          class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+        <property name="principalRequestHeader" value="API_TOKEN"/>
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="exceptionIfHeaderMissing" value="false"/>
+    </bean>
+
+    <bean id="preauthAuthProvider"
+          class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+        <property name="preAuthenticatedUserDetailsService">
+            <bean id="userDetailsServiceWrapper"
+                  class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+                <property name="userDetailsService" ref="userDetailsService"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="userDetailsService" class="org.springframework.nanotrader.web.security.UserDetailsServiceImpl"/>
+
+</beans>

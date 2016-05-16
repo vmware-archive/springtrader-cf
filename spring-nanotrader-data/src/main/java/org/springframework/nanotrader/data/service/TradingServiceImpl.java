@@ -18,14 +18,12 @@ package org.springframework.nanotrader.data.service;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -39,7 +37,6 @@ import java.util.List;
  */
 
 @Service
-@Transactional
 public class TradingServiceImpl implements TradingService {
 
 	private static Logger log = Logger.getLogger(TradingServiceImpl.class);
@@ -70,7 +67,6 @@ public class TradingServiceImpl implements TradingService {
 	QuotePublisher quotePublisher;
 
 	@Override
-	@Transactional 
 	public Order saveOrder(Order order)  {
 		Order createdOrder = null;
 		if (log.isDebugEnabled()) {
@@ -126,7 +122,7 @@ public class TradingServiceImpl implements TradingService {
 		Account account = accountService.findAccount(order.getAccountid());
 		Holding holding = holdingService.find(order.getHoldingHoldingid().getHoldingid());
 		if (holding == null) {
-			throw new DataRetrievalFailureException("Attempted to sell holding"
+			throw new RuntimeException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
 		}
 		Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
@@ -238,7 +234,6 @@ public class TradingServiceImpl implements TradingService {
 			this.quotePublisher.publishQuote(quoteToPublish);
 	}
 	
-	@Transactional
 	public void updateQuote(Quote quote) {
 		quoteService.saveQuote(quote);
 	}
@@ -279,7 +274,6 @@ public class TradingServiceImpl implements TradingService {
 	}
 
 	@Override
-	@Transactional
 	public List<Order> findOrders(Long accountId) {
 		List<Order> orders = null;
 		if (log.isDebugEnabled()) {

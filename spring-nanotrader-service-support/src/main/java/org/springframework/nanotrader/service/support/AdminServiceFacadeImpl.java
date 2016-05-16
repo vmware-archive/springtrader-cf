@@ -22,8 +22,6 @@ import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.data.service.AccountService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
-import org.springframework.nanotrader.service.cache.DataCreationProgressCache;
-import org.springframework.nanotrader.service.domain.PerfTestData;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -56,23 +54,5 @@ public class AdminServiceFacadeImpl implements AdminServiceFacade {
 	private TradingServiceFacade tradingServiceFacade;
 
 	@Resource
-	private DataCreationProgressCache progressCache;
-
-	@Resource
 	private Mapper mapper;
-
-	@Override
-	public Integer getProgressCount() {
-		return progressCache.getProgresscount();
-	}
-
-	@Override
-	public void runPerfTest(PerfTestData perfTestData, String serverUrl) {
-        Integer vmCount = Integer.parseInt(perfTestData.getVmcount());
-        for (int i = 0; i < vmCount; i++){
-        	new Thread(new PerformanceRunner(perfTestData.getCount(), perfTestData.getType(), perfTestData.getVmnames()[i], perfTestData.getUsernames()[i], perfTestData.getPasswords()[i], perfTestData.getInstallopts()[i], serverUrl)).start();
-        }
-	}
-	
-	
 }

@@ -17,6 +17,7 @@ package org.springframework.nanotrader.asynch.service;
 
 import org.dozer.spring.DozerBeanMapperFactoryBean;
 import org.mockito.Mockito;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +37,7 @@ import org.springframework.nanotrader.service.FallBackOrderService;
  */
 
 @Configuration
-@ComponentScan(basePackages = "org.springframework.nanotrader.service.support, org.springframework.nanotrader.data.service, org.springframework.nanotrader.service.cache")
+@ComponentScan(basePackages = "org.springframework.nanotrader.service.support, org.springframework.nanotrader.data.service")
 public class Config {
 
     @Bean
@@ -51,6 +52,16 @@ public class Config {
         return new FallBackQuoteService();
     }
 
+
+    @Bean
+    public QuoteService realTimeQuoteService() {
+        return new FallBackQuoteService();
+    }
+
+    @Bean
+    public QuoteService dbQuoteService() {
+        return new FallBackQuoteService();
+    }
 
     @Bean
     public AccountService accountService() {
@@ -75,5 +86,10 @@ public class Config {
     @Bean
     public TradingServiceImpl.QuotePublisher publisher() {
         return Mockito.mock(TradingServiceImpl.QuotePublisher.class);
+    }
+
+    @Bean
+    public DiscoveryClient discoveryClient() {
+        return Mockito.mock(DiscoveryClient.class);
     }
 }

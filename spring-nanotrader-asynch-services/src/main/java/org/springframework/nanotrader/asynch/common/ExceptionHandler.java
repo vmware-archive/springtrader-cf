@@ -15,9 +15,9 @@
  */
 package org.springframework.nanotrader.asynch.common;
 
-import org.springframework.integration.Message;
-import org.springframework.integration.MessagingException;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessagingException;
 
 /**
  * Servive Activator which re-throws exception. 

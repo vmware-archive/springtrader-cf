@@ -15,12 +15,12 @@
  */
 package org.springframework.nanotrader.web.configuration;
 
-import org.codehaus.jackson.map.SerializationConfig.Feature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.nanotrader.web.exception.ExtendedExceptionHandlerExceptionResolver;
 import org.springframework.nanotrader.web.exception.GlobalExceptionHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -50,11 +50,10 @@ public class WebConfig extends WebMvcConfigurationSupport {
 	public void configureMessageConverters(
 			List<HttpMessageConverter<?>> converters) {
 		// Configure JSON support
-		MappingJacksonHttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJacksonHttpMessageConverter();
+		MappingJackson2HttpMessageConverter mappingJacksonHttpMessageConverter = new MappingJackson2HttpMessageConverter();
 		mappingJacksonHttpMessageConverter.setSupportedMediaTypes(Arrays
 				.asList(MediaType.APPLICATION_JSON));
-		mappingJacksonHttpMessageConverter.getObjectMapper().configure(
-				Feature.WRITE_DATES_AS_TIMESTAMPS, true);
+		mappingJacksonHttpMessageConverter.getObjectMapper().configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		// There is no need to set the timezone as Jackson uses GMT and not the
 		// local time zone (which is exactly what you want)
@@ -62,8 +61,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
 		// StdSerializerProvider clones the configured formatter for each thread
 		mappingJacksonHttpMessageConverter.getObjectMapper().setDateFormat(
 				format);
-		mappingJacksonHttpMessageConverter.getObjectMapper().configure(
-				Feature.INDENT_OUTPUT, true);
+		mappingJacksonHttpMessageConverter.getObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 		// mappingJacksonHttpMessageConverter.getObjectMapper().getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);
 		converters.add(mappingJacksonHttpMessageConverter);
 	}

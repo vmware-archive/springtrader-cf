@@ -1,10 +1,10 @@
 package org.springframework.nanotrader;
 
+import com.netflix.discovery.DiscoveryClient;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.service.*;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.FallBackAccountService;
@@ -16,12 +16,26 @@ import org.springframework.nanotrader.service.FallBackOrderService;
  */
 
 @Configuration
-@Profile("test")
-@ComponentScan(basePackages = "org.springframework.nanotrader.data, ")
+@ComponentScan(basePackages = "org.springframework.nanotrader.data, org.springframework.nanotrader.service")
 public class Config {
 
     @Bean
+    public DiscoveryClient discoveryClient() {
+        return Mockito.mock(DiscoveryClient.class);
+    }
+
+    @Bean
+    public String liveQuoteServiceEurekaName() {
+        return "foo";
+    }
+
+    @Bean
     public QuoteService rtQuoteService() {
+        return new FallBackQuoteService();
+    }
+
+    @Bean
+    public QuoteService dbQuoteService() {
         return new FallBackQuoteService();
     }
 
