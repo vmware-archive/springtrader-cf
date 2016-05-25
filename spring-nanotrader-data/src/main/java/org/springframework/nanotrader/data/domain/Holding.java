@@ -44,6 +44,17 @@ public class Holding implements Serializable {
 
     private String quoteSymbol;
 
+    //for packward compatibility with UI layer
+    private Quote quote;
+
+    public Quote getQuote() {
+        return quote;
+    }
+
+    public void setQuote(Quote quote) {
+        this.quote = quote;
+    }
+
     public List<Order> getOrders() {
         return orders;
     }

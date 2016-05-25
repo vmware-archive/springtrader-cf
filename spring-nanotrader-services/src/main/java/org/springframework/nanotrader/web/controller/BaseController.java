@@ -18,6 +18,7 @@ package org.springframework.nanotrader.web.controller;
 import javax.annotation.Resource;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.web.security.SecurityUtil;
 
@@ -49,6 +50,7 @@ public class BaseController {
 	public static HttpHeaders getNoCacheHeaders() {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Cache-Control", "no-cache");
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		return responseHeaders;
 	}
 

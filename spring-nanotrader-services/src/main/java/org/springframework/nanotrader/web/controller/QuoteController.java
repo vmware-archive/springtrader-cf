@@ -15,16 +15,15 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.QuoteService;
+import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Provides JSON based REST api to Quote repository
@@ -33,13 +32,23 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Kashyap Parikh
  */
 @Controller
-public class QuoteController extends BaseController {
+public class QuoteController  {
+
+	@Autowired
+	@Qualifier( "rtQuoteService")
+	private QuoteService quoteService;
+
 	@RequestMapping(value = "/quote/{symbol}", method = RequestMethod.GET)
 	public ResponseEntity<Quote> findQuote(
 			@PathVariable("symbol") final String symbol) {
-		Quote responseQuote = getTradingServiceFacade().findQuoteBySymbol(
-				symbol);
-		return new ResponseEntity<Quote>(responseQuote, getNoCacheHeaders(),
+		Quote responseQuote = quoteService.findBySymbol(symbol);
+
+		if(responseQuote == null) {
+			return new ResponseEntity<Quote>(BaseController.getNoCacheHeaders(),
+					HttpStatus.NOT_FOUND);
+		}
+
+		return new ResponseEntity<Quote>(responseQuote, BaseController.getNoCacheHeaders(),
 				HttpStatus.OK);
 
 	}
@@ -47,7 +56,9 @@ public class QuoteController extends BaseController {
 	@RequestMapping(value = "/quotes", method = RequestMethod.GET)
 	@ResponseBody
 	public CollectionResult findQuotes() {
-		return getTradingServiceFacade().findQuotes();
+		CollectionResult cr = new CollectionResult();
+		cr.setResults(quoteService.findAllQuotes());
+		return cr;
 	}
 
 	@RequestMapping(value = "/quote", method = RequestMethod.POST)

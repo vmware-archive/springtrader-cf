@@ -15,17 +15,18 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.nanotrader.service.domain.Accountprofile;
+import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.AccountProfileService;
+import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Date;
 
 /**
  * Provides JSON based REST api to Accountprofile repository
@@ -34,31 +35,45 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 
 @Controller
-public class AccountProfileController extends BaseController {
+public class AccountProfileController {
+
+	@Autowired
+	private AccountProfileService accountProfileService;
+
+	@Autowired
+	private SecurityUtil securityUtil;
 
 	@RequestMapping(value = "/accountProfile/{id}", method = RequestMethod.GET)
 	public  ResponseEntity<Accountprofile> find(@PathVariable("id") final Long id) {
-		this.getSecurityUtil().checkAccountProfile(id);
-		Accountprofile accountProfile = getTradingServiceFacade().findAccountProfile(id);
-		return new ResponseEntity<Accountprofile>(accountProfile, getNoCacheHeaders(),
+		securityUtil.checkAccountProfile(id);
+		Accountprofile accountProfile = accountProfileService.findAccountProfile(id);
+		return new ResponseEntity<Accountprofile>(accountProfile, BaseController.getNoCacheHeaders(),
 				HttpStatus.OK);
 		
 	}
-	
+
 	@RequestMapping(value = "/accountProfile", method = RequestMethod.POST)
 	public ResponseEntity<String> save(@RequestBody Accountprofile accountProfileRequest,  UriComponentsBuilder builder) {
-		Long accountProfileId = getTradingServiceFacade().saveAccountProfile(accountProfileRequest);
+		//initialize the new account
+		org.springframework.nanotrader.data.domain.Account account = accountProfileRequest.getAccounts().iterator().next();
+		account.setLogincount(0);
+		account.setLogoutcount(0);
+		account.setBalance(account.getOpenbalance());
+		account.setCreationdate(new Date());
+
+		Long accountProfileId = accountProfileService.saveAccountProfile(accountProfileRequest).getProfileid();
+
 		HttpHeaders responseHeaders = new HttpHeaders();   
 		responseHeaders.setLocation(builder.path("/accountProfile/{id}").buildAndExpand(accountProfileId).toUri());
 		return new ResponseEntity<String>(responseHeaders, HttpStatus.CREATED);
 	}
-	
+
 	@RequestMapping(value = "/accountProfile/{id}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.OK)
 	public void update(@PathVariable("id") final Long id, @RequestBody Accountprofile accountProfileRequest) {
-		this.getSecurityUtil().checkAccountProfile(id);
+		securityUtil.checkAccountProfile(id);
 		accountProfileRequest.setProfileid(id);
-		getTradingServiceFacade().updateAccountProfile(accountProfileRequest, this.getSecurityUtil().getUsernameFromPrincipal());
+		accountProfileService.updateAccountProfile(accountProfileRequest, securityUtil.getUsernameFromPrincipal());
 	}
 
 	@RequestMapping(value = "/accountProfile/{id}", method = RequestMethod.DELETE)

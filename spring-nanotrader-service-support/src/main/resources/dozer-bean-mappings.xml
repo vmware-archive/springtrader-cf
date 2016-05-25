@@ -3,67 +3,6 @@
 	xsi:schemaLocation="http://dozer.sourceforge.net
           http://dozer.sourceforge.net/schema/beanmapping.xsd">
 
-	<mapping map-id="account">
-		<class-a>org.springframework.nanotrader.data.domain.Account</class-a>
-		<class-b>org.springframework.nanotrader.service.domain.Account
-		</class-b>
-		<field-exclude>
-			<a>orders</a>
-			<b>orders</b>
-		</field-exclude>
-		
-	</mapping>
-
-	<!-- Start Account profile mappings -->
-	<mapping map-id="accountProfile">
-		<class-a>org.springframework.nanotrader.data.domain.Accountprofile
-		</class-a>
-		<class-b>org.springframework.nanotrader.service.domain.Accountprofile
-		</class-b>
-	</mapping>
-
-	<mapping map-id="accountProfile.account">
-		<class-a map-null="false">org.springframework.nanotrader.data.domain.Account
-		</class-a>
-		<class-b map-null="false">java.util.Map</class-b>
-
-		<field-exclude>
-			<a>orders</a>
-			<b>orders</b>
-		</field-exclude>
-		<field-exclude>
-			<a>profileProfileid</a>
-			<b>profileProfileid</b>
-		</field-exclude>
-	</mapping>
-	
-	<mapping map-id="accountProfile-no-accounts">
-		<class-a>org.springframework.nanotrader.data.domain.Accountprofile
-		</class-a>
-		<class-b>org.springframework.nanotrader.service.domain.Accountprofile
-		</class-b>
-	<field-exclude>
-			<a>accounts</a>
-			<b>accounts</b>
-		</field-exclude>
-
-	</mapping>
-	
-	<!-- End Account profile mappings -->
-	<mapping map-id="holding">
-		<class-a>org.springframework.nanotrader.data.domain.Holding</class-a>
-		<class-b>org.springframework.nanotrader.service.domain.Holding
-		</class-b>
-		<field>
-			<a>quoteSymbol</a>
-			<b>quote.symbol</b>
-		</field>
-		<field-exclude>
-			<a>orders</a>
-			<b>orders</b>
-		</field-exclude>
-	</mapping>
-
 	<mapping map-id="order">
 		<class-a>org.springframework.nanotrader.data.domain.Order</class-a>
 		<class-b>org.springframework.nanotrader.service.domain.Order</class-b>

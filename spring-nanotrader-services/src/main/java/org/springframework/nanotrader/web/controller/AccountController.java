@@ -15,9 +15,12 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.nanotrader.service.domain.Account;
+import org.springframework.nanotrader.data.domain.Account;
+import org.springframework.nanotrader.data.service.AccountService;
+import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +34,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 
 @Controller
-public class AccountController extends BaseController {
+public class AccountController {
+
+	@Autowired
+	private AccountService accountService;
+
+	@Autowired
+	private SecurityUtil securityUtil;
 	
 	@RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Account> find(@PathVariable( "id" ) final Long id) {
-		this.getSecurityUtil().checkAccount(id);
-		Account accountResponse = this.getTradingServiceFacade().findAccount(id);
-		return new ResponseEntity<Account>(accountResponse, getNoCacheHeaders(),
+		securityUtil.checkAccount(id);
+		Account accountResponse = accountService.findAccount(id);
+		return new ResponseEntity<Account>(accountResponse, BaseController.getNoCacheHeaders(),
 				HttpStatus.OK);
 		
 	}

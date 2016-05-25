@@ -23,7 +23,8 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.nanotrader.service.domain.Accountprofile;
+import org.springframework.nanotrader.data.domain.Account;
+import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -61,15 +62,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		} catch (AuthenticationException ae) { 
 			throw new UsernameNotFoundException("UserDetailsServiceImpl.loadUserByUsername(): User not found with token:" + token);
 		}
-		
-		@SuppressWarnings("rawtypes")
-		List<Map> accounts = accountProfile.getAccounts();
+
+		List<Account> accounts = accountProfile.getAccounts();
 		Long accountId = null;
-		for(Map<?, ?> account: accounts ) { 
-			accountId = (Long)account.get("accountid");
+		for(Account account: accounts ) {
+			accountId = account.getAccountid();
 		}
-		
-		
 	
 		User user = new CustomUser(accountProfile.getUserid(), accountProfile.getPasswd(), getAuthorities(accountProfile.getUserid()), accountId, accountProfile.getProfileid(), token);
 		if (log.isDebugEnabled()) { 
