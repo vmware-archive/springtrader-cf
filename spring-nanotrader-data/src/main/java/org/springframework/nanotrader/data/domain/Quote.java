@@ -50,6 +50,18 @@ public class Quote implements Serializable {
 
 	private BigDecimal change1;
 
+    private int version;
+
+   	public int getVersion() {
+           return version;
+     }
+
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+
 	public BigDecimal getLow() {
         return low;
     }
@@ -103,7 +115,7 @@ public class Quote implements Serializable {
     }
 
 	public void setSymbol(String symbol) {
-		if (symbol != null) {
+		if(symbol != null && symbol.length() > 0) {
 			this.symbol = symbol;
 			setQuoteid(symbol);
 		}

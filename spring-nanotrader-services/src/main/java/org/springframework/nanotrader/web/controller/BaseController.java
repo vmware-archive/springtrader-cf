@@ -46,7 +46,7 @@ public class BaseController {
 		this.securityUtil = securityUtil;
 	}
 
-	public HttpHeaders getNoCacheHeaders() {
+	public static HttpHeaders getNoCacheHeaders() {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Cache-Control", "no-cache");
 		return responseHeaders;

@@ -15,9 +15,12 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.data.domain.MarketSummary;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,13 +33,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *  @author Brian Dussault 
  */
 @Controller
-public class MarketSummaryController extends BaseController {
+public class MarketSummaryController {
+
+	@Autowired
+	@Qualifier( "rtQuoteService")
+	QuoteService quoteService;
 
 	@RequestMapping(value = "/marketSummary", method = RequestMethod.GET)
 	public ResponseEntity<MarketSummary> findMarketSummary() {
 
-		return new ResponseEntity<MarketSummary>(getTradingServiceFacade().findMarketSummary(), 
-				getNoCacheHeaders(),
+		return new ResponseEntity<MarketSummary>(quoteService.marketSummary(),
+				BaseController.getNoCacheHeaders(),
 				HttpStatus.OK);
 				
 	}

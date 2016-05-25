@@ -17,6 +17,9 @@ package org.springframework.nanotrader.service.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import  org.springframework.nanotrader.data.domain.Quote;
+
 /**
  *  Order
  *  @author Brian Dussault 

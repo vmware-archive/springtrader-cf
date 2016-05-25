@@ -56,7 +56,10 @@ public class PortfolioSummary {
 	}
 
 	public BigDecimal getGain() {
-		BigDecimal	calculatedGain = totalMarketValue.subtract(totalBasis);
+		BigDecimal calculatedGain = new BigDecimal(0.0);
+		if (totalMarketValue != null && totalBasis!= null) {
+			calculatedGain = totalMarketValue.subtract(totalBasis);
+		}
 		return calculatedGain;
 	}
 

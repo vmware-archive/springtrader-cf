@@ -73,16 +73,4 @@
 		</field>
 	</mapping>
 
-	<mapping map-id="quote">
-		<class-a>org.springframework.nanotrader.data.domain.Quote</class-a>
-		<class-b>org.springframework.nanotrader.service.domain.Quote</class-b>
-		
-	</mapping>
-
-	<mapping map-id="portfolioSummary">
-		<class-a>org.springframework.nanotrader.data.domain.PortfolioSummary</class-a>
-		<class-b>org.springframework.nanotrader.service.domain.PortfolioSummary
-		</class-b>
-	</mapping>
-
 </mappings>

@@ -30,7 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.data.service.TradingServiceImpl;
 import org.springframework.nanotrader.service.domain.Order;
-import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
 import org.springframework.util.FileCopyUtils;
 

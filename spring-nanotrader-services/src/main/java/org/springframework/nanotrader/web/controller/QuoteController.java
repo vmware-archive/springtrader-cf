@@ -18,7 +18,7 @@ package org.springframework.nanotrader.web.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

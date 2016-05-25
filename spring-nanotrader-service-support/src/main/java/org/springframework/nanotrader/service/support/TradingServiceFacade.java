@@ -16,15 +16,9 @@
 package org.springframework.nanotrader.service.support;
 
 
-import org.springframework.nanotrader.service.domain.Account;
-import org.springframework.nanotrader.service.domain.Accountprofile;
-import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.service.domain.Holding;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
-import org.springframework.nanotrader.data.domain.MarketSummary;
-import org.springframework.nanotrader.service.domain.Order;
-import org.springframework.nanotrader.service.domain.PortfolioSummary;
-import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.service.domain.*;
 
 import java.util.Map;
 
@@ -62,11 +56,5 @@ public interface TradingServiceFacade {
 
 	Account findAccount(Long id);
 
-	PortfolioSummary findPortfolioSummary(Long accountId);
-
-	MarketSummary findMarketSummary();
-
 	Accountprofile findAccountprofileByAuthtoken(String token);
-	
-	HoldingSummary findHoldingSummary(Long accountId);
 }

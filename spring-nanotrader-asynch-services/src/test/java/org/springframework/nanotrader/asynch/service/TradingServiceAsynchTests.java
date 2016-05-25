@@ -28,7 +28,7 @@ import org.springframework.nanotrader.data.service.AccountService;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.service.domain.Order;
-import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

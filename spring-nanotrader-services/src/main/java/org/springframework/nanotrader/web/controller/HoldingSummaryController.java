@@ -15,9 +15,12 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
+import org.springframework.nanotrader.data.service.HoldingService;
+import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,16 +28,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller
-public class HoldingSummaryController extends BaseController {
+public class HoldingSummaryController {
+
+	@Autowired
+	private HoldingService holdingService;
+
+	@Autowired
+	private SecurityUtil securityUtil;
 
 	@RequestMapping(value = "/account/{accountId}/holdingSummary", method = RequestMethod.GET)
 	public ResponseEntity<HoldingSummary> find(
 			@PathVariable("accountId") final Long accountId) {
-		this.getSecurityUtil().checkAccount(accountId);
-		HoldingSummary holdingSummary = getTradingServiceFacade()
+		securityUtil.checkAccount(accountId);
+		HoldingSummary holdingSummary = holdingService
 				.findHoldingSummary(accountId);
 		return new ResponseEntity<HoldingSummary>(holdingSummary,
-				getNoCacheHeaders(), HttpStatus.OK);
+				BaseController.getNoCacheHeaders(), HttpStatus.OK);
 
 	}
 

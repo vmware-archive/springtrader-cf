@@ -15,10 +15,6 @@
 */
 package org.springframework.nanotrader.service.support;
 
-import java.util.*;
-
-import javax.annotation.Resource;
-
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.service.*;
-import org.springframework.nanotrader.service.domain.Account;
-import org.springframework.nanotrader.service.domain.Accountprofile;
-import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.service.domain.Holding;
-import org.springframework.nanotrader.data.domain.HoldingSummary;
-import org.springframework.nanotrader.data.domain.MarketSummary;
-import org.springframework.nanotrader.service.domain.Order;
-import org.springframework.nanotrader.service.domain.PortfolioSummary;
-import org.springframework.nanotrader.service.domain.Quote;
+import org.springframework.nanotrader.service.domain.*;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
 import org.springframework.nanotrader.service.support.exception.NoRecordsFoundException;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
 * Facade that, generally, delegates directly to a {@link TradingService},
@@ -108,14 +100,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
         return accountProfileResponse;
     }
-
-    public Accountprofile findAccountprofileByUserId(String username) {
-        org.springframework.nanotrader.data.domain.Accountprofile accountProfile = accountProfileService.findByUserid(username);
-        Accountprofile accountProfileResponse = new Accountprofile();
-        mapper.map(accountProfile, accountProfileResponse, "accountProfile-no-accounts");
-        return accountProfileResponse;
-    }
-
 
     public Map<String, Object> login(String username, String password) {
 
@@ -390,40 +374,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     }
     
     public Quote findQuoteBySymbol(String symbol) {
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findQuote: quoteId=" + symbol);
-        }
-        org.springframework.nanotrader.data.domain.Quote quote = quoteService.findBySymbol(symbol);
+        Quote quote = quoteService.findBySymbol(symbol);
         if (quote == null) {
             throw new NoRecordsFoundException();
         }
-        Quote responseQuote = new Quote();
-        mapper.map(quote, responseQuote, QUOTE_MAPPING);
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findQuote: completed successfully.");
-        }
-        return responseQuote;
-    }
-
-    public PortfolioSummary findPortfolioSummary(Long accountId) {
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findPortfolioSummary: accountId=" + accountId);
-        }
-        org.springframework.nanotrader.data.domain.PortfolioSummary portfolioSummary = holdingService.findPortfolioSummary(accountId);
-        PortfolioSummary portfolioSummaryResponse = new PortfolioSummary();
-        mapper.map(portfolioSummary, portfolioSummaryResponse, PORTFOLIO_SUMMARY_MAPPING);
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findPortfolioSummary: completed successfully.");
-        }
-        return portfolioSummaryResponse;
-    }
-    
-    public MarketSummary findMarketSummary() {
-       return quoteService.marketSummary();
-    }
-    
-    public HoldingSummary findHoldingSummary(Long accountId) {
-        return holdingService.findHoldingSummary(accountId);
+        return quote;
     }
     
     public static interface OrderGateway {
