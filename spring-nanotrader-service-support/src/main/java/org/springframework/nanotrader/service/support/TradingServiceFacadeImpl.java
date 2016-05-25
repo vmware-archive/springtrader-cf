@@ -31,8 +31,8 @@ import org.springframework.nanotrader.service.domain.Account;
 import org.springframework.nanotrader.service.domain.Accountprofile;
 import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.service.domain.Holding;
-import org.springframework.nanotrader.service.domain.HoldingSummary;
-import org.springframework.nanotrader.service.domain.MarketSummary;
+import org.springframework.nanotrader.data.domain.HoldingSummary;
+import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.domain.PortfolioSummary;
 import org.springframework.nanotrader.service.domain.Quote;
@@ -418,34 +418,15 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         return portfolioSummaryResponse;
     }
     
-    public MarketSummary findMarketSummary() { 
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findMarketSummary: Start");
-        }
-        org.springframework.nanotrader.data.domain.MarketSummary marketSummary = quoteService.marketSummary();
-        MarketSummary marketSummaryResponse = new MarketSummary();
-        mapper.map(marketSummary, marketSummaryResponse, MARKET_SUMMARY_MAPPING);
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findMarketSummary: completed successfully.");
-        }
-        return marketSummaryResponse;
+    public MarketSummary findMarketSummary() {
+       return quoteService.marketSummary();
     }
     
     public HoldingSummary findHoldingSummary(Long accountId) {
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findHoldingSummary: Start accountId=" + accountId );
-        }
-        org.springframework.nanotrader.data.domain.HoldingSummary holdingSummary = holdingService.findHoldingSummary(accountId);
-        HoldingSummary holdingSummaryResponse = new HoldingSummary();
-        mapper.map(holdingSummary, holdingSummaryResponse, HOLDING_SUMMARY_MAPPING);
-        if (log.isDebugEnabled()) {
-            log.debug("TradingServiceFacade.findHoldingSummary: completed successfully.");
-        }
-        return holdingSummaryResponse;
+        return holdingService.findHoldingSummary(accountId);
     }
     
     public static interface OrderGateway {
-
         void sendOrder(Order order);
     }
 }

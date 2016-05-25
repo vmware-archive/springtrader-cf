@@ -25,8 +25,6 @@ import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.FallBackAccountService;
 import org.springframework.nanotrader.service.cache.DataCreationProgressCache;
-import org.springframework.nanotrader.service.support.AdminServiceFacade;
-import org.springframework.nanotrader.service.support.AdminServiceFacadeImpl;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl;
 
@@ -166,11 +164,6 @@ public class ServiceTestConfiguration {
     @Bean
     public TradingServiceFacade tradingServiceFacade() {
         return new TradingServiceFacadeImpl();
-    }
-
-    @Bean
-    public AdminServiceFacade adminServiceFacade() {
-        return new AdminServiceFacadeImpl();
     }
 
     @Bean
