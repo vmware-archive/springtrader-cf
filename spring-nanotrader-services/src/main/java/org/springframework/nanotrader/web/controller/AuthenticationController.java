@@ -15,10 +15,20 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
+import org.springframework.nanotrader.data.domain.Account;
+import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.service.domain.AuthenticationRequest;
+import org.springframework.nanotrader.service.support.exception.AuthenticationException;
+import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,27 +44,65 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 
 @Controller
-public class AuthenticationController extends BaseController {
+public class AuthenticationController {
 
+	private static final Logger LOG = Logger.getLogger(AuthenticationController.class);
+
+	@Autowired
+	private AccountProfileService accountProfileService;
+
+	@Autowired
+	private SecurityUtil securityUtil;
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseStatus( HttpStatus.CREATED )
 	@ResponseBody
 	public Map<String, Object> login(@RequestBody AuthenticationRequest authenticationRequest) {
-		Map<String, Object> authenticationResponse = getTradingServiceFacade().login(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-		return authenticationResponse;// authToken and accountId;
+		return login(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	@ResponseStatus( HttpStatus.OK )
 	@ResponseBody
 	public void logout() {
-		getTradingServiceFacade().logout(this.getSecurityUtil().getAuthToken());
+		logout(securityUtil.getAuthToken());
 	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	@ResponseStatus( HttpStatus.METHOD_NOT_ALLOWED )
 	public void get() {
 		
+	}
+
+	private Map<String, Object> login(String username, String password) {
+		Accountprofile accountProfile  = accountProfileService.login(username, password);
+		Map<String, Object> loginResponse;
+
+		if (accountProfile != null) {
+			loginResponse = new HashMap<String, Object>();
+			List<Account> accounts = accountProfile.getAccounts();
+			loginResponse.put("authToken", accountProfile.getAuthtoken());
+			loginResponse.put("profileid", accountProfile.getProfileid());
+			for (org.springframework.nanotrader.data.domain.Account account: accounts) {
+				loginResponse.put("accountid", account.getAccountid());
+			}
+		} else {
+			LOG.error("login failed to find username=" + username + " password" + password);
+			throw new AuthenticationException("Login failed for user: " + username);
+		}
+
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("login success for " + username + " username::token=" + loginResponse.get("authToken"));
+		}
+		return loginResponse;
+	}
+
+	@CacheEvict(value="authorizationCache")
+	private void logout(String authtoken) {
+
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("logout: username::token=" + authtoken);
+		}
+		accountProfileService.logout(authtoken);
 	}
 }

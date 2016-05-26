@@ -15,17 +15,13 @@
  */
 package org.springframework.nanotrader.web.security;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
-import org.springframework.nanotrader.service.support.TradingServiceFacade;
+import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +30,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  UserDetailsServiceImpl provides authentication lookup service which validates the http header token
@@ -44,21 +43,20 @@ import org.springframework.stereotype.Service;
 @Service 
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private static Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
-	
-	@Resource
-	private TradingServiceFacade tradingServiceFacade;
+	private static Logger LOG = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+
+	@Autowired
+	private AccountProfileService accountProfileService;
 	
 	@Override
-
 	public UserDetails loadUserByUsername(String token) throws UsernameNotFoundException  {
 		if (token == null) {
-			log.error("UserDetailsServiceImpl.loadUserByUsername(): User not found with null token");
+			LOG.error("UserDetailsServiceImpl.loadUserByUsername(): User not found with null token");
 			throw new UsernameNotFoundException("UserDetailsServiceImpl.loadUserByUsername(): User not found with null token");
 		}
-		Accountprofile accountProfile = null;
+		Accountprofile accountProfile;
 		try { 
-			accountProfile = tradingServiceFacade.findAccountprofileByAuthtoken(token);
+			accountProfile = findAccountprofileByAuthtoken(token);
 		} catch (AuthenticationException ae) { 
 			throw new UsernameNotFoundException("UserDetailsServiceImpl.loadUserByUsername(): User not found with token:" + token);
 		}
@@ -70,8 +68,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		}
 	
 		User user = new CustomUser(accountProfile.getUserid(), accountProfile.getPasswd(), getAuthorities(accountProfile.getUserid()), accountId, accountProfile.getProfileid(), token);
-		if (log.isDebugEnabled()) { 
-			log.debug("UserDetailsServiceImpl.loadUserByUsername(): user=" + user  + " username::token" + token);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("UserDetailsServiceImpl.loadUserByUsername(): user=" + user  + " username::token" + token);
 		}
 		
 		return user;
@@ -84,10 +82,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		} else { 
 			authList.add(new SimpleGrantedAuthority("ROLE_API_USER"));
 		}
-        
-        
         return authList;
     }
-	
 
+	@Cacheable(value="authorizationCache")
+	private Accountprofile findAccountprofileByAuthtoken(String token) {
+		Accountprofile accountProfile = accountProfileService.findByAuthtoken(token);
+		if (accountProfile != null) {
+			return accountProfile;
+		} else {
+			LOG.error("findAccountprofileByAuthtoken(): accountProfile is null for token=" + token);
+			throw new AuthenticationException("Authorization Token not found");
+		}
+	}
 }

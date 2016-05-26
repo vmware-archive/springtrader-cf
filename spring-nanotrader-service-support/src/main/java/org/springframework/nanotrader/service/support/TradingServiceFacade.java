@@ -17,28 +17,15 @@ package org.springframework.nanotrader.service.support;
 
 
 import org.springframework.nanotrader.data.domain.Accountprofile;
-import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.data.domain.Order;
-
-import java.util.Map;
 
 /**
  * @author Gary Russell
  * 
  */
 public interface TradingServiceFacade {
-	
-	Map<String, Object> login(String username, String password);
-
-	void logout(String authtoken);
 
 	Long saveOrder(Order order, boolean synch);
 
 	Long saveOrderDirect(Order order);
-
-	Order findOrder(Long orderId, Long accountId);
-
-	CollectionResult findOrders(Long accountId, String status, Integer page, Integer pageSize);
-
-	Accountprofile findAccountprofileByAuthtoken(String token);
 }
