@@ -18,7 +18,7 @@ package org.springframework.nanotrader.service.support;
 
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.service.domain.Order;
+import org.springframework.nanotrader.data.domain.Order;
 
 import java.util.Map;
 

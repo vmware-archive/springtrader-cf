@@ -35,6 +35,9 @@ public class Order implements Serializable {
 
     private Holding holdingHoldingid;
 
+    //for backwards compatibility with UI layer
+    private Long holdingid;
+
     private BigDecimal orderfee;
 
     private Date completiondate;
@@ -59,6 +62,17 @@ public class Order implements Serializable {
         this.quoteid = s;
     }
 
+    //for backwards compatibility with UI layer
+    private Quote quote;
+
+    public Quote getQuote() {
+        return quote;
+    }
+
+    public void setQuote(Quote quote) {
+        this.quote = quote;
+    }
+
     public Long getAccountid() {
         return accountid;
     }
@@ -73,6 +87,9 @@ public class Order implements Serializable {
 
     public void setHoldingHoldingid(Holding holdingHoldingid) {
         this.holdingHoldingid = holdingHoldingid;
+        if(holdingHoldingid != null) {
+            setHoldingid(holdingHoldingid.getHoldingid());
+        }
     }
 
     public BigDecimal getOrderfee() {
@@ -129,6 +146,14 @@ public class Order implements Serializable {
 
     public void setOpendate(Date opendate) {
         this.opendate = opendate;
+    }
+
+    public Long getHoldingid() {
+        return holdingid;
+    }
+
+    private void setHoldingid(Long holdingid) {
+        this.holdingid = holdingid;
     }
 
     @Override

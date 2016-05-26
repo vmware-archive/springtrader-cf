@@ -15,7 +15,6 @@
 */
 package org.springframework.nanotrader.service.support;
 
-import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.service.*;
 import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.service.domain.Order;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
 import org.springframework.nanotrader.service.support.exception.NoRecordsFoundException;
 import org.springframework.stereotype.Service;
@@ -48,22 +47,6 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
     private static Logger log = LoggerFactory.getLogger(TradingServiceFacadeImpl.class);
 
-    private String ORDER_MAPPING = "order";
-
-    private static String HOLDING_MAPPING = "holding";
-
-    private static String QUOTE_MAPPING = "quote";
-
-    private static final String ACCOUNT_PROFILE_MAPPING = "accountProfile";
-
-    private static final String ACCOUNT_MAPPING = "account";
-
-    private static final String PORTFOLIO_SUMMARY_MAPPING = "portfolioSummary";
-
-    private static final String MARKET_SUMMARY_MAPPING = "marketSummary";
-
-    private static final String HOLDING_SUMMARY_MAPPING = "holdingSummary";
-
     @Autowired
     private TradingService tradingService;
 
@@ -81,10 +64,7 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
 
     @Autowired
     @Qualifier( "rtQuoteService")
-    QuoteService quoteService;
-
-    @Autowired
-    private Mapper mapper;
+    private QuoteService quoteService;
 
     @Autowired(required=false)
     private OrderGateway orderGateway;
@@ -148,13 +128,11 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     }
 
     public Long saveOrderDirect(Order orderRequest) {
-        org.springframework.nanotrader.data.domain.Order order = new org.springframework.nanotrader.data.domain.Order();
-        mapper.map(orderRequest, order, ORDER_MAPPING);
         if(orderRequest != null && orderRequest.getQuote() != null) {
-            order.setQuoteid(orderRequest.getQuote().getQuoteid());
+            orderRequest.setQuoteid(orderRequest.getQuote().getQuoteid());
         }
-        tradingService.saveOrder(order);
-        return order.getOrderid();
+        tradingService.saveOrder(orderRequest);
+        return orderRequest.getOrderid();
     }
 
 
@@ -162,15 +140,13 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         if (log.isDebugEnabled()) {
             log.debug("TradingServiceFacade.findOrder: orderId=" + orderId + " accountId=" + accountId);
         }
-        org.springframework.nanotrader.data.domain.Order order =  orderService.find(orderId);
+        Order order =  orderService.find(orderId);
         if (order == null) {
             throw new NoRecordsFoundException();
         }
-        Order responseOrder = new Order();
-        mapper.map(order, responseOrder, ORDER_MAPPING);
 
-        responseOrder.setQuote(quoteService.findBySymbol(order.getQuoteid()));
-        return responseOrder;
+        order.setQuote(quoteService.findBySymbol(order.getQuoteid()));
+        return order;
     }
 
     public CollectionResult findOrders(Long accountId, String status, Integer page, Integer pageSize) {
@@ -181,31 +157,28 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
         List<org.springframework.nanotrader.data.domain.Order> orders = null;
 
         collectionResults.setTotalRecords(tradingService.findCountOfOrders(accountId, status));
+        collectionResults.setPage(page);
+        collectionResults.setPageSize(pageSize);
         if (status != null) {
             orders = tradingService.findOrdersByStatus(accountId, status); //get by status
         } else {
             orders = tradingService.findOrders(accountId); //get all orders
         }
 
-
         List<Order> responseOrders = new ArrayList<Order>();
         if (orders != null && orders.size() > 0 ) {
 
 
-            for(org.springframework.nanotrader.data.domain.Order o: orders) {
-                Order order = new Order();
-                mapper.map(o, order, ORDER_MAPPING);
-
-                order.setQuote(quoteService.findBySymbol(o.getQuoteid()));
-                responseOrders.add(order);
+            for(Order o: orders) {
+                o.setQuote(quoteService.findBySymbol(o.getQuoteid()));
+                responseOrders.add(o);
             }
         }
         collectionResults.setResults(responseOrders);
-
         return collectionResults;
     }
     
-    public static interface OrderGateway {
+    public interface OrderGateway {
         void sendOrder(Order order);
     }
 }

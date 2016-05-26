@@ -15,7 +15,6 @@
  */
 package org.springframework.nanotrader.service.support;
 
-import org.dozer.Mapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +22,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.nanotrader.data.domain.Accountprofile;
+import org.springframework.nanotrader.data.domain.Order;
+import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.AccountProfileService;
-import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.service.TradingService;
-import org.springframework.nanotrader.service.domain.Order;
-import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl.OrderGateway;
 import org.springframework.nanotrader.service.support.config.IntegrationTestConfig;
 import org.springframework.test.context.ActiveProfiles;
@@ -67,9 +66,6 @@ public class TradingServiceFacadeTests {
 	@Autowired
 	private AccountProfileService accountProfileService;
 
-	@Autowired
-    private Mapper mapper;
-
 	private Accountprofile profile;
 
 	@Before
@@ -86,8 +82,7 @@ public class TradingServiceFacadeTests {
 		Order orderRequest = new Order();
 		orderRequest.setAccountid(profile.getAccounts().get(0).getAccountid());
 		orderRequest.setOrdertype(TradingService.ORDER_TYPE_BUY);
-		Quote quote = new Quote();
-		mapper.map(quoteService.findBySymbol("GOOG"), quote);
+		Quote quote = quoteService.findBySymbol("GOOG");
 		orderRequest.setQuote(quote);
 		assertNotNull(orderRequest.getQuote().getQuoteid());
 		orderRequest.setQuantity(BigDecimal.valueOf(100));

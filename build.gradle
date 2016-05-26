@@ -60,7 +60,6 @@ subprojects { subproject ->
 	ext.springCloudVersion = '1.1.1.RELEASE'
 	ext.javaxInjectVersion = '1'
 	ext.servletApiVersion = '2.5'
-	ext.dozerVersion='5.3.2'
 
 	// add the natures and builders to your project
 	eclipse.project {
@@ -143,8 +142,7 @@ project('spring-nanotrader-service-support') {
 		testCompile project(':spring-nanotrader-data').sourceSets.test.output
 		
 		compile project(":spring-nanotrader-data")
-		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion" 
-		compile "net.sf.dozer:dozer:$dozerVersion"
+		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
 		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile  "joda-time:joda-time:1.6"
 		compile "com.gemstone.gemfire:gemfire:6.6.3"	
@@ -198,7 +196,6 @@ project('spring-nanotrader-services') {
 		compile "org.springframework.security:spring-security-config:$springSecurityVersion" 
 		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 		compile "javax.inject:javax.inject:$javaxInjectVersion"
-		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
 		testCompile "org.hamcrest:hamcrest-all:1.1"
 		compile "org.aspectj:aspectjweaver:$aspectjVersion"
@@ -257,7 +254,6 @@ project('spring-nanotrader-asynch-services') {
 		compile "cglib:cglib-nodep:$cglibVersion"
 		compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
 		compile "javax.inject:javax.inject:$javaxInjectVersion"
-		compile "net.sf.dozer:dozer:$dozerVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
 		compile "org.aspectj:aspectjweaver:$aspectjVersion"
 

@@ -41,16 +41,16 @@ public class HoldingServiceImpl implements HoldingService {
     public final static int TOP_N = 4;
 
     @Autowired
-    DiscoveryClient discoveryClient;
+    private DiscoveryClient discoveryClient;
 
-    HoldingRepository holdingRepository;
+    private HoldingRepository holdingRepository;
 
     @Autowired
-    String orderRepositoryName;
+    private String orderRepositoryName;
 
     @Autowired
     @Qualifier("rtQuoteService")
-    QuoteService quoteService;
+    private QuoteService quoteService;
 
     public List<Holding> findByAccountid(Long accountId) {
         return holdingRepository().findByAccountid(accountId);

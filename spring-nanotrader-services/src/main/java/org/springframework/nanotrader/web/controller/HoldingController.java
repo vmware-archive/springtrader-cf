@@ -74,22 +74,25 @@ public class HoldingController {
 
 		securityUtil.checkAccount(accountId);
 
-		List<Holding> holdings = holdingService.findByAccountid(accountId);
-
-		for(Holding h: holdings) {
-			h.setQuote(quoteService.findBySymbol(h.getQuoteSymbol()));
-		}
-
 		CollectionResult cr = new CollectionResult();
-		if(pageSize != null) {
-			cr.setPageSize(pageSize);
-		}
+		List<Holding> holdings = holdingService.findByAccountid(accountId);
+		if (holdings != null && holdings.size() > 0) {
+			for (Holding h : holdings) {
+				h.setQuote(quoteService.findBySymbol(h.getQuoteSymbol()));
+			}
 
-		if(page != null) {
-			cr.setPage(page);
-		}
+			cr.setTotalRecords(Long.valueOf("" + holdings.size()));
 
-		cr.setResults(holdings);
+			if (pageSize != null) {
+				cr.setPageSize(pageSize);
+			}
+
+			if (page != null) {
+				cr.setPage(page);
+			}
+
+			cr.setResults(holdings);
+		}
 		return new ResponseEntity<CollectionResult>(cr,
 				BaseController.getNoCacheHeaders(), HttpStatus.OK);
 

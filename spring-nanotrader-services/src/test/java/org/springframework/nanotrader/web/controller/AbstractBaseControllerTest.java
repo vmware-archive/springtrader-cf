@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.nanotrader.service.configuration.MappingConfig;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
 import org.springframework.nanotrader.web.configuration.WebConfig;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = { WebConfig.class, MappingConfig.class, ServiceTestConfiguration.class })
+@ContextConfiguration(classes = { WebConfig.class, ServiceTestConfiguration.class })
 @ActiveProfiles("test")
 @Ignore
 public class AbstractBaseControllerTest {
