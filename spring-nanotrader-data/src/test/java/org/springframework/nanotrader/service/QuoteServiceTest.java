@@ -20,9 +20,8 @@ import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@Profile("test")
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = Config.class)
 public class QuoteServiceTest {
 
 	@Autowired

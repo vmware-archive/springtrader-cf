@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.nanotrader.data.service;
+package org.springframework.nanotrader.service.support;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
+import org.springframework.nanotrader.data.service.AccountService;
+import org.springframework.nanotrader.data.service.HoldingService;
+import org.springframework.nanotrader.data.service.OrderService;
+import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,19 +40,9 @@ import java.util.List;
  */
 
 @Service
-@Transactional
 public class TradingServiceImpl implements TradingService {
 
-	private static Logger log = LoggerFactory.getLogger(TradingServiceImpl.class);
-
-	public static BigDecimal DEFAULT_ORDER_FEE = BigDecimal.valueOf(1050, 2);
-
-	private static String OPEN_STATUS = "open";
-
-	private static String CANCELLED_STATUS = "cancelled";
-
-	@Autowired
-	private AccountProfileService accountProfileService;
+	private static Logger log = Logger.getLogger(TradingServiceImpl.class);
 
 	@Autowired
 	private OrderService orderService;
@@ -64,16 +54,11 @@ public class TradingServiceImpl implements TradingService {
 	private AccountService accountService;
 
 	@Autowired
-	@Qualifier( "rtQuoteService")
-	private QuoteService quoteService;
-
-	@Autowired
-	QuotePublisher quotePublisher;
+	private QuoteService realTimeQuoteService;
 
 	@Override
-	@Transactional 
 	public Order saveOrder(Order order)  {
-		Order createdOrder = null;
+		Order createdOrder;
 		if (log.isDebugEnabled()) {
 			log.debug("TradingServices.saveOrder: order=" + order.toString());
 		}
@@ -97,9 +82,9 @@ public class TradingServiceImpl implements TradingService {
 	private Order buy(Order order) {
 		
 		Account account = accountService.findAccount(order.getAccountid());
-		Quote quote = quoteService.findBySymbol(order.getQuoteid());
+		Quote quote = realTimeQuoteService.findBySymbol(order.getQuoteid());
 		// create order and persist
-		Order createdOrder = null;
+		Order createdOrder;
 
 		if(quote == null) {
 			throw new RuntimeException("null quote");
@@ -125,12 +110,12 @@ public class TradingServiceImpl implements TradingService {
 
 	private Order sell(Order order) {
 		Account account = accountService.findAccount(order.getAccountid());
-		Holding holding = holdingService.find(order.getHoldingHoldingid().getHoldingid());
+		Holding holding = holdingService.find(order.getHoldingid());
 		if (holding == null) {
-			throw new DataRetrievalFailureException("Attempted to sell holding"
+			throw new RuntimeException("Attempted to sell holding"
 					+ order.getHoldingHoldingid().getHoldingid() + " which is already sold.");
 		}
-		Quote quote = quoteService.findBySymbol(holding.getQuoteSymbol());
+		Quote quote = realTimeQuoteService.findBySymbol(holding.getQuoteSymbol());
 		// create order and persist
 		
 		Order createdOrder = createOrder(order, account, holding, quote);
@@ -177,7 +162,7 @@ public class TradingServiceImpl implements TradingService {
 		order.setCompletiondate(new Date());
 
 			
-		updateQuoteMarketData(order.getQuoteid(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
+//		updateQuoteMarketData(order.getQuoteid(), FinancialUtils.getRandomPriceChangeFactor(), order.getQuantity());
 	
 		
 		return order;
@@ -189,7 +174,7 @@ public class TradingServiceImpl implements TradingService {
 		BigDecimal price = quote.getPrice();
 		BigDecimal orderFee = order.getOrderfee();
 		BigDecimal balance = account.getBalance();
-		BigDecimal total = null;
+		BigDecimal total;
 		if (ORDER_TYPE_BUY.equals(order.getOrdertype())) {
 			total = (order.getQuantity().multiply(price)).add(orderFee);
 			account.setBalance(balance.subtract(total));
@@ -210,93 +195,12 @@ public class TradingServiceImpl implements TradingService {
 		accountService.saveAccount(account);
 	}
 
-	public void updateQuoteMarketData(String symbol, BigDecimal changeFactor, BigDecimal sharesTraded) {
-			Quote quote = quoteService.findBySymbol(symbol);
-			Quote quoteToPublish = new Quote();
-			quoteToPublish.setCompanyname(quote.getCompanyname());
-			quoteToPublish.setSymbol(quote.getSymbol());
-			quoteToPublish.setOpen1(quote.getOpen1());
-			BigDecimal oldPrice = quote.getPrice();
-			if (quote.getPrice().compareTo(FinancialUtils.PENNY_STOCK_PRICE) <= 0) {
-				changeFactor = FinancialUtils.PENNY_STOCK_RECOVERY_MIRACLE_MULTIPLIER;
-			}
-			if (quote.getPrice().compareTo(quote.getLow()) <= 0) { 
-				quoteToPublish.setLow(quote.getPrice());
-			} else { 
-				quoteToPublish.setLow(quote.getLow());
-			}
-			
-			if (quote.getPrice().compareTo(quote.getHigh()) > 0) { 
-				quoteToPublish.setHigh(quote.getPrice());
-			} else { 
-				quoteToPublish.setHigh(quote.getHigh());
-			}
-			
-			BigDecimal newPrice = changeFactor.multiply(oldPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
-			quoteToPublish.setPrice(newPrice);
-			quoteToPublish.setVolume(quote.getVolume().add(sharesTraded));
-			quoteToPublish.setChange1(newPrice.subtract(quote.getOpen1()));
-			this.quotePublisher.publishQuote(quoteToPublish);
-	}
-	
-	@Transactional
-	public void updateQuote(Quote quote) {
-		quoteService.saveQuote(quote);
-	}
-
-	@Override
-	public Long findCountOfOrders(Long accountId, String status) {
-		Long countOfOrders = null;
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findCountOfHoldings: accountId=" + accountId + " status=" + status);
-		}
-		if (status != null) {
-			countOfOrders = orderService.countOfOrders(accountId, status);
-		}
-		else {
-			countOfOrders = orderService.countOfOrders(accountId);
-		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findCountOfHoldings: completed successfully.");
-		}
-		return countOfOrders;
-	}
-
-	@Override
-	public List<Order> findOrdersByStatus(Long accountId, String status) {
-		List<Order> orders = null;
-
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findOrdersByStatus: accountId=" + accountId + " status=" + status);
-		}
-		
-		orders = orderService.findOrdersByStatus(accountId, status);
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findOrdersByStatus: completed successfully.");
-		}
-
-		return orders;
-	}
-
-	@Override
-	@Transactional
-	public List<Order> findOrders(Long accountId) {
-		List<Order> orders = null;
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findOrders: accountId=" + accountId);
-		}
-		orders = orderService.findByAccountId(accountId);
-
-		if (log.isDebugEnabled()) {
-			log.debug("TradingServices.findOrders: completed successfully.");
-		}
-
-		return orders;
-	}
-
 	public static interface QuotePublisher {
-
 		void publishQuote(Quote quote);
+	}
+
+	//@Transactional
+	public void updateQuote(Quote quote) {
+		realTimeQuoteService.saveQuote(quote);
 	}
 }

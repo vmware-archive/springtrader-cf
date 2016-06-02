@@ -15,31 +15,67 @@
  */
 package org.springframework.nanotrader.service.support.config;
 
+import org.mockito.Mockito;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Profile;
+import org.springframework.nanotrader.data.domain.test.HoldingDataOnDemand;
+import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
+import org.springframework.nanotrader.data.service.*;
+import org.springframework.nanotrader.service.FallBackAccountProfileService;
+import org.springframework.nanotrader.service.FallBackAccountService;
+import org.springframework.nanotrader.service.FallBackHoldingService;
+import org.springframework.nanotrader.service.FallBackOrderService;
+import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl;
 
 /**
  * Java configuration for the application's spring managed beans
- * 
+ *
  * @author Kashyap Parikh
  * @author Brian Dussault
  */
 
-/*
- * Component scan excludes ServiceConfig.class (and the associated spring-nanotrader-service-support.xml) 
- * from the spring-nanotrader-service-support project, since spring-nanotrader-asynch 
- * does not need gemfire configured and we are already including the application context 
- * files in this configuration with @ImportResource.
- */
-
-@Profile ("test")
 @Configuration
-@ComponentScan(basePackages="org.springframework.nanotrader.service" )
-@ImportResource({ "classpath:/META-INF/spring/cache/spring-nanotrader-service-support.xml" })
+@ComponentScan(basePackages = "org.springframework.nanotrader.service.support")
 public class IntegrationTestConfig {
-	public IntegrationTestConfig() { 
-		
-	}
+
+    @Bean
+    public TradingServiceFacadeImpl.OrderGateway orderGateway() {
+        return Mockito.mock(TradingServiceFacadeImpl.OrderGateway.class);
+    }
+
+    @Bean
+    public OrderService orderService() {
+        return new FallBackOrderService();
+    }
+
+    @Bean
+    public HoldingService holdingService() {
+        return new FallBackHoldingService();
+    }
+
+    @Bean
+    public AccountService accountService() {
+        return new FallBackAccountService();
+    }
+
+    @Bean
+    public QuoteService rtQuoteService() {
+        return new FallBackQuoteService();
+    }
+
+    @Bean
+    public AccountProfileService accountProfileService() {
+        return new FallBackAccountProfileService();
+    }
+
+    @Bean
+    OrderDataOnDemand orderDataOnDemand() {
+        return new OrderDataOnDemand();
+    }
+
+    @Bean
+    HoldingDataOnDemand holdingDataOnDemand() {
+        return new HoldingDataOnDemand();
+    }
 }

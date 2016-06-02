@@ -27,7 +27,6 @@ import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl.OrderGateway;
 import org.springframework.nanotrader.service.support.config.IntegrationTestConfig;

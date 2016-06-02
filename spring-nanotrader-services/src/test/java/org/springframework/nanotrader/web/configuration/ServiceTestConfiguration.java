@@ -15,8 +15,11 @@
  */
 package org.springframework.nanotrader.web.configuration;
 
+import org.junit.Before;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.domain.*;
@@ -24,8 +27,12 @@ import org.springframework.nanotrader.data.service.*;
 import org.springframework.nanotrader.data.util.FinancialUtils;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.FallBackAccountService;
+import org.springframework.nanotrader.service.support.TradingService;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.TradingServiceFacadeImpl;
+import org.springframework.nanotrader.service.support.TradingServiceImpl;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -36,6 +43,7 @@ import java.util.List;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * ServiceTestConfiguration provides test objects and mock service layer for unit tests.
@@ -44,7 +52,6 @@ import static org.mockito.Mockito.when;
  */
 
 @Configuration
-@Profile("test")
 public class ServiceTestConfiguration {
     //Holding constants
     public static Long HOLDING_ID = 100L;
@@ -77,7 +84,6 @@ public class ServiceTestConfiguration {
     public static BigDecimal OPEN = BigDecimal.valueOf(40.11);
     public static BigDecimal VOLUME = BigDecimal.valueOf(3000);
     public static BigDecimal CURRENT_PRICE = BigDecimal.valueOf(48.44);
-    public static Integer RANDOM_QUOTES_COUNT = 5;
 
     //Account constants
     public static BigDecimal ACCOUNT_OPEN_BALANCE = BigDecimal.valueOf(55.02);
@@ -109,11 +115,7 @@ public class ServiceTestConfiguration {
     @Bean
     public TradingService tradingService() {
         TradingService tradingService = Mockito.mock(TradingService.class);
-        when(tradingService.findCountOfOrders(eq(ACCOUNT_ID), any(String.class))).thenReturn(RESULT_COUNT);
         when(tradingService.saveOrder(any(Order.class))).thenReturn(null);
-//        when(tradingService.updateOrder(any(Order.class))).thenReturn(null);
-        when(tradingService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class))).thenReturn(orders());
-        when(tradingService.findOrders(eq(ACCOUNT_ID))).thenReturn(orders());
 
         return tradingService;
     }
@@ -123,7 +125,6 @@ public class ServiceTestConfiguration {
         HoldingService holdingService = Mockito.mock(HoldingService.class);
         when(holdingService.find(eq(100L))).thenReturn(holding());
         when(holdingService.findByAccountid(eq(ACCOUNT_ID))).thenReturn(holdings());
-//        when(holdingService.countByAccountid(eq(ACCOUNT_ID))).thenReturn(RESULT_COUNT);
         when(holdingService.findHoldingSummary(eq(ACCOUNT_ID))).thenReturn(holdingSummary());
         when(holdingService.findPortfolioSummary(eq(ACCOUNT_ID))).thenReturn(portfolioSummary());
 
@@ -134,6 +135,8 @@ public class ServiceTestConfiguration {
     public OrderService orderService() {
         OrderService orderService = Mockito.mock(OrderService.class);
         when(orderService.find(eq(999L))).thenReturn(order());
+        when(orderService.findOrdersByStatus(eq(ACCOUNT_ID), any(String.class))).thenReturn(orders());
+        when(orderService.findByAccountId(eq(ACCOUNT_ID))).thenReturn(orders());
 
         return orderService;
     }
@@ -150,7 +153,7 @@ public class ServiceTestConfiguration {
         return new FallBackAccountService();
     }
 
-    @Bean(name = "rtQuoteService")
+    @Bean
     public QuoteService quoteService() {
         QuoteService quoteService = Mockito.mock(QuoteService.class);
         when(quoteService.findBySymbol(eq(SYMBOL))).thenReturn(quote());
@@ -158,6 +161,11 @@ public class ServiceTestConfiguration {
         when(quoteService.marketSummary()).thenReturn(marketSummary());
 
         return quoteService;
+    }
+
+    @Bean
+    public QuoteService rtQuoteService() {
+        return quoteService();
     }
 
     @Bean
@@ -299,6 +307,4 @@ public class ServiceTestConfiguration {
         holdingSummary.setHoldingRollups(holdings);
         return holdingSummary;
     }
-
-
 }

@@ -15,13 +15,8 @@
  */
 package org.springframework.nanotrader.web.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
@@ -30,11 +25,11 @@ import org.springframework.nanotrader.service.domain.AuthenticationRequest;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
 import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -97,7 +92,6 @@ public class AuthenticationController {
 		return loginResponse;
 	}
 
-	@CacheEvict(value="authorizationCache")
 	private void logout(String authtoken) {
 
 		if (LOG.isDebugEnabled()) {

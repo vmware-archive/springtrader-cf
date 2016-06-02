@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.nanotrader.data.service;
+package org.springframework.nanotrader.service.support;
 
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 /**
  * @author Brian Dussault
@@ -30,15 +30,11 @@ public interface TradingService {
 
     String ORDER_TYPE_SELL = "sell";
 
+    String OPEN_STATUS = "open";
+
+    String CANCELLED_STATUS = "cancelled";
+
+    BigDecimal DEFAULT_ORDER_FEE = BigDecimal.valueOf(1050, 2);
+
     Order saveOrder(Order order);
-
-//    Order updateOrder(Order order);
-
-    Long findCountOfOrders(Long accountId, String status);
-
-    List<Order> findOrdersByStatus(Long accountId, String status);
-
-    List<Order> findOrders(Long accountId);
-
-    void updateQuote(Quote quote);
 }

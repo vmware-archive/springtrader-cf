@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.OrderService;
+import org.springframework.nanotrader.service.Config;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
-@Configurable
+@ContextConfiguration(classes = Config.class)
 public class OrderIntegrationTest {
 
 	

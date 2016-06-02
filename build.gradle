@@ -145,8 +145,6 @@ project('spring-nanotrader-service-support') {
 		compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
 		compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
 		compile  "joda-time:joda-time:1.6"
-		compile "com.gemstone.gemfire:gemfire:6.6.3"	
-		compile  "org.springframework.data:spring-data-gemfire:1.1.1.RELEASE"
 	        compile "net.schmizz:sshj:0.8.1"
         }
 }

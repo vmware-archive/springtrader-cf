@@ -17,7 +17,6 @@ package org.springframework.nanotrader.service.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.Order;
-import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -48,14 +47,19 @@ public class TradingServiceFacadeImpl implements TradingServiceFacade {
     }
 
     public Long saveOrderDirect(Order orderRequest) {
-        if (orderRequest != null && orderRequest.getQuote() != null) {
+        if(orderRequest == null) {
+            throw new RuntimeException("null orderRequest not allowed.");
+        }
+
+        if (orderRequest.getQuote() != null) {
             orderRequest.setQuoteid(orderRequest.getQuote().getQuoteid());
         }
+
         tradingService.saveOrder(orderRequest);
         return orderRequest.getOrderid();
     }
 
-    public interface OrderGateway {
+    public static interface OrderGateway {
         void sendOrder(Order order);
     }
 }

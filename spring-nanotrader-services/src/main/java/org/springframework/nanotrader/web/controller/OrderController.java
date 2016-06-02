@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.service.OrderService;
 import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.data.service.TradingService;
 import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.exception.NoRecordsFoundException;
@@ -56,11 +55,8 @@ public class OrderController {
 	private OrderService orderService;
 
 	@Autowired
-	@Qualifier( "rtQuoteService")
-	private QuoteService quoteService;
-
-	@Autowired
-	private TradingService tradingService;
+	@Qualifier("rtQuoteService")
+	private QuoteService realTimeQuoteService;
 
 	@RequestMapping(value = "/account/{accountId}/orders", method = RequestMethod.GET)
 	public ResponseEntity<CollectionResult> findOrders(
@@ -133,7 +129,7 @@ public class OrderController {
 			throw new NoRecordsFoundException();
 		}
 
-		order.setQuote(quoteService.findBySymbol(order.getQuoteid()));
+		order.setQuote(realTimeQuoteService.findBySymbol(order.getQuoteid()));
 		return order;
 	}
 
@@ -144,13 +140,13 @@ public class OrderController {
 		}
 		List<Order> orders;
 
-		collectionResults.setTotalRecords(tradingService.findCountOfOrders(accountId, status));
+		collectionResults.setTotalRecords(findCountOfOrders(accountId, status));
 		collectionResults.setPage(page);
 		collectionResults.setPageSize(pageSize);
 		if (status != null) {
-			orders = tradingService.findOrdersByStatus(accountId, status); //get by status
+			orders = orderService.findOrdersByStatus(accountId, status); //get by status
 		} else {
-			orders = tradingService.findOrders(accountId); //get all orders
+			orders = orderService.findByAccountId(accountId); //get all orders
 		}
 
 		List<Order> responseOrders = new ArrayList<Order>();
@@ -158,7 +154,7 @@ public class OrderController {
 
 
 			for(Order o: orders) {
-				o.setQuote(quoteService.findBySymbol(o.getQuoteid()));
+				o.setQuote(realTimeQuoteService.findBySymbol(o.getQuoteid()));
 				responseOrders.add(o);
 			}
 		}
@@ -166,4 +162,10 @@ public class OrderController {
 		return collectionResults;
 	}
 
+	private Long findCountOfOrders(Long accountId, String status) {
+		if (status != null) {
+			return orderService.countOfOrders(accountId, status);
+		}
+		return orderService.countOfOrders(accountId);
+	}
 }

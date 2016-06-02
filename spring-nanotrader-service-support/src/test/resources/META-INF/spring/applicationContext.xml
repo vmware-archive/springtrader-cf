@@ -13,7 +13,7 @@
     </bean>
     
     <bean id="quotePublisher" class="org.mockito.Mockito" factory-method="mock">
-        <constructor-arg value="org.springframework.nanotrader.data.service.TradingServiceImpl$QuotePublisher" />
+        <constructor-arg value="org.springframework.nanotrader.service.support.TradingServiceImpl$QuotePublisher" />
     </bean>
 
 	<bean id="rtQuoteService"

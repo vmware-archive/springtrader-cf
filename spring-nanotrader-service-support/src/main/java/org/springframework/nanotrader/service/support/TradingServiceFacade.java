@@ -26,6 +26,4 @@ import org.springframework.nanotrader.data.domain.Order;
 public interface TradingServiceFacade {
 
 	Long saveOrder(Order order, boolean synch);
-
-	Long saveOrderDirect(Order order);
 }

@@ -18,7 +18,6 @@ package org.springframework.nanotrader.web.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.service.AccountProfileService;
@@ -85,7 +84,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return authList;
     }
 
-	@Cacheable(value="authorizationCache")
 	private Accountprofile findAccountprofileByAuthtoken(String token) {
 		Accountprofile accountProfile = accountProfileService.findByAuthtoken(token);
 		if (accountProfile != null) {

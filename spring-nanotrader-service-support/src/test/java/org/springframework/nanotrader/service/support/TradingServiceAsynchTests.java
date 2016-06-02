@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.nanotrader.asynch.service;
+package org.springframework.nanotrader.service.support;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.nanotrader.data.domain.Quote;
-import org.springframework.nanotrader.data.domain.test.OrderDataOnDemand;
 import org.springframework.nanotrader.data.service.AccountProfileService;
-import org.springframework.nanotrader.data.service.AccountService;
+import org.springframework.nanotrader.data.service.OrderService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.service.FallBackAccountProfileService;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
+import org.springframework.nanotrader.service.support.config.IntegrationTestConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -38,10 +36,8 @@ import static org.junit.Assert.assertNotNull;
  * @author Gary Russell
  *
  */
-@Profile("test")
-@ContextConfiguration(locations={
-		"classpath:/META-INF/spring/applicationContext.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = IntegrationTestConfig.class)
 public class TradingServiceAsynchTests {
 
 	@Autowired
@@ -51,14 +47,10 @@ public class TradingServiceAsynchTests {
 	private AccountProfileService accountProfileService;
 
 	@Autowired
-	private AccountService accountService;
+	private OrderService orderService;
 
 	@Autowired
-	private OrderDataOnDemand orderDataOnDemand;
-
-	@Autowired
-	@Qualifier( "rtQuoteService")
-	private QuoteService quoteService;
+	private QuoteService realTimeQuoteService;
 
 	@Test
 	public void testService() {
@@ -68,14 +60,14 @@ public class TradingServiceAsynchTests {
 		Long accountId = ap.getAccounts().get(0).getAccountid();
 		assertNotNull(accountId);
 
-		Quote quote = quoteService.findBySymbol("GOOG");
+		Quote quote = realTimeQuoteService.findBySymbol("GOOG");
 
-		Order order = orderDataOnDemand.getRandomOrder();
+		Order order = new Order();
 		order.setOrdertype("buy");
 		order.setAccountid(accountId);
 		order.setQuote(quote);
 		assertNotNull(order.getAccountid());
-		Long i = tradingServiceFacade.saveOrderDirect(order);
+		Long i = tradingServiceFacade.saveOrder(order, true);
 		assertNotNull(i);
 	}
 }
