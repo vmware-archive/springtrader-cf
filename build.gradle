@@ -8,108 +8,92 @@ allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'idea'
 
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-
     repositories {
         mavenLocal()
         mavenCentral()
-        maven {
-            url "http://repo.spring.io/gemstone-release-cache"
-        }
     }
 
     ext {
-        aspectjVersion = '1.6.12.M2'
-        cglibVersion = '2.2'
-        commonsLangVersion = '3.0.1'
-        easymockVersion = '2.3'
-        jacksonVersion = '1.9.2'
-        junitVersion = '4.8.2'
-        log4jVersion = '1.2.12'
-        mockitoVersion = '1.9.0'
-        springVersion = '3.2.6.RELEASE'
-        springSecurityVersion = '3.1.0.RELEASE'
-        springIntegrationVersion = '2.2.6.RELEASE'
+        springVersion = '4.2.6.RELEASE'
+        springSecurityVersion = '4.1.0.RELEASE'
         springCloudVersion = '1.1.1.RELEASE'
-        javaxInjectVersion = '1'
-        servletApiVersion = '2.5'
+        amqpVersion = '4.2.5.RELEASE'
+        servletApiVersion = "3.0.1"
+        mockitoVersion = '1.10.19'
+        junitVersion = '4.12'
+        hamcrestVersion = '1.3'
+        springNetflixVersion = '1.0.6.RELEASE'
+        log4jVersion = '2.6'
+        feignGsonVersion = '8.5.0'
+        gsonVersion = '2.3.1'
+        jsonPathVersion = '2.2.0'
+        jacksonVersion = '2.6.4'
+        jstlVersion = '1.2'
     }
 
     dependencies {
-        compile "org.slf4j:slf4j-log4j12:1.6.4"
-        testCompile "cglib:cglib-nodep:$cglibVersion"
-        testCompile "junit:junit-dep:$junitVersion"
-        testCompile "log4j:log4j:$log4jVersion"
-        testCompile "org.easymock:easymock:$easymockVersion"
-        testCompile "org.easymock:easymockclassextension:$easymockVersion"
-        testCompile "org.mockito:mockito-all:$mockitoVersion"
-        testCompile "org.springframework:spring-test:$springVersion"
+        testCompile "org.mockito:mockito-core:${mockitoVersion}"
+        testCompile "org.springframework:spring-test:${springVersion}"
+        testCompile "junit:junit:${junitVersion}"
+        testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     }
 }
+
 
 project('spring-nanotrader-service-support') {
     description = 'Spring Nanotrader Data Service Support'
 
     dependencies {
         testCompile project(':spring-nanotrader-data').sourceSets.test.output
-
         compile project(":spring-nanotrader-data")
-        compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
-        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile "joda-time:joda-time:1.6"
-        compile "net.schmizz:sshj:0.8.1"
     }
 }
 
 project('spring-nanotrader-data') {
     description = 'Spring Nanotrader Data'
+
     dependencies {
-        // Spring Cloud
-        compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
-        compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
-        compile("org.springframework.cloud:spring-cloud-starter-eureka:1.0.0.RELEASE") {
+
+        compile("org.springframework.cloud:spring-cloud-starter-eureka:${springNetflixVersion}") {
             exclude module: 'spring-cloud-starter'
+            exclude module: 'spring-boot-starter-web'
+            exclude module: 'spring-cloud-starter-ribbon'
         }
-        compile("org.springframework.cloud:spring-cloud-starter-hystrix:1.0.3.RELEASE") {
+
+        compile("org.springframework.cloud:spring-cloud-starter-hystrix:${springNetflixVersion}") {
             exclude module: 'spring-cloud-starter'
         }
 
-        compile "org.springframework:spring-web:$springVersion"
-        compile "org.aspectj:aspectjrt:$aspectjVersion"
-        compile "org.springframework:spring-aspects:$springVersion"
-        compile "org.springframework.integration:spring-integration-amqp:$springIntegrationVersion"
-        compile "org.apache.commons:commons-lang3:$commonsLangVersion"
-        compile "javax.validation:validation-api:1.0.0.GA"
-        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile "com.netflix.feign:feign-core:6.1.3"
-        compile "com.netflix.feign:feign-jackson:6.1.3"
-        compile "com.netflix.feign:feign-gson:8.5.0"
-        compile "com.google.code.gson:gson:2.3.1"
-        compile "com.jayway.jsonpath:json-path:0.9.1"
-        compile "joda-time:joda-time:2.5"
+        compile("org.springframework.cloud:spring-cloud-starter-feign:${springNetflixVersion}") {
+            exclude module: 'spring-cloud-starter'
+        }
+
+        compile "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+        compile "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+
+        compile "com.netflix.feign:feign-gson:${feignGsonVersion}"
+        compile "com.google.code.gson:gson:${gsonVersion}"
+        compile "com.jayway.jsonpath:json-path:${jsonPathVersion}"
+        compile "com.fasterxml.jackson.core:jackson-annotations:2.5.2"
     }
 }
 
 project('spring-nanotrader-services') {
     apply plugin: 'war'
-
     description = 'Spring Nanotrader Services'
 
     dependencies {
         testCompile project(':spring-nanotrader-data').sourceSets.test.output
         compile project(":spring-nanotrader-service-support")
-        compile "org.springframework:spring-webmvc:$springVersion"
-        providedCompile("javax.servlet:servlet-api:$servletApiVersion")
-        compile "com.jayway.jsonpath:json-path:0.8.1"
-        compile "cglib:cglib-nodep:$cglibVersion"
-        compile "org.springframework.security:spring-security-web:$springSecurityVersion"
-        compile "org.springframework.security:spring-security-config:$springSecurityVersion"
-        compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
-        compile "javax.inject:javax.inject:$javaxInjectVersion"
-        testCompile "org.springframework:spring-test:$springVersion"
-        testCompile "org.hamcrest:hamcrest-all:1.1"
-        compile "org.aspectj:aspectjweaver:$aspectjVersion"
+
+        compile "org.springframework:spring-webmvc:${springVersion}"
+        providedCompile("javax.servlet:javax.servlet-api:${servletApiVersion}")
+        compile "org.springframework.cloud:spring-cloud-spring-service-connector:${springCloudVersion}"
+        compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:${springCloudVersion}"
+        compile "org.springframework.integration:spring-integration-amqp:${amqpVersion}"
+        compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
+        compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
+        compile "org.springframework:spring-aspects:${springVersion}"
     }
 }
 
@@ -118,33 +102,26 @@ project('spring-nanotrader-web') {
     description = 'Spring Nanotrader Web'
 
     dependencies {
-        // Spring Cloud
-        compile "org.springframework.cloud:spring-cloud-spring-service-connector:$springCloudVersion"
-        compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:$springCloudVersion"
+        compile "org.springframework.cloud:spring-cloud-spring-service-connector:${springCloudVersion}"
+        compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:${springCloudVersion}"
+        compile "org.springframework:spring-webmvc:${springVersion}"
 
-        compile "org.springframework:spring-webmvc:$springVersion"
-        providedCompile("javax.servlet:servlet-api:$servletApiVersion")
-        compile "javax.servlet:jstl:1.2"
-        compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
+        compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+        compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+        compile "javax.servlet:jstl:${jstlVersion}"
     }
 }
 
 project('spring-nanotrader-asynch-services') {
     apply plugin: 'war'
-
     description = 'Spring Nanotrader Asynch Services'
+
     dependencies {
         testCompile project(':spring-nanotrader-data').sourceSets.test.output
         compile project(":spring-nanotrader-service-support")
-        compile "org.springframework:spring-webmvc:$springVersion"
-        providedCompile("javax.servlet:servlet-api:$servletApiVersion")
-        compile "com.jayway.jsonpath:json-path:0.8.1"
-        compile "cglib:cglib-nodep:$cglibVersion"
-        compile "org.codehaus.jackson:jackson-mapper-asl:1.8.5"
-        compile "javax.inject:javax.inject:$javaxInjectVersion"
-        testCompile "org.springframework:spring-test:$springVersion"
-        compile "org.aspectj:aspectjweaver:$aspectjVersion"
-
+        compile "org.springframework.integration:spring-integration-amqp:${amqpVersion}"
+        compile "org.springframework.cloud:spring-cloud-spring-service-connector:${springCloudVersion}"
+        compile "org.springframework.cloud:spring-cloud-cloudfoundry-connector:${springCloudVersion}"
     }
 }
 

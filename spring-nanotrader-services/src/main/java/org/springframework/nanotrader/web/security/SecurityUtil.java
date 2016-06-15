@@ -15,22 +15,46 @@
  */
 package org.springframework.nanotrader.web.security;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.security.Principal;
 
 /**
  * Provides utilities to work with SecurityContext
  * 
  * @author Brian Dussault
  */
+
+@Service
 public class SecurityUtil {
+
+	private static final Logger LOG = LogManager.getLogger(SecurityUtil.class);
 
 	public Long getAccountFromPrincipal() {
 		return getPrincipal().getAccountId();
 	}
+
+	public Long getAccountFromPrincipal(Principal principal) {
+		if(principal == null) {
+			return null;
+		}
+		return ((CustomUser) principal).getAccountId();
+	}
 	
 	public Long getAccountProfileIdFromPrincipal() {
 		return getPrincipal().getAccountProfileId();
+	}
+
+	public Long getAccountProfileIdFromPrincipal(Principal principal) {
+		if(principal == null) {
+			return null;
+		}
+
+		return ((CustomUser) principal).getAccountProfileId();
 	}
 
 	public void checkAccountProfile(Long accountProfileId) {
@@ -46,17 +70,12 @@ public class SecurityUtil {
 			throw new AccessDeniedException(null);
 		}
 	}
-	
-	public void checkAuthToken(String token) {
-		if (token == null
-				|| !token.equals(getAuthToken())) {
+
+	public void checkAccount(Principal principal, Long accountId) {
+		if (accountId == null
+				|| accountId.compareTo(getAccountFromPrincipal(principal)) != 0) {
 			throw new AccessDeniedException(null);
 		}
-	}
-	
-
-	public String getAuthToken() { 
-		return getPrincipal().getAuthToken();
 	}
 	
 	public String getUsernameFromPrincipal() { 
@@ -64,9 +83,11 @@ public class SecurityUtil {
 	}
 	
 	private CustomUser getPrincipal() {
-		CustomUser principal = (CustomUser) SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
+		if(SecurityContextHolder.getContext().getAuthentication() == null) {
+			return null;
+		}
 
-		return principal;
+		return (CustomUser) SecurityContextHolder.getContext()
+				.getAuthentication().getPrincipal();
 	}
 }

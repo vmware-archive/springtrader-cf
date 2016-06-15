@@ -15,6 +15,8 @@
  */
 package org.springframework.nanotrader.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -27,6 +29,7 @@ public class Account implements Serializable {
     @NotNull
     private Accountprofile accountprofile;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date creationdate;
 
     private BigDecimal openbalance;
@@ -36,6 +39,7 @@ public class Account implements Serializable {
 
     private BigDecimal balance;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date lastlogin;
 
     @NotNull

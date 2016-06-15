@@ -154,18 +154,13 @@ public class ServiceTestConfiguration {
     }
 
     @Bean
-    public QuoteService quoteService() {
+    public QuoteService realTimeQuoteService() {
         QuoteService quoteService = Mockito.mock(QuoteService.class);
         when(quoteService.findBySymbol(eq(SYMBOL))).thenReturn(quote());
         when(quoteService.findBySymbolIn(anySetOf(String.class))).thenReturn(quotes());
         when(quoteService.marketSummary()).thenReturn(marketSummary());
 
         return quoteService;
-    }
-
-    @Bean
-    public QuoteService rtQuoteService() {
-        return quoteService();
     }
 
     @Bean
@@ -306,5 +301,10 @@ public class ServiceTestConfiguration {
         holdings.add(holding2);
         holdingSummary.setHoldingRollups(holdings);
         return holdingSummary;
+    }
+
+    @Bean
+    public TradingServiceFacadeImpl.OrderGateway orderGateway() {
+        return Mockito.mock(TradingServiceFacadeImpl.OrderGateway.class);
     }
 }

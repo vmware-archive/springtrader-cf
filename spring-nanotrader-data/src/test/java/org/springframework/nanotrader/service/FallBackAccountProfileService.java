@@ -114,8 +114,8 @@ public class FallBackAccountProfileService implements AccountProfileService {
     }
 
     @Override
-    public void logout(String authtoken) {
-        Accountprofile accountProfile = findByAuthtoken(authtoken);
+    public void logout(Long id) {
+        Accountprofile accountProfile = findAccountProfile(id);
         if (accountProfile != null) {
             accountProfile.setAuthtoken(null); // remove token
             List<Account> accounts = accountProfile.getAccounts();

@@ -35,13 +35,12 @@ import org.springframework.web.bind.annotation.*;
 public class QuoteController  {
 
 	@Autowired
-	@Qualifier( "rtQuoteService")
-	private QuoteService quoteService;
+	private QuoteService realTimeQuoteService;
 
 	@RequestMapping(value = "/quote/{symbol}", method = RequestMethod.GET)
 	public ResponseEntity<Quote> findQuote(
 			@PathVariable("symbol") final String symbol) {
-		Quote responseQuote = quoteService.findBySymbol(symbol);
+		Quote responseQuote = realTimeQuoteService.findBySymbol(symbol);
 
 		if(responseQuote == null) {
 			return new ResponseEntity<Quote>(BaseController.getNoCacheHeaders(),
@@ -57,7 +56,7 @@ public class QuoteController  {
 	@ResponseBody
 	public CollectionResult findQuotes() {
 		CollectionResult cr = new CollectionResult();
-		cr.setResults(quoteService.findAllQuotes());
+		cr.setResults(realTimeQuoteService.findAllQuotes());
 		return cr;
 	}
 

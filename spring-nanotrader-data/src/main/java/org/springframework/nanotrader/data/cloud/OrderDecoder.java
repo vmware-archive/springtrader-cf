@@ -7,6 +7,7 @@ import feign.FeignException;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.domain.Order;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDecoder extends GsonDecoder {
 
@@ -120,7 +122,7 @@ public class OrderDecoder extends GsonDecoder {
 
         Object h = ctx.read("$.holding");
         if (h != null) {
-            o.setHoldingHoldingid(holdingFromJson(JsonPath.parse(h.toString()), false));
+            o.setHoldingHoldingid(holdingFromJson(JsonPath.parse(new JSONObject((Map) ctx.read("$.holding")).toJSONString()), false));
         }
 
         return o;
@@ -146,7 +148,7 @@ public class OrderDecoder extends GsonDecoder {
 
             Object h = ctx.read("$.[" + i + "].holding");
             if (h != null && processHoldings) {
-                o.setHoldingHoldingid(holdingFromJson(JsonPath.parse(h.toString()), false));
+                o.setHoldingHoldingid(holdingFromJson(JsonPath.parse(new JSONObject((Map) ctx.read("$.[" + i + "].holding")).toJSONString()), false));
             }
 
             orders.add(o);

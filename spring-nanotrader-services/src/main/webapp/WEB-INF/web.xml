@@ -40,38 +40,6 @@
 		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
 
-	<!-- CORS filter to allow cross site scripting -->
-	
-	<filter>
-		<filter-name>CORSFilter</filter-name>
-		<filter-class>org.springframework.nanotrader.web.security.SimpleCORSFilter</filter-class>
-	</filter>
-	<filter-mapping>
-	   <filter-name>CORSFilter</filter-name>
-	   <servlet-name>service</servlet-name>
-	</filter-mapping>
-	
-	<filter>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	
-<!-- 	<absolute-ordering>
-		<name>CORSFilter</name>
-		<name>springSecurityFilterChain</name>
-	</absolute-ordering> -->
-	
-	<resource-ref>
-	  <description>Nanotrader Datasource</description>
-	  <res-ref-name>jdbc/nanodb</res-ref-name>
-	  <res-type>javax.sql.DataSource</res-type>
-	  <res-auth>Container</res-auth>
-	</resource-ref>
-
 	<!-- Disables servlet container welcome file handling. Needed for compatibility with Servlet 3.0 and Tomcat 7.0 -->
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

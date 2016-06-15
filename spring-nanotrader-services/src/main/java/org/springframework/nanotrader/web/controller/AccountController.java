@@ -15,17 +15,20 @@
  */
 package org.springframework.nanotrader.web.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.service.AccountService;
-import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.security.Principal;
 
 /**
  * Provides JSON based REST api to Account repository
@@ -36,21 +39,22 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Controller
 public class AccountController {
 
+	private static final Logger LOG = LogManager.getLogger(AccountController.class);
+
 	@Autowired
 	private AccountService accountService;
 
-	@Autowired
-	private SecurityUtil securityUtil;
+//	@Autowired
+//	private SecurityUtil securityUtil;
 	
 	@RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Account> find(@PathVariable( "id" ) final Long id) {
-		securityUtil.checkAccount(id);
+	public ResponseEntity<Account> find(@PathVariable( "id" ) final Long id, Principal principal) {
+
+//		securityUtil.checkAccount(principal, id);
 		Account accountResponse = accountService.findAccount(id);
 		return new ResponseEntity<Account>(accountResponse, BaseController.getNoCacheHeaders(),
 				HttpStatus.OK);
-		
 	}
-	
 	
 	@RequestMapping(value = "/account", method = RequestMethod.POST)
 	@ResponseStatus( HttpStatus.METHOD_NOT_ALLOWED )

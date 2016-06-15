@@ -17,29 +17,8 @@
 	Note: If you change the property within STS, right click the server 
 	and select "clean" from the menu to reload.
 	#################################################################### -->
-	
 
-		
-	<beans profile="test">
- 		<rabbit:connection-factory id="connectionFactory"
-			host="${NANO_RABBIT_HOST:localhost}"
-			port="${NANO_RABBIT_PORT:5672}"/>
-	</beans>
-	<beans profile="default">
-		<cloud:rabbit-connection-factory id="connectionFactory"/>
-	</beans>
-	
-	<!--  Enable clustered rabbit brokers by adding "clusteredRabbit" 
-		  to the catalina.properties property spring.active.profiles. 
-		  If enabled, this will override the connectionFactory bean above.
-	 -->
-	<beans profile="clusteredRabbit">
-	  
-	    <rabbit:connection-factory  id="connectionFactory"
-    			addresses="${NANO_RABBIT_HOSTS:localhost:5679}"/>
-	</beans>
-	
-	<beans >
+	<cloud:rabbit-connection-factory id="connectionFactory"/>
     
 <!--#################################################################### 
     Using the rabbit template with json message converter. This simplifies 
@@ -93,5 +72,5 @@
             <rabbit:binding queue="nanotrader.quote.queue" key="nanotrader.quote.binding" />
         </rabbit:bindings>
     </rabbit:direct-exchange>
-	</beans>
 </beans>
+

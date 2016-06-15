@@ -16,14 +16,12 @@
 package org.springframework.nanotrader.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.nanotrader.data.domain.Holding;
 import org.springframework.nanotrader.data.service.HoldingService;
 import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.service.domain.CollectionResult;
-import org.springframework.nanotrader.data.domain.Holding;
-import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,17 +40,16 @@ public class HoldingController {
 	private HoldingService holdingService;
 
 	@Autowired
-	@Qualifier( "rtQuoteService")
-	private QuoteService quoteService;
+	private QuoteService realTimeQuoteService;
 
-	@Autowired
-	private SecurityUtil securityUtil;
+//	@Autowired
+//	private SecurityUtil securityUtil;
 
 	@RequestMapping(value = "/account/{accountId}/holding/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Holding> find(@PathVariable("id") final Long id,
 			@PathVariable("accountId") final Long accountId) {
 
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 
 		Holding holding = holdingService.find(id);
 		if(holding == null || ! holding.getAccountAccountid().equals(accountId) ) {
@@ -60,7 +57,7 @@ public class HoldingController {
 					BaseController.getNoCacheHeaders(), HttpStatus.NOT_FOUND);
 		}
 
-		holding.setQuote(quoteService.findBySymbol(holding.getQuoteSymbol()));
+		holding.setQuote(realTimeQuoteService.findBySymbol(holding.getQuoteSymbol()));
 
 		return new ResponseEntity<Holding>(holding,
 				BaseController.getNoCacheHeaders(), HttpStatus.OK);
@@ -72,13 +69,13 @@ public class HoldingController {
 			@RequestParam(value = "page", required = false) Integer page,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 
 		CollectionResult cr = new CollectionResult();
 		List<Holding> holdings = holdingService.findByAccountid(accountId);
 		if (holdings != null && holdings.size() > 0) {
 			for (Holding h : holdings) {
-				h.setQuote(quoteService.findBySymbol(h.getQuoteSymbol()));
+				h.setQuote(realTimeQuoteService.findBySymbol(h.getQuoteSymbol()));
 			}
 
 			cr.setTotalRecords(Long.valueOf("" + holdings.size()));

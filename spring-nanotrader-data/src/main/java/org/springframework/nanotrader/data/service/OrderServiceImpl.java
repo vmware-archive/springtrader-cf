@@ -17,10 +17,13 @@ package org.springframework.nanotrader.data.service;
 
 import com.netflix.discovery.DiscoveryClient;
 import feign.Feign;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.nanotrader.data.cloud.*;
+import org.springframework.nanotrader.data.cloud.OrderDecoder;
+import org.springframework.nanotrader.data.cloud.OrderEncoder;
+import org.springframework.nanotrader.data.cloud.OrderRepository;
 import org.springframework.nanotrader.data.domain.Order;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +34,12 @@ import java.util.List;
 @Profile({"default", "cloud"})
 public class OrderServiceImpl implements OrderService {
 
-    private static final Logger LOG = Logger.getLogger(OrderServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(OrderServiceImpl.class);
 
     @Autowired
     DiscoveryClient discoveryClient;
 
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
     String orderRepositoryName;

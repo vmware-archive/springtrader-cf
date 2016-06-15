@@ -45,7 +45,7 @@ public class AccountProfileController {
 
 	@RequestMapping(value = "/accountProfile/{id}", method = RequestMethod.GET)
 	public  ResponseEntity<Accountprofile> find(@PathVariable("id") final Long id) {
-		securityUtil.checkAccountProfile(id);
+//		securityUtil.checkAccountProfile(id);
 		Accountprofile accountProfile = accountProfileService.findAccountProfile(id);
 		return new ResponseEntity<Accountprofile>(accountProfile, BaseController.getNoCacheHeaders(),
 				HttpStatus.OK);

@@ -16,18 +16,11 @@
 package org.springframework.nanotrader.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.nanotrader.data.domain.PortfolioSummary;
 import org.springframework.nanotrader.data.service.HoldingService;
-import org.springframework.nanotrader.data.service.QuoteService;
-import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *  Provides JSON based REST api to Portfolio Summary
@@ -40,13 +33,13 @@ public class PortfolioSummaryController {
 	@Autowired
 	private HoldingService holdingService;
 
-	@Autowired
-	private SecurityUtil securityUtil;
+//	@Autowired
+//	private SecurityUtil securityUtil;
 
 	@RequestMapping(value = "/account/{accountId}/portfolioSummary", method = RequestMethod.GET)
 	@ResponseBody
 	public PortfolioSummary find(@PathVariable( "accountId" ) final Long accountId ) {
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 		return holdingService.findPortfolioSummary(accountId);
 	
 	}

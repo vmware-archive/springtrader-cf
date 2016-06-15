@@ -15,6 +15,8 @@
  */
 package org.springframework.nanotrader.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -38,6 +40,7 @@ public class Holding implements Serializable {
 
     private BigDecimal quantity;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date purchasedate;
 
     private Long accountAccountid;

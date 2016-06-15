@@ -17,7 +17,8 @@ package org.springframework.nanotrader.data.service;
 
 import com.netflix.discovery.DiscoveryClient;
 import feign.Feign;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.cloud.AccountDecoder;
@@ -31,12 +32,12 @@ import org.springframework.stereotype.Service;
 @Profile({"default", "cloud"})
 public class AccountServiceImpl implements AccountService {
 
-    private static final Logger LOG = Logger.getLogger(AccountServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(AccountServiceImpl.class);
 
     @Autowired
     DiscoveryClient discoveryClient;
 
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     String accountRepositoryName;

@@ -17,11 +17,14 @@ package org.springframework.nanotrader.data.service;
 
 import com.netflix.discovery.DiscoveryClient;
 import feign.Feign;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
-import org.springframework.nanotrader.data.cloud.*;
+import org.springframework.nanotrader.data.cloud.HoldingRepository;
+import org.springframework.nanotrader.data.cloud.OrderDecoder;
+import org.springframework.nanotrader.data.cloud.OrderEncoder;
 import org.springframework.nanotrader.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +37,11 @@ import java.util.*;
 @Profile({"default", "cloud"})
 public class HoldingServiceImpl implements HoldingService {
 
-    private static final Logger LOG = Logger.getLogger(HoldingServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(HoldingServiceImpl.class);
 
-    public final static int SCALE = 2;
-    public final static int ROUND = BigDecimal.ROUND_HALF_UP;
-    public final static int TOP_N = 4;
+    private final static int SCALE = 2;
+    private final static int ROUND = BigDecimal.ROUND_HALF_UP;
+    private final static int TOP_N = 4;
 
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -49,7 +52,7 @@ public class HoldingServiceImpl implements HoldingService {
     private String orderRepositoryName;
 
     @Autowired
-    @Qualifier("rtQuoteService")
+    @Qualifier("realTimeQuoteService")
     private QuoteService quoteService;
 
     public List<Holding> findByAccountid(Long accountId) {
@@ -138,7 +141,7 @@ public class HoldingServiceImpl implements HoldingService {
         BigDecimal basis = BigDecimal.ZERO;
         for (Holding h : holdings) {
             basis = basis.add(h.getPurchaseprice().multiply(h.getQuantity()));
-    }
+        }
 
         portfolioSummary.setTotalBasis(basis);
         portfolioSummary.setTotalMarketValue(getTotalMarketValue(accountId));

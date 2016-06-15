@@ -1,7 +1,8 @@
 package org.springframework.nanotrader.data.cloud;
 
 import com.jayway.jsonpath.ReadContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -9,18 +10,16 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * Created by jgordon on 3/3/16.
- */
-public class JsonUtils {
 
-    private static final Logger LOG = Logger.getLogger(OrderDecoder.class);
+class JsonUtils {
 
-    public String getStringValue(ReadContext ctx, String path) {
+    private static final Logger LOG = LogManager.getLogger(OrderDecoder.class);
+
+    String getStringValue(ReadContext ctx, String path) {
         return ctx.read(path);
     }
 
-    public Long getLongValue(ReadContext ctx, String path) {
+    Long getLongValue(ReadContext ctx, String path) {
         Object o = ctx.read(path);
         if (isEmpty(o)) {
             return null;
@@ -28,7 +27,7 @@ public class JsonUtils {
         return Long.decode(o.toString());
     }
 
-    public BigDecimal getBigDecimalValue(ReadContext ctx, String path) {
+    BigDecimal getBigDecimalValue(ReadContext ctx, String path) {
         Object o = ctx.read(path);
         if (isEmpty(o)) {
             return null;
@@ -36,7 +35,7 @@ public class JsonUtils {
         return new BigDecimal(o.toString());
     }
 
-    public Date getDateValue(ReadContext ctx, String path) {
+    Date getDateValue(ReadContext ctx, String path) {
         Object o = ctx.read(path);
         if (isEmpty(o)) {
             return null;
@@ -50,7 +49,7 @@ public class JsonUtils {
         }
     }
 
-    public Integer getIntegerValue(ReadContext ctx, String path) {
+    Integer getIntegerValue(ReadContext ctx, String path) {
         Object o = ctx.read(path);
         if (isEmpty(o)) {
             return null;

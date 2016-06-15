@@ -15,7 +15,8 @@
  */
 package org.springframework.nanotrader.service.support;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Holding;
@@ -42,7 +43,7 @@ import java.util.List;
 @Service
 public class TradingServiceImpl implements TradingService {
 
-	private static Logger log = Logger.getLogger(TradingServiceImpl.class);
+	private static Logger log = LogManager.getLogger(TradingServiceImpl.class);
 
 	@Autowired
 	private OrderService orderService;

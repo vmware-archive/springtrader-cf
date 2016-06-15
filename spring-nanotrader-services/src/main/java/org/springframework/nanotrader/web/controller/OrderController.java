@@ -15,9 +15,9 @@
  */
 package org.springframework.nanotrader.web.controller;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +27,6 @@ import org.springframework.nanotrader.data.service.QuoteService;
 import org.springframework.nanotrader.service.domain.CollectionResult;
 import org.springframework.nanotrader.service.support.TradingServiceFacade;
 import org.springframework.nanotrader.service.support.exception.NoRecordsFoundException;
-import org.springframework.nanotrader.web.security.SecurityUtil;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -40,13 +38,13 @@ import java.util.List;
  * 
  * @author Brian Dussault
  */
-@Controller
+@RestController
 public class OrderController {
 
-	private static final Logger LOG = Logger.getLogger(OrderController.class);
+	private static final Logger LOG = LogManager.getLogger(OrderController.class);
 
-	@Autowired
-	private SecurityUtil securityUtil;
+//	@Autowired
+//	private SecurityUtil securityUtil;
 
 	@Autowired
 	private TradingServiceFacade tradingServiceFacade;
@@ -55,7 +53,6 @@ public class OrderController {
 	private OrderService orderService;
 
 	@Autowired
-	@Qualifier("rtQuoteService")
 	private QuoteService realTimeQuoteService;
 
 	@RequestMapping(value = "/account/{accountId}/orders", method = RequestMethod.GET)
@@ -65,7 +62,7 @@ public class OrderController {
 			@RequestParam(value = "page", required = false) Integer page,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 		return new ResponseEntity<CollectionResult>(getOrders(accountId, status, page, pageSize),
 				BaseController.getNoCacheHeaders(), HttpStatus.OK);
 	}
@@ -74,7 +71,7 @@ public class OrderController {
 	public ResponseEntity<Order> findOrder(
 			@PathVariable("accountId") final Long accountId,
 			@PathVariable("id") final Long orderId) {
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 		Order responseOrder = getOrder(orderId, accountId);
 
 		return new ResponseEntity<Order>(responseOrder, BaseController.getNoCacheHeaders(),
@@ -87,7 +84,7 @@ public class OrderController {
 			@PathVariable("accountId") final Long accountId,
 			UriComponentsBuilder builder) {
 
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 		orderRequest.setAccountid(accountId);
 		Long orderId = tradingServiceFacade.saveOrder(orderRequest, true);
 

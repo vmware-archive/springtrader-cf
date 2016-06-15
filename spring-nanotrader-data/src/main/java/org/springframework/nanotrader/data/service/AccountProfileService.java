@@ -36,5 +36,5 @@ public interface AccountProfileService {
 
     Accountprofile login(String username, String password);
 
-    void logout(String authtoken);
+    void logout(Long id);
 }

@@ -15,11 +15,12 @@
  */
 package org.springframework.nanotrader.data.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
+import com.netflix.discovery.DiscoveryClient;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import feign.Feign;
+import feign.gson.GsonEncoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -30,28 +31,25 @@ import org.springframework.nanotrader.data.domain.MarketSummary;
 import org.springframework.nanotrader.data.domain.Quote;
 import org.springframework.stereotype.Service;
 
-import com.netflix.discovery.DiscoveryClient;
-//import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-
-import feign.Feign;
-import feign.gson.GsonEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Profile({ "default", "cloud" })
 public class RealTimeQuoteService implements QuoteService, ScheduledUpdatable {
 
-	private static final Logger LOG = Logger
+	private static final Logger LOG = LogManager
 			.getLogger(RealTimeQuoteService.class);
 
 	private RealTimeQuoteRepository realTimeQuoteRepository;
 
 	@Autowired
-	DiscoveryClient discoveryClient;
+	private DiscoveryClient discoveryClient;
 
 	@Autowired
-	@Qualifier("dbQuoteService")
-	QuoteService dbQuoteService;
+	@Qualifier("DBQuoteService")
+	private QuoteService dbQuoteService;
 
 	@Autowired
 	String liveQuoteServiceEurekaName;

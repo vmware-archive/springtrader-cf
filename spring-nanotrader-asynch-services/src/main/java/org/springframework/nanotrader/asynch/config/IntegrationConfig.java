@@ -15,32 +15,66 @@
  */
 package org.springframework.nanotrader.asynch.config;
 
+import com.netflix.appinfo.MyDataCenterInstanceConfig;
+import com.netflix.discovery.DefaultEurekaClientConfig;
+import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.DiscoveryManager;
+import com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.nanotrader.service.configuration.ServiceConfig;
+import org.springframework.core.env.Environment;
 
 /**
  * Java configuration for the application's spring managed beans
- * 
+ *
  * @author Kashyap Parikh
  * @author Brian Dussault
  */
 
-/*
- * Component scan excludes ServiceConfig.class (and the associated spring-nanotrader-service-support.xml) 
- * from the spring-nanotrader-service-support project, since spring-nanotrader-asynch 
- * does not need gemfire configured and we are already including the application context 
- * files in this configuration with @ImportResource.
- */
-
-
 @Configuration
-@ComponentScan(basePackages="org.springframework.nanotrader.service", excludeFilters={@Filter(type=FilterType.ASSIGNABLE_TYPE, value=ServiceConfig.class)} )
-@ImportResource({ "classpath:/META-INF/spring/applicationContext.xml",
-		"classpath:/META-INF/spring/integration/amqp-inbound-context.xml" })
-public class IntegrationConfig   {
+@ComponentScan(basePackages = {"org.springframework.nanotrader.data.service, org.springframework.nanotrader.service.support"})
+@ImportResource({"classpath:/META-INF/spring/integration/amqp-inbound-context.xml"})
+public class IntegrationConfig {
+
+    @Bean
+    DiscoveryClient discoveryClient() {
+        DiscoveryManager dm = DiscoveryManager.getInstance();
+        dm.initComponent(new MyDataCenterInstanceConfig(),
+                new DefaultEurekaClientConfig());
+
+        return dm.getDiscoveryClient();
+    }
+
+    @Bean
+    public HystrixCommandAspect hystrixAspect() {
+        return new HystrixCommandAspect();
+    }
+
+    @Autowired
+    Environment env;
+
+    @Bean
+    public String liveQuoteServiceEurekaName() {
+        return env.getProperty("LIVE_QUOTE_SERVICE_NAME");
+    }
+
+    @Bean
+    public String dbQuoteServiceEurekaName() {
+        return env.getProperty("DB_QUOTE_SERVICE_NAME");
+    }
+
+
+    @Bean
+    public String accountRepositoryName() {
+        return env.getProperty("ACCOUNT_SERVICE_NAME");
+    }
+
+    @Bean
+    public String orderRepositoryName() {
+        return env.getProperty("ORDER_SERVICE_NAME");
+    }
 
 }

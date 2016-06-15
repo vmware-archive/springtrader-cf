@@ -15,7 +15,8 @@
  */
 package org.springframework.nanotrader.web.controller;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.nanotrader.data.domain.Account;
@@ -23,10 +24,17 @@ import org.springframework.nanotrader.data.domain.Accountprofile;
 import org.springframework.nanotrader.data.service.AccountProfileService;
 import org.springframework.nanotrader.service.domain.AuthenticationRequest;
 import org.springframework.nanotrader.service.support.exception.AuthenticationException;
-import org.springframework.nanotrader.web.security.SecurityUtil;
-import org.springframework.stereotype.Controller;
+import org.springframework.nanotrader.web.security.CustomAuthProvider;
+import org.springframework.nanotrader.web.security.CustomUser;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,38 +46,40 @@ import java.util.Map;
  * @author Brian Dussault
  */
 
-@Controller
+@RestController
 public class AuthenticationController {
 
-	private static final Logger LOG = Logger.getLogger(AuthenticationController.class);
+	private static final Logger LOG = LogManager.getLogger(AuthenticationController.class);
 
 	@Autowired
 	private AccountProfileService accountProfileService;
 
 	@Autowired
-	private SecurityUtil securityUtil;
+	CustomAuthProvider authenticationProvider;
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseStatus( HttpStatus.CREATED )
 	@ResponseBody
-	public Map<String, Object> login(@RequestBody AuthenticationRequest authenticationRequest) {
-		return login(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+	public Map<String, Object> login(HttpServletRequest request, @RequestBody AuthenticationRequest authenticationRequest) {
+		return login(request, authenticationRequest.getUsername(), authenticationRequest.getPassword());
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	@ResponseStatus( HttpStatus.OK )
 	@ResponseBody
 	public void logout() {
-		logout(securityUtil.getAuthToken());
-	}
-	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	@ResponseStatus( HttpStatus.METHOD_NOT_ALLOWED )
-	public void get() {
-		
+		LOG.info("logging out...");
+////		Principal principal = request.getUserPrincipal();
+////		LOG.info("logging out: " + principal);
+////
+////		if(principal != null) {
+////			Long id =  ((CustomUser) principal).getAccountProfileId();
+////			LOG.info("logout: accountProfileId=" + id);
+////			accountProfileService.logout(id);
+////		}
 	}
 
-	private Map<String, Object> login(String username, String password) {
+	private Map<String, Object> login(HttpServletRequest request, String username, String password) {
 		Accountprofile accountProfile  = accountProfileService.login(username, password);
 		Map<String, Object> loginResponse;
 
@@ -78,25 +88,28 @@ public class AuthenticationController {
 			List<Account> accounts = accountProfile.getAccounts();
 			loginResponse.put("authToken", accountProfile.getAuthtoken());
 			loginResponse.put("profileid", accountProfile.getProfileid());
-			for (org.springframework.nanotrader.data.domain.Account account: accounts) {
+			for (Account account: accounts) {
 				loginResponse.put("accountid", account.getAccountid());
 			}
+
+			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+			Authentication authentication = this.authenticationProvider.authenticate(token);
+
+			LOG.info("Logging in: " + authentication.getPrincipal());
+
+			SecurityContext securityContext = SecurityContextHolder.getContext();
+			securityContext.setAuthentication(authentication);
+
+			HttpSession session = request.getSession(true);
+			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+
 		} else {
-			LOG.error("login failed to find username=" + username + " password" + password);
+			LOG.error("login failed to find username=" + username + " password=" + password);
 			throw new AuthenticationException("Login failed for user: " + username);
 		}
 
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("login success for " + username + " username::token=" + loginResponse.get("authToken"));
-		}
+		LOG.info("login success for " + username + " username::token=" + loginResponse.get("authToken"));
+
 		return loginResponse;
-	}
-
-	private void logout(String authtoken) {
-
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("logout: username::token=" + authtoken);
-		}
-		accountProfileService.logout(authtoken);
 	}
 }

@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.nanotrader.web.configuration.ServiceTestConfiguration;
@@ -60,6 +61,7 @@ public class HoldingControllerTest extends AbstractSecureControllerTest {
 	}
 	
 	@Test
+	@Ignore
 	public void getHoldingByAccountIdNoRecordsFoundJson() throws Exception {
 		mockMvc.perform(get("/account/600/holdings").accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized())
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)).andDo(print());

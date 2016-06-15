@@ -7,6 +7,7 @@ import feign.FeignException;
 import feign.Response;
 import feign.gson.GsonDecoder;
 import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import org.springframework.nanotrader.data.domain.Account;
 import org.springframework.nanotrader.data.domain.Accountprofile;
 
@@ -118,7 +119,7 @@ public class AccountDecoder extends GsonDecoder {
 
         Object ap = ctx.read("$.accountProfile");
         if (ap != null) {
-            a.setAccountprofile(accountprofileFromJson(JsonPath.parse(ap.toString()), false));
+            a.setAccountprofile(accountprofileFromJson(JsonPath.parse(new JSONObject(ctx.read("$.accountProfile")).toJSONString()), false));
         }
 
         return a;

@@ -17,7 +17,8 @@ package org.springframework.nanotrader.data.service;
 
 import com.netflix.discovery.DiscoveryClient;
 import feign.Feign;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.nanotrader.data.cloud.AccountDecoder;
@@ -35,9 +36,9 @@ import java.util.UUID;
 @Profile({"default", "cloud"})
 public class AccountProfileServiceImpl implements AccountProfileService {
 
-    private static final Logger LOG = Logger.getLogger(AccountProfileServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(AccountProfileServiceImpl.class);
 
-    AccountProfileRepository accountProfileRepository;
+    private AccountProfileRepository accountProfileRepository;
 
     @Autowired
     DiscoveryClient discoveryClient;
@@ -125,8 +126,8 @@ public class AccountProfileServiceImpl implements AccountProfileService {
     }
 
     @Override
-    public void logout(String authtoken) {
-        Accountprofile accountProfile = findByAuthtoken(authtoken);
+    public void logout(Long id) {
+        Accountprofile accountProfile = findAccountProfile(id);
         if (accountProfile != null) {
             accountProfile.setAuthtoken(null); // remove token
             List<Account> accounts = accountProfile.getAccounts();

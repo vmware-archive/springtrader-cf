@@ -15,10 +15,10 @@
  */
 package org.springframework.nanotrader.web.security;
 
-import java.util.Collection;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
+import java.util.Collection;
 
 
 /**
@@ -27,44 +27,38 @@ import org.springframework.security.core.userdetails.User;
  *  @author Brian Dussault 
  */
 
-@SuppressWarnings("serial")
 public class CustomUser extends User {
-	
 
 	private Long accountId;
+
 	private Long accountProfileId;
-	private String authToken;
 	
 	public Long getAccountProfileId() {
 		return accountProfileId;
 	}
 
-	public void setAccountId(Long accountId) {
+	private void setAccountId(Long accountId) {
 		this.accountId = accountId;
 	}
 
 	public CustomUser(String username, String password,
-			Collection<? extends GrantedAuthority> authorities, Long accountId, Long accountProfileId, String token) {
+			Collection<? extends GrantedAuthority> authorities, Long accountId, Long accountProfileId) {
 		super(username, password, authorities);
-		this.accountId = accountId;
-		this.accountProfileId = accountProfileId;
-		this.authToken = token;
-	}
-
-	
-	public String getAuthToken() {
-		return authToken;
+		setAccountId(accountId);
+		setAccountProfileId(accountProfileId);
 	}
 
 	public Long getAccountId() {
 		return accountId;
 	}
 
+	private void setAccountProfileId(Long accountProfileId) {
+		this.accountProfileId = accountProfileId;
+	}
+
 	@Override
 	public String toString() {
 		return "CustomUser [accountId=" + accountId + ", accountProfileId="
-				+ accountProfileId + ", authToken=" + authToken + "]";
+				+ accountProfileId + "]";
 	}
-
-	
 }

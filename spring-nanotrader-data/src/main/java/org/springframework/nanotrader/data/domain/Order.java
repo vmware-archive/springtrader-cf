@@ -15,6 +15,8 @@
  */
 package org.springframework.nanotrader.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -40,6 +42,7 @@ public class Order implements Serializable {
 
     private BigDecimal orderfee;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date completiondate;
 
     private String ordertype;
@@ -50,6 +53,7 @@ public class Order implements Serializable {
 
     private BigDecimal quantity;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date opendate;
 
     private String quoteid;

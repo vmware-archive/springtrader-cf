@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.nanotrader.data.domain.HoldingSummary;
 import org.springframework.nanotrader.data.service.HoldingService;
-import org.springframework.nanotrader.web.security.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,13 +32,13 @@ public class HoldingSummaryController {
 	@Autowired
 	private HoldingService holdingService;
 
-	@Autowired
-	private SecurityUtil securityUtil;
+//	@Autowired
+//	private SecurityUtil securityUtil;
 
 	@RequestMapping(value = "/account/{accountId}/holdingSummary", method = RequestMethod.GET)
 	public ResponseEntity<HoldingSummary> find(
 			@PathVariable("accountId") final Long accountId) {
-		securityUtil.checkAccount(accountId);
+//		securityUtil.checkAccount(accountId);
 		HoldingSummary holdingSummary = holdingService
 				.findHoldingSummary(accountId);
 		return new ResponseEntity<HoldingSummary>(holdingSummary,
