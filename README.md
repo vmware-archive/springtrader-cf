@@ -1,3 +1,5 @@
+# springtrader-cf is no longer actively maintained by VMware.
+
 SpringTrader on Cloud Foundry
 =============================
 
